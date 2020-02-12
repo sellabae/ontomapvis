@@ -1,0 +1,35 @@
+.text-unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+.svgdiv {
+    width: 800px;
+    height: 500px;
+    overflow: scroll;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: rgb(248, 248, 248);
+}
+.mapsvg {
+    height: 2100px;
+}
+
+
+.node text {
+    font-size: 0.9em;
+    color: red;
+}
+.mapping line {
+    stroke: rgb(20, 165, 153);
+    stroke-width: 1px;
+}
+
+.align-right text {
+    text-anchor: "end";
+}

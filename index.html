@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Mapping Data Visualization</title>
+    <!-- <link id="favicon" rel="shortcut icon" href=""/> -->
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Script -->
+    <!-- <script src="data.js"></script> -->
+    <script src="script.js"></script>
+    <!-- data -->
+    <script src="data/conference_dataset.js"></script>
+    <!-- <script src="dataset/conference/edas.json"></script>
+    <script src="dataset/conference/ekaw.json"></script>
+    <script src="dataset/conference/edas-ekaw.json"></script> -->
+    
+</head>
+
+<body class="text-unselectable">
+    <div class="container-fluid">
+        <div>
+            <h2>Prototyping ontology mapping visualization</h2>
+            <p id="dataset-description"></p>
+        </div>
+        <h4>baseline mapping</h4>
+        <div class="svgdiv">
+            <!-- svg for baseline mapping -->
+            <svg class="mapsvg" id="baseline-svg" width="800" height="600">
+            </svg>
+        </div>
+        <h4>matrix mapping</h4>
+        <div class="svgdiv">
+            <!-- svg for matrix mapping -->
+            <svg class="mapsvg" id="matrix-svg" width="800" height="600">
+            </svg>
+        </div>
+    </div>
+
+</body>
+
+</html>
