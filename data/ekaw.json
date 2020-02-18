@@ -1,0 +1,419 @@
+{
+  "name": "ekaw",
+  "baseNS": "http://ekaw#",
+  "classCount": 773,
+  "root": {
+    "depth": 0,
+    "name": "Thing",
+    "subClasses": [
+      {
+        "depth": 1,
+        "name": "Organisation",
+        "subClasses": [
+          {
+            "depth": 2,
+            "name": "Academic_Institution",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "University",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Research_Institute",
+                "subClasses": []
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Proceedings_Publisher",
+            "subClasses": []
+          },
+          {
+            "depth": 2,
+            "name": "Organising_Agency",
+            "subClasses": []
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "name": "Event",
+        "subClasses": [
+          {
+            "depth": 2,
+            "name": "Scientific_Event",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Conference",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Individual_Presentation",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "Tutorial",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Contributed_Talk",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Invited_Talk",
+                    "subClasses": []
+                  }
+                ]
+              },
+              {
+                "depth": 3,
+                "name": "Session",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "Conference_Session",
+                    "subClasses": [
+                      {
+                        "depth": 5,
+                        "name": "Industrial_Session",
+                        "subClasses": []
+                      }
+                    ]
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Poster_Session",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Demo_Session",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Workshop_Session",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Regular_Session",
+                    "subClasses": []
+                  }
+                ]
+              },
+              {
+                "depth": 3,
+                "name": "Workshop",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Track",
+                "subClasses": []
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Social_Event",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Conference_Banquet",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Conference_Trip",
+                "subClasses": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "name": "Location",
+        "subClasses": []
+      },
+      {
+        "depth": 1,
+        "name": "Person",
+        "subClasses": [
+          {
+            "depth": 2,
+            "name": "Paper_Author",
+            "subClasses": []
+          },
+          {
+            "depth": 2,
+            "name": "Conference_Participant",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Workshop_Chair",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Session_Chair",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Tutorial_Chair",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Late-Registered_Participant",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Demo_Chair",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "OC_Member",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "OC_Chair",
+                    "subClasses": []
+                  }
+                ]
+              },
+              {
+                "depth": 3,
+                "name": "Early-Registered_Participant",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "PC_Chair",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Presenter",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "Invited_Speaker",
+                    "subClasses": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Student",
+            "subClasses": []
+          },
+          {
+            "depth": 2,
+            "name": "Possible_Reviewer",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "PC_Member",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "SC_Member",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "PC_Chair",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Session_Chair",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Workshop_Chair",
+                    "subClasses": []
+                  },
+                  {
+                    "depth": 4,
+                    "name": "Tutorial_Chair",
+                    "subClasses": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Agency_Staff_Member",
+            "subClasses": []
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "name": "Research_Topic",
+        "subClasses": []
+      },
+      {
+        "depth": 1,
+        "name": "Document",
+        "subClasses": [
+          {
+            "depth": 2,
+            "name": "Flyer",
+            "subClasses": []
+          },
+          {
+            "depth": 2,
+            "name": "Abstract",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Invited_Talk_Abstract",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Tutorial_Abstract",
+                "subClasses": []
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Paper",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Poster_Paper",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Conference_Paper",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Camera_Ready_Paper",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Industrial_Paper",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Regular_Paper",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Demo_Paper",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Submitted_Paper",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "Assigned_Paper",
+                    "subClasses": [
+                      {
+                        "depth": 5,
+                        "name": "Evaluated_Paper",
+                        "subClasses": [
+                          {
+                            "depth": 6,
+                            "name": "Rejected_Paper",
+                            "subClasses": []
+                          },
+                          {
+                            "depth": 6,
+                            "name": "Accepted_Paper",
+                            "subClasses": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "depth": 3,
+                "name": "Workshop_Paper",
+                "subClasses": []
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Multi-author_Volume",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Proceedings",
+                "subClasses": [
+                  {
+                    "depth": 4,
+                    "name": "Conference_Proceedings",
+                    "subClasses": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "depth": 2,
+            "name": "Programme_Brochure",
+            "subClasses": []
+          },
+          {
+            "depth": 2,
+            "name": "Web_Site",
+            "subClasses": []
+          },
+          {
+            "depth": 2,
+            "name": "Review",
+            "subClasses": [
+              {
+                "depth": 3,
+                "name": "Positive_Review",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Neutral_Review",
+                "subClasses": []
+              },
+              {
+                "depth": 3,
+                "name": "Negative_Review",
+                "subClasses": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
