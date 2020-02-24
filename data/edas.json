@@ -1,6 +1,6 @@
 {
   "name": "edas",
-  "baseNS": "http://edas#",
+  "baseNS": "http://edas",
   "classCount": 103,
   "root": {
     "depth": 0,

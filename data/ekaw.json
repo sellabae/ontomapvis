@@ -1,7 +1,7 @@
 {
   "name": "ekaw",
-  "baseNS": "http://ekaw#",
-  "classCount": 773,
+  "baseNS": "http://ekaw",
+  "classCount": 73,
   "root": {
     "depth": 0,
     "name": "Thing",
