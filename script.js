@@ -5,24 +5,11 @@ let dataset = {
     maps: mapping_edas_ekaw
 };
 
-var baselineSvg;
-var matrixSvg;
-
-let nodeWidth = 200;
-let nodeHeight = 26;
-let nodeGap = 4;
-let indent = 15;
 let treeWidth = 300;
-let ontGap = 100;
+let ontGap = 200;
 
-var base_ont1G;
-var base_ont2G;
-var base_mapG;
-var base_ont1_subNodes;
-var base_ont2_subNodes;
-
-var matr_ont2_subNodes;
-var matr_ont2_subNodes;
+const ont1TreeRoot = tree(dataset.ont1.root, 'right');
+const ont2TreeRoot = tree(dataset.ont2.root, 'left');
 
 window.addEventListener('load', function() {
     console.log("window loaded.");
@@ -35,354 +22,165 @@ window.addEventListener('load', function() {
 
 function describeDataset()
 {
-    var desc = '[Dataset]'
-        +'<br>'+ '  domain: ' + dataset.domain
-        +'<br>'+ `  onto1: \"${dataset.ont1.baseNS}\" ${dataset.ont1.classCount} classes`
-        +'<br>'+ `  onto2: \"${dataset.ont2.baseNS}\" ${dataset.ont2.classCount} classes`
-        +'<br>'+ `  maps: ${dataset.maps.alignments.length} alignments`;
+    var desc = /*'[Dataset]' +'<br>' +*/
+        'domain: ' + dataset.domain +'<br>'+
+        `onto1: \"${dataset.ont1.baseNS}\" ${dataset.ont1.classCount} classes` +'<br>'+
+        `onto2: \"${dataset.ont2.baseNS}\" ${dataset.ont2.classCount} classes` +'<br>'+
+        `maps: ${dataset.maps.alignments.length} alignments`;
     // console.log(desc);
     return desc;
 }
 
 function drawBaselineSvg()
 {
-    // 1. Prep svg
-    baselineSvg = d3.select("#baseline-svg");
-    let g = baselineSvg.append('g')
-        .attr('transform','translate(50,20)');
-    base_ont1G = g.append('g')
-        .attr('id','ont1G')
-        .classed('align-right', true);
-    base_ont2G = g.append('g')
-        .attr('id','ont2G')
-        .attr('transform',`translate(${treeWidth + ontGap},0)`);
-    base_mapG = g.append('g')
-        .attr('id','mapG');
-
-    // 2. Draws ontology trees
-    // drawIndentedTree(base_ont1G, dataset.ont1, true);
-    // drawIndentedTree(base_ont2G, dataset.ont2, false);
-
-    //TEMP codes to make subNodes work with mapping!
-    var isRightAlign;
-    var tree;
-    var ontG;
-    //2-1) ont1
-    // root node
-    isRightAlign = true;
-    tree = dataset.ont1;
-    ontG = base_ont1G;
-    //draw root node
-    var rootNodeG = ontG.append('g');
-    var rootNode = rootNodeG.append('g')
-        .datum(tree.root);
-    drawNode(rootNode, isRightAlign);
-    var subNodeG = rootNodeG.append('g')
-        .classed('subNodeG', true)
-        .attr('transform', `translate(0, ${nodeHeight+nodeGap})`);
-    // level1 sub nodes
-    base_ont1_subNodes = subNodeG.selectAll('g')
-        .data(tree.root.subClasses).enter().append('g')
-        .on('mouseover', handleMouseOver_base)
-        .on('mouseout', handleMouseOut);
-    drawSubNodes(base_ont1_subNodes, tree.root, isRightAlign);
-
-    //2-2) ont2
-    isRightAlign = false;
-    tree = dataset.ont2;
-    ontG = base_ont2G;
-    //draw root node
-    rootNodeG = ontG.append('g');
-    rootNode = rootNodeG.append('g')
-        .datum(tree.root);
-    drawNode(rootNode, isRightAlign);
-    subNodeG = rootNodeG.append('g')
-        .classed('subNodeG', true)
-        .attr('transform', `translate(0, ${nodeHeight+nodeGap})`);
-    // level1 sub nodes
-    base_ont2_subNodes = subNodeG.selectAll('g')
-        .data(tree.root.subClasses).enter().append('g')
-        .on('mouseover', handleMouseOver_base)
-        .on('mouseout', handleMouseOut);
-    drawSubNodes(base_ont2_subNodes, tree.root, isRightAlign);
-
-
-    // 3. Draws mapped line
-    // drawBaselineMapping(base_mapG, dataset.maps.alignments, ont1G, ont2G);
-
-    // var testSubNodes = base_ont1G.select('.subNodeG').selectAll('.node');
-    // console.log(testSubNodes);
-    // var filtered = testSubNodes.filter(d => {
-    //     console.log(d.entity1);
-    //     return d.entity1 === testName;
-    // });
-    // var filtered = base_ont1_subNodes.filter(d => {return d.entity1 === testName;} );
-    // console.log("filtered: ");
-    // console.log(filtered);
-
-    base_mapG.selectAll('line')
-        .data(dataset.maps.alignments)
-        .enter()
-        .append('line')
-        // .classed('mapping', true)
-        .attr('style', "stroke:rgb(20,165,153);stroke-width:2;")
-        .attr('x1', treeWidth + 4)
-        .attr('x2', treeWidth + ontGap - 4)
-        .attr('y1', (d,i) => {
-            var y = 0;
-            var fc = base_ont1_subNodes.filter((c,j) => {
-                if(c.name === d.entity1) {
-                    y = (j+1) * (nodeHeight + nodeGap) + 13;
-                    console.log('class1: ',c.name ,' y1: ', y);
-                }
-                return c.name === d.entity1; 
-            });
-            return y;
-        })
-        .attr('y2', (d,i) => {
-            var y = 0;
-            var fc = base_ont2_subNodes.filter((c,j) => {
-                if(c.name === d.entity2) {
-                    y = (j+1) * (nodeHeight + nodeGap) + 13;
-                    console.log('class2: ',c.name ,' y2: ', y);
-                }
-                return c.name === d.entity2; 
-            });
-            return y;
-        });
+    console.log("drawBaselineSvg()");
     
+    const svg = d3.select("#baseline-svg")
+        .attr('height', 1900)
+        .attr('width', 1000);
+    const svgWidth = +svg.attr('width');
+    // //auto adjust the height
+    // let newHeight = nodeHeight * Math.max(ont1TreeRoot.count(), ont2TreeRoot.count());
+    // svg.attr('height', newHeight);
+
+    let g = svg.append('g')
+        .attr('transform',`translate(${svgWidth/2},20)`);
+    var base_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
+        .attr('id','base_ont1G')
+        .attr('transform',`translate(${-ontGap/2},0)`);
+    var base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
+        .attr('id','base_ont2G')
+        .attr('transform',`translate(${ontGap/2},0)`);
+    
+    console.log('draw baseline mapping');
+    var base_mapG = g.append('g').lower()
+        .attr('id','base_mapG')
+        .attr('transform',`translate(${-ontGap/2},0)`);
+    const mapLine = base_mapG.selectAll('path')
+        .data(dataset.maps.alignments)
+        .join('path')
+            .classed('mapping', true)
+            .attr('stroke', 'rgb(20, 165, 153)')
+            .attr('stroke-width', '2px')
+            .attr('fill', 'none')
+            .attr('d', (d,i) => mapLinePath(d,i));
+
+}
+
+function mapLinePath(a, i)
+{
+    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
+    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
+
+    if (e1 != undefined && e2 != undefined) {
+        // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
+        const x1 = e1.y, y1 = e1.x;
+        const x2 = e2.y + ontGap, y2 = e2.x;
+        const q = Math.abs(y2 - y1)/2;
+        const qx = (ontGap-20) / dataset.maps.alignments.length * i;
+        const qy = y2 > y1 ? y2-q : y2+q;
+        return `M ${x1} ${y1} Q ${qx.toFixed(0)} ${y1} ${qx.toFixed(0)} ${qy} T ${x2} ${y2}`;
+    } else {
+        // console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
+        return ``;
+    }
 }
 
 function drawMatrixSvg()
 {
-    //1. Preps svg
-    matrixSvg = d3.select("#matrix-svg");
-    let g = matrixSvg.append('g')
-        .attr('transform',`translate(-50, ${treeWidth-50})`);
-    let ont1G = g.append('g')
-        .attr('id','ont1G')
-        .classed('align-right', true);
-    let ont2G = g.append('g')
-        .attr('id','ont2G')
-        .attr('transform',`translate(${treeWidth},0), rotate(-90)`)
-        .classed('tilted', true);
-    let mapG = g.append('g')
-        .attr('transform', `translate(${treeWidth},0)`)
-        .attr('id','mapG');
+    console.log("drawMatrixSvg()");
+    
+    const svg = d3.select("#matrix-svg")
+        .attr('height', 2150)
+        .attr('width', 1750);
+    const svgWidth = svg.attr('width');
 
-    //2. Draws ontology trees
-    // drawIndentedTree(ont1G, dataset.ont1, true);
-    // drawIndentedTree(ont2G, dataset.ont2, false);
-    //TEMP codes to make subNodes work with mapping!
-    var isRightAlign;
-    var tree;
-    var ontG;
-    //2-1) ont1
-    // root node
-    isRightAlign = true;
-    tree = dataset.ont1;
-    ontG = ont1G;
-    //draw root node
-    var rootNodeG = ontG.append('g');
-    var rootNode = rootNodeG.append('g')
-        .datum(tree.root);
-    drawNode(rootNode, isRightAlign);
-    var subNodeG = rootNodeG.append('g')
-        .classed('subNodeG', true)
-        .attr('transform', `translate(0, ${nodeHeight+nodeGap})`);
-    // level1 sub nodes
-    matr_ont1_subNodes = subNodeG.selectAll('g')
-        .data(tree.root.subClasses).enter().append('g')
-        .on('mouseover', handleMouseOver_matr)
-        .on('mouseout', handleMouseOut);
-    drawSubNodes(matr_ont1_subNodes, tree.root, isRightAlign);
-
-    //2-2) ont2
-    isRightAlign = false;
-    tree = dataset.ont2;
-    ontG = ont2G;
-    //draw root node
-    rootNodeG = ontG.append('g');
-    rootNode = rootNodeG.append('g')
-        .datum(tree.root);
-    drawNode(rootNode, isRightAlign);
-    subNodeG = rootNodeG.append('g')
-        .classed('subNodeG', true)
-        .attr('transform', `translate(0, ${nodeHeight+nodeGap})`);
-    // level1 sub nodes
-    matr_ont2_subNodes = subNodeG.selectAll('g')
-        .data(tree.root.subClasses).enter().append('g')
-        .on('mouseover', handleMouseOver_matr)
-        .on('mouseout', handleMouseOut);
-    drawSubNodes(matr_ont2_subNodes, tree.root, isRightAlign);
-
-    mapG.selectAll('circle')
-        .data(dataset.maps.alignments).enter()
-        .append('circle')
-        .classed('mapping', true)
-        .attr('style', "fill:rgb(20,165,153);stroke:none")
-        .attr('r', 10)
-        .attr('cy', d => { 
-            var y = 0;
-            var fc = matr_ont1_subNodes.filter((c,j) => {
-                if(c.name === d.entity1) {
-                    y = (j+1) * (nodeHeight + nodeGap) + 13;
-                    console.log('class1: ',c.name ,' y1: ', y);
-                }
-                return c.name === d.entity1; 
-            });
-            return y;
-        })
-        .attr('cx', d => {
-            var x = 0;
-            var fc = matr_ont2_subNodes.filter((c,j) => {
-                if(c.name === d.entity2) {
-                    x = (j+1) * (nodeHeight + nodeGap) + 13;
-                    console.log('class2: ',c.name ,' x: ', x);
-                }
-                return c.name === d.entity2; 
-            });
-            return x;
-        });
-
-}
-
-function handleMouseOver_base(d, i) {
-    console.log('mouseover on ', d.name);
-
-    d3.selectAll('.node').classed('highlight', false);
-    // d3.select(this).classed('highlight', true);
-    var name = d.name;
-    base_ont1_subNodes.filter(dd => {return dd.name === name;})
-        .classed('highlight', true);
-    base_ont2_subNodes.filter(dd => {return dd.name === name;})
-        .classed('highlight', true);
-
-    if(d.name == null) {
-        console.log('d.name == null, on mapping object?');
+    let g = svg.append('g')
+        .attr('transform','translate(10,10)');
+    var matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
+        .attr('id','matrix_ont1G')
+        .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+    var matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
+        .attr('id','matrix_ont2G')
+        .attr('transform',`translate(${treeWidth},${treeWidth-50}), rotate(270)`);
+    
+    //draw matrix background table rows and columns
+    var mapBgG = g.append('g').lower()
+        .classed('map-bg-table', true)
+        .attr('transform',`translate(${treeWidth},${treeWidth-50})`)
+    let ont1len = ont1TreeRoot.descendants().length;
+    let ont2len = ont2TreeRoot.descendants().length;
+    mapBgG.append('rect')
+        .attr('height', ont1len * nodeHeight)
+        .attr('width', ont2len * nodeHeight)
+        .style('fill', '#EEE');
+    for (let i=0; i<ont1len; i++) {
+        mapBgG.append('g').classed('row', true)
+            .append('line')
+            .attr('x1', 0).attr('y1', i * nodeHeight)
+            .attr('x2', ont2len * nodeHeight).attr('y2', i * nodeHeight)
+            .style('stroke', 'white').style('stroke-width', '1px');
     }
-}
-function handleMouseOver_matr(d, i) {
-    console.log('mouseover on ', d.name);
-
-    d3.selectAll('.node').classed('highlight', false);
-    // d3.select(this).classed('highlight', true);
-    var name = d.name;
-    matr_ont1_subNodes.filter(dd => {return dd.name === name;})
-        .classed('highlight', true);
-    matr_ont2_subNodes.filter(dd => {return dd.name === name;})
-        .classed('highlight', true);
-
-    if(d.name == null) {
-        console.log('d.name == null, on mapping object?');
+    for (let i=0; i<ont2len; i++) {
+        mapBgG.append('g').classed('col', true)
+            .append('line')
+            .attr('x1', i * nodeHeight).attr('y1', 0)
+            .attr('x2', i * nodeHeight).attr('y2', ont1len * nodeHeight)
+            .style('stroke', 'white').style('stroke-width', '1px');
     }
-}
-function handleMouseOut(d, i) {
-    // d3.selectAll('.node').classed('highlight', false);
-    console.log('mouseout. clear \'highlight\' from all nodes.');
+
+    console.log('draw matrix mapping');
+    //draw mapping cells
+    var matrix_mapG = g.append('g')
+    .attr('id','matrix_mapG');
+    // .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+
+    // var mapCell = matrix_mapG.selectAll('rect')
+    //     .data(dataset.maps.alignments)
+    //     .enter()
+    //     .append((d,i) => mapCellRect(d,i));
+
+    //TODO: this is temporary
+    var mapCell = matrix_mapG.selectAll('rect');
+    dataset.maps.alignments.forEach((a,i) => {
+        var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
+        var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
+        if (e1 != undefined && e2 != undefined) {
+            console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
+            const x = e2.x;
+            const y = e1.x;
+            const cellSize = nodeHeight;
+            mapCell.append('rect')
+                .classed('mapping', true)
+                .attr('x', x).attr('y', y)
+                .attr('width', cellSize).attr('height', cellSize)
+                .style('fill', 'red');
+        } else {
+            console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
+        }
+    });
 }
 
-function drawIndentedTree(ontG, tree, isRightAlign)
+function mapCellRect(a,i)
 {
-    console.log(`drawIndentedTree() of '${tree.name}' ontology. ${tree.root.subClasses.length} classes at level 1.`);
+    // console.log('mapCellRect() called');
+    //TODO: update to handle more than one filtered results (there can be repetition)
+    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
+    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
 
-    // TODO: draw indented tree in hierarchy
-    // root node
-    var rootNodeG = ontG.append('g');
-    var rootNode = rootNodeG.append('g')
-        .datum(tree.root);
-    drawNode(rootNode, isRightAlign);
-    var subNodeG = rootNodeG.append('g')
-        .classed('subNodeG', true)
-        .attr('transform', `translate(0, ${nodeHeight+nodeGap})`);
-
-    // level1 sub nodes
-    var subNodes = subNodeG.selectAll('g')
-        .data(tree.root.subClasses).enter();
-    drawSubNodes(subNodes, tree.root, isRightAlign);
-
-
-}
-
-function drawSubNodes(subNodes, cls, isRightAlign)
-{
-    var subClasses = cls.subClasses;
-    console.log( subClasses.length + " sub classes under " + cls.name );
-
-    if(subClasses.length == 0) { return; }
-
-    // var nodes = g.selectAll('g')
-    //     .data(subClasses)
-    //     .enter().append('g');
-    // var nodes = subNodes.append('g');
-    var nodes = subNodes;
-
-    drawNode(nodes, isRightAlign);
-
-}
-
-function drawNode(g, isRightAlign)
-{
-    g.classed('node', true)
-        .attr('transform', (d,i) => { return `translate(${d.depth*indent}, ${i*30})`; });
-    g.append('rect')
-        .attr('width', nodeWidth);
-    if(isRightAlign) {
-        g.append('text').text(d => d.name)
-            .attr('x', (nodeWidth - 6) + 'px').attr('y', '13px');
-        g.attr('transform', (d,i) => {
-            return `translate(${treeWidth - nodeWidth - d.depth*indent}, ${i*30})`;
-        });
+    if (e1 != undefined && e2 != undefined) {
+        console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
+        const x = e2.x;
+        const y = e1.x;
+        const cellSize = nodeHeight;
+        var rect = d3.create('rect')
+            .classed('mapping', true)
+            .attr('x', x).attr('y', y)
+            .attr('width', cellSize).attr('height', cellSize)
+            .style('fill', 'red');
+        return rect.node();
     } else {
-        g.append('text').text(d => d.name)
-            .attr('x', '6px').attr('y', '13px');
-    }
-}
-
-function expand(cls, g)
-{
-
-}
-function collapse(cls, g)
-{
-    // var subG = g.select(..
-    
-}
-
-
-function drawBaselineMapping(g, cells, ont1G, ont2G)
-{
-    console.log(`drawBaselineMapping()  ${cells.length} alignments`);
-    
-    g.selectAll('line')
-        .data(cells).enter().append('line')
-        // .classed('mapping', true)
-        .attr('style', "stroke:rgb(20,165,153);stroke-width:2")
-        .attr('x1', treeWidth + 4)
-        .attr('x2', treeWidth + ontGap - 4)
-        .attr('y1', (d,i) => ClassNodeY(d,i,1))
-        .attr('y2', (d,i) => ClassNodeY(d,i,2));
-
-    //TODO: find the class node in the tree and get position
-    var testName = "Person";
-    console.log(`\'${testName}\' x,y: `);
-    var fnodes = ont1G.select('subNodeG').selectAll('node')
-        .filter(d => { console.log(d.name); return d.name === testName; })
-        .classed('highlight', true);
-    console.log(fnodes);
-}
-
-//TODO: calculate y corresponding to the entity's position
-function ClassNodeY(d, i, ontNum)
-{
-    switch (ontNum) {
-        case 1:
-            console.log(`${i}. entity1: ${d.entity1}`);
-            return i * (nodeHeight+nodeGap);
-        case 2:
-            console.log(`${i}. entity2: ${d.entity2}`);
-            return 400 - i * (nodeHeight+nodeGap);
-        default:
-            console.log('error in ClassNodeY(), ontNum:'+ontNum);
+        console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
+        return d3.create('rect').node();
     }
 }

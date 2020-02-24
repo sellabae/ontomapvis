@@ -6,67 +6,71 @@
     -ms-user-select: none;
     user-select: none;
 }
-
-
 .svgdiv {
-    width: 800px;
-    height: 500px;
+    width: 1000px;
+    height: 600px;
     overflow: scroll;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: rgb(248, 248, 248);
     margin-bottom: 20px;
 }
-.mapsvg {
-    height: 2100px;
-}
-
-
-.align-right text {
-    text-anchor: end;
-    x: 194px;
-}
 
 .node text {
     font-size: 1.0em;
     fill: black;
-    dominant-baseline: central;
 }
 .node rect {
-    height: 26px;
-    fill: rgb(224, 235, 234);
+    height: 20px;
+    transform: translateY(-10px);
+    fill: rgb(161, 207, 203);
+    opacity: 0;
     stroke: none;
     stroke-width: 1px;
     rx: 2px;
     ry: 2px;
 }
-.node rect:hover{
-    fill: rgb(161, 207, 203);
-}
 
 .node.highlight rect {
     fill: rgb(0, 131, 120);
+    opacity: 1;
 }
 .node.highlight text {
     fill: white;
+    opacity: 1;
 }
 
-.node.subExpanded rect {
-    stroke: none;
+.node circle {
+    fill: rgb(0, 131, 120);
+    /* stroke: rgb(0, 131, 120);
+    stroke-width: 1px; */
+    opacity: 1;
 }
-.node.subCollapsed rect {
-    stroke: rgb(131, 172, 168);
+.node.leaf circle {
+    fill: rgb(118, 177, 172);
+    /* fill: white; */
+}
+.link {
+    stroke: rgb(118, 177, 172);
+    opacity: 1;
 }
 
 .mapping line {
     stroke: rgb(20, 165, 153);
-    stroke-width: 1px;
+    stroke-width: 1.5px;
+    stroke-opacity: 0.5;
+    /* fill: none; */
+}
+.mapping rect {
+    fill: rgb(20, 165, 153);
+    stroke: none;
+    opacity: 1;
 }
 
-.align-right text {
-    text-anchor: end;
-    x: 194px;
+.muted {
+    opacity: 0.4;
 }
+
 
 .tilted.node g{
     transform-origin: center left;
