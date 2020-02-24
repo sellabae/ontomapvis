@@ -93,16 +93,16 @@ function drawMatrixSvg()
     const svg = d3.select("#matrix-svg")
         .attr('height', 2150)
         .attr('width', 1750);
-    const svgWidth = svg.attr('width');
 
     let g = svg.append('g')
         .attr('transform','translate(10,10)');
+    hVal = nodeHeight/2; //for header position adjustmant
     var matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','matrix_ont1G')
-        .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+        .attr('transform',`translate(${treeWidth-hVal},${treeWidth-50+hVal})`);
     var matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
-        .attr('transform',`translate(${treeWidth},${treeWidth-50}), rotate(270)`);
+        .attr('transform',`translate(${treeWidth+hVal},${treeWidth-50-hVal}), rotate(270)`);
     
     //draw matrix background table rows and columns
     var mapBgG = g.append('g').lower()
@@ -110,29 +110,29 @@ function drawMatrixSvg()
         .attr('transform',`translate(${treeWidth},${treeWidth-50})`)
     let ont1len = ont1TreeRoot.descendants().length;
     let ont2len = ont2TreeRoot.descendants().length;
-    mapBgG.append('rect')
-        .attr('height', ont1len * nodeHeight)
-        .attr('width', ont2len * nodeHeight)
-        .style('fill', '#EEE');
-    for (let i=0; i<ont1len; i++) {
-        mapBgG.append('g').classed('row', true)
-            .append('line')
+    // mapBgG.append('rect')
+    //     .attr('height', ont1len * nodeHeight)
+    //     .attr('width', ont2len * nodeHeight)
+    //     .style('fill', '#EEE');
+    var tbRow = mapBgG.append('g').classed('row', true);
+    var tbCol = mapBgG.append('g').classed('col', true);
+    for (let i=0; i<ont1len+1; i++) {
+        tbRow.append('line')
             .attr('x1', 0).attr('y1', i * nodeHeight)
             .attr('x2', ont2len * nodeHeight).attr('y2', i * nodeHeight)
-            .style('stroke', 'white').style('stroke-width', '1px');
+            .style('stroke', '#CCC').style('stroke-width', '1px');
     }
-    for (let i=0; i<ont2len; i++) {
-        mapBgG.append('g').classed('col', true)
-            .append('line')
+    for (let i=0; i<ont2len+1; i++) {
+        tbCol.append('line')
             .attr('x1', i * nodeHeight).attr('y1', 0)
             .attr('x2', i * nodeHeight).attr('y2', ont1len * nodeHeight)
-            .style('stroke', 'white').style('stroke-width', '1px');
+            .style('stroke', '#CCC').style('stroke-width', '1px');
     }
 
     console.log('draw matrix mapping');
     //draw mapping cells
     var matrix_mapG = g.append('g')
-    .attr('id','matrix_mapG');
+        .attr('id','matrix_mapG');
     // .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
 
     // var mapCell = matrix_mapG.selectAll('rect')
@@ -140,8 +140,15 @@ function drawMatrixSvg()
     //     .enter()
     //     .append((d,i) => mapCellRect(d,i));
 
-    //TODO: this is temporary
-    var mapCell = matrix_mapG.selectAll('rect');
+    //TODO: this is temporary to check drawing cells
+    var mapCell = matrix_mapG.selectAll('rect')
+        .append('rect')
+        .attr('id', 'test-cell')
+        .attr('x', 400)
+        .attr('y', 400)
+        .attr('width', nodeHeight)
+        .attr('height', nodeHeight)
+        .style('color', 'red');
     dataset.maps.alignments.forEach((a,i) => {
         var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
         var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
@@ -149,12 +156,13 @@ function drawMatrixSvg()
             console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
             const x = e2.x;
             const y = e1.x;
-            const cellSize = nodeHeight;
             mapCell.append('rect')
-                .classed('mapping', true)
-                .attr('x', x).attr('y', y)
-                .attr('width', cellSize).attr('height', cellSize)
-                .style('fill', 'red');
+                // .classed('mapping', true)
+                .attr('x', x)
+                .attr('y', y)
+                .attr('width', nodeHeight)
+                .attr('height', nodeHeighht)
+                .style('color', 'red');
         } else {
             console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
         }
@@ -163,7 +171,7 @@ function drawMatrixSvg()
 
 function mapCellRect(a,i)
 {
-    // console.log('mapCellRect() called');
+    console.log('mapCellRect() called');
     //TODO: update to handle more than one filtered results (there can be repetition)
     var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
     var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
