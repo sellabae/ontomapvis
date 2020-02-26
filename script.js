@@ -178,7 +178,7 @@ function drawTableLines(row, col, cellSize, drawsBg)
 {
     console.log('draw lines for table background.');
 
-    const tbG = d3.create('g');
+    const tbG = d3.create('svg:g');
     if (drawsBg) {
         tbG.append('rect')
             .attr('height', row * cellSize)
@@ -224,7 +224,7 @@ function mapCellRect(almt,i)
         const x = e2.x;
         const y = e1.x;
         const cellSize = nodeHeight;
-        var rect = d3.create('rect')
+        var rect = d3.create('svg:rect')
             .classed('mapCell', true)
             .attr('x', x)
             .attr('y', y)
@@ -233,6 +233,6 @@ function mapCellRect(almt,i)
         return rect.node();
     } else {
         console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
-        return d3.create('rect').node();
+        return d3.create('svg:rect').node();
     }
 }

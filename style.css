@@ -16,46 +16,53 @@
     margin-bottom: 20px;
 }
 
+/* tree nodes */
 .node text {
     font-size: 1.0em;
     fill: black;
 }
-.node rect {
-    height: 20px;
-    transform: translateY(-10px);
-    fill: rgb(161, 207, 203);
-    opacity: 0;
-    stroke: none;
-    stroke-width: 1px;
-    rx: 2px;
-    ry: 2px;
-}
-
-.node.highlight rect {
-    fill: rgb(0, 131, 120);
-    opacity: 1;
-}
-.node.highlight text {
-    fill: white;
-    opacity: 1;
-}
-
-.node circle {
-    fill: rgb(0, 131, 120);
-    /* stroke: rgb(0, 131, 120);
-    stroke-width: 1px; */
-    opacity: 1;
-}
-.node.leaf circle {
-    fill: rgb(118, 177, 172);
-    /* fill: white;
-    stroke: rgb(0, 131, 120);
-    stroke-width: 1px; */
-}
+/* tree nodelinks */
 .nodelink {
     stroke: rgb(118, 177, 172);
     opacity: 1;
 }
+.node rect.selection-helper {
+    /* opacity: 0; */
+    transform: translateY(-9px);
+    fill: white;
+    stroke: green;
+    stroke-width: 1px;
+}
+
+/* nodemarks */
+.node.expanded .nodemark {
+    transform: rotate(90deg);
+}
+.nodemark {
+    fill: rgb(0, 131, 120);
+    opacity: 1;
+    transform-origin: 50 50;
+}
+.leaf .nodemark {
+    /* fill: rgb(191, 218, 215); */
+    /* fill: white;
+    stroke: rgb(0, 131, 120);
+    stroke-width: 1px; */
+    opacity: 1;
+}
+
+
+/* highlight */
+.node.highlight {
+    opacity: 1;
+}
+.node.highlight rect.selection-helper {
+    fill: rgb(82, 185, 177);
+}
+.node.highlight text {
+    font-weight: bold;
+}
+
 
 .mapLine {
     fill: none;
@@ -79,6 +86,6 @@
 }
 
 
-.node.tilted text {
+.node.tilted text, .node.tilted rect {
     transform: rotate(25deg);
 }

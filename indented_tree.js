@@ -1,11 +1,12 @@
 //Global variable setting
-var margin = {top: 30, right: 20, bottom: 30, left: 20},
+let margin = {top: 30, right: 20, bottom: 30, left: 20},
     nodeHeight = 18,
     nodeWidth = 250,
     nodeIndent = 10;
+    nodemarkSize = 4.5;
 
 //root: d3.tree object, align: left or righth
-treechart = (root, align) => {
+function treechart(root, align) {
     console.log('treechart() called. align:' + align);
     let alignRight = align === "right" ? true : false;
     // const root = tree(data, align);
@@ -48,30 +49,53 @@ treechart = (root, align) => {
       .data(root.descendants())
       .join("g")
         .classed('node', true)
+        .classed('branch', d => d.children ? true : false)
         .classed('leaf', d => d.children ? false : true)
         .attr("transform", d => `translate(${d.y},${d.x})`);
-  
-    node.append("circle")
-        .attr("fill", d => d.children ? "#555" : "#999")
-        .attr("r", 3);
-  
+
     node.append("text")
         .attr("dy", "0.31em")
-        .attr("x", alignRight ? -6 : 6)
+        .attr("x", alignRight ? -8 : 8)
         .attr("text-anchor", alignRight ? "end" : "start")
         .text(d => d.data.name);
-    //   .clone(true).lower()
-    //     .attr("stroke", "white");
 
-    //mouseover effect
-    // node.append("rect").lower()
-    //     .attr('width', nodeWidth)
-    //     .attr('x', alignRight ? -nodeWidth : 0);
-    // node.on('mouseover', d => {
-    //     this.classed('highlight', true);
-    // });
+    //transparent rect for better node selection
+    node.append("rect").lower()
+        .classed('selection-helper', true)
+        .attr('width', nodeWidth)
+        .attr('height', nodeHeight)
+        .attr('stroke', 'red')
+        .attr('x', alignRight ? -nodeWidth+10 : -10);
 
-    
+    //nodemarks
+    // different marks for leaf & non-leaf(branch) nodes
+    const pointsStr = trianglePoints(nodemarkSize);
+    g.selectAll('.node.branch')
+        .append('polygon')
+            .classed('nodemark', true)
+            .attr('points', pointsStr);
+    g.selectAll('.node.leaf')
+        .append("circle")
+            .classed('nodemark', true)
+            .attr("r", 2);
+
+
+    // mouseover effect
+    node.on('mouseover', (_, i, n) => {
+        d3.select(n[i]).classed('highlight', true);
+        // g.selectAll('.node').classed('muted', true);
+    }).on('mouseout', (_, i, n) => {
+        d3.select(n[i]).classed('highlight', false);
+        // g.selectAll('.node').classed('muted', false);
+    });
+
+    //branch interaction collapse/expand
+    g.selectAll('.node.branch')
+        .on('click', (_, i, n) => {
+            const sel = d3.select(n[i]); //this selection
+            sel.classed('expanded', sel.classed('expanded') ? false : true);
+        });
+
     return g.node();
   }
 
@@ -96,4 +120,13 @@ function tree(data, align) {
     });
 
     return treeRoot;
+}
+
+/**
+ * Calculates triangle points
+ * @param {number} s radius size
+ */
+function trianglePoints(s) {
+    // d3.create('polygon');
+    return `-${s-1},-${s} -${s-1},${s} ${s-1},0 -${s-1},-${s}`;
 }
