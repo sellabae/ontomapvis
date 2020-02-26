@@ -39,38 +39,39 @@ function drawBaselineSvg()
         .attr('height', 1900)
         .attr('width', 1000);
     const svgWidth = +svg.attr('width');
-    // //auto adjust the height
+    // //auto adjust the svg height
     // let newHeight = nodeHeight * Math.max(ont1TreeRoot.count(), ont2TreeRoot.count());
     // svg.attr('height', newHeight);
 
-    let g = svg.append('g')
+    const g = svg.append('g')
         .attr('transform',`translate(${svgWidth/2},20)`);
-    var base_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
+    const base_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','base_ont1G')
         .attr('transform',`translate(${-ontGap/2},0)`);
-    var base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
+    const base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','base_ont2G')
         .attr('transform',`translate(${ontGap/2},0)`);
     
     console.log('draw baseline mapping');
-    var base_mapG = g.append('g').lower()
+    const base_mapG = g.append('g').lower()
         .attr('id','base_mapG')
         .attr('transform',`translate(${-ontGap/2},0)`);
-    const mapLine = base_mapG.selectAll('path')
+    base_mapG.selectAll('path')
         .data(dataset.maps.alignments)
         .join('path')
-            .classed('mapping', true)
-            .attr('stroke', 'rgb(20, 165, 153)')
-            .attr('stroke-width', '2px')
-            .attr('fill', 'none')
+            .classed('mapLine', true)
             .attr('d', (d,i) => mapLinePath(d,i));
-
 }
 
-function mapLinePath(a, i)
+/**
+ * Calculates the svg:path for a baseline mapping line
+ * @param {Object} almt an alignment mapping
+ * @param {number} i the index of the alignment
+ */
+function mapLinePath(almt, i)
 {
-    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
-    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
+    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
+    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
 
     if (e1 != undefined && e2 != undefined) {
         // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
@@ -81,7 +82,7 @@ function mapLinePath(a, i)
         const qy = y2 > y1 ? y2-q : y2+q;
         return `M ${x1} ${y1} Q ${qx.toFixed(0)} ${y1} ${qx.toFixed(0)} ${qy} T ${x2} ${y2}`;
     } else {
-        // console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
+        // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
         return ``;
     }
 }
@@ -92,7 +93,7 @@ function drawMatrixSvg()
     
     const svg = d3.select("#matrix-svg")
         .attr('height', 2150)
-        .attr('width', 1750);
+        .attr('width', 1800);
 
     let g = svg.append('g')
         .attr('transform','translate(10,10)');
@@ -104,33 +105,40 @@ function drawMatrixSvg()
         .attr('id','matrix_ont2G')
         .attr('transform',`translate(${treeWidth+hVal},${treeWidth-50-hVal}), rotate(270)`);
     
+    //tilts the texts in the ont2 header
+    matrix_ont2G.selectAll('.node')
+        .classed('tilted', true);
+    
     //draw matrix background table rows and columns
-    var mapBgG = g.append('g').lower()
-        .classed('map-bg-table', true)
-        .attr('transform',`translate(${treeWidth},${treeWidth-50})`)
-    let ont1len = ont1TreeRoot.descendants().length;
-    let ont2len = ont2TreeRoot.descendants().length;
-    // mapBgG.append('rect')
-    //     .attr('height', ont1len * nodeHeight)
-    //     .attr('width', ont2len * nodeHeight)
-    //     .style('fill', '#EEE');
-    var tbRow = mapBgG.append('g').classed('row', true);
-    var tbCol = mapBgG.append('g').classed('col', true);
-    for (let i=0; i<ont1len+1; i++) {
-        tbRow.append('line')
-            .attr('x1', 0).attr('y1', i * nodeHeight)
-            .attr('x2', ont2len * nodeHeight).attr('y2', i * nodeHeight)
-            .style('stroke', '#CCC').style('stroke-width', '1px');
+    const row = ont1TreeRoot.descendants().length;
+    const col = ont2TreeRoot.descendants().length;
+    const cellSize = nodeHeight;
+    // g.append(() => drawTableLines(row, col, cellSize, false))
+    //     .lower()
+    //     .classed('map-bg-table', true)
+    //     .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+    var tbG = g.append('g').lower()
+        .classed('tbG', true)
+        .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+    const rowG = tbG.append('g').classed('row', true);
+    for (let i=0; i<row+1; i++) {
+        rowG.append('line')
+            .attr('x1', 0)
+            .attr('y1', i * cellSize)
+            .attr('x2', col * cellSize)
+            .attr('y2', i * cellSize);
     }
-    for (let i=0; i<ont2len+1; i++) {
-        tbCol.append('line')
-            .attr('x1', i * nodeHeight).attr('y1', 0)
-            .attr('x2', i * nodeHeight).attr('y2', ont1len * nodeHeight)
-            .style('stroke', '#CCC').style('stroke-width', '1px');
+    const colG = tbG.append('g').classed('col', true);
+    for (let i=0; i<col+1; i++) {
+        colG.append('line')
+            .attr('x1', i * cellSize)
+            .attr('y1', 0)
+            .attr('x2', i * cellSize)
+            .attr('y2', row * cellSize);
     }
 
-    console.log('draw matrix mapping');
     //draw mapping cells
+    console.log('draw matrix mapping');
     var matrix_mapG = g.append('g')
         .attr('id','matrix_mapG')
         .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
@@ -139,34 +147,77 @@ function drawMatrixSvg()
     //     .data(dataset.maps.alignments)
     //     .enter()
     //     .append((d,i) => mapCellRect(d,i));
-
-    //TODO: this is temporary to check drawing cells
-    dataset.maps.alignments.forEach((a,i) => {
-        var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
-        var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
+    //TODO: this is temporary to draw mapping cells
+    dataset.maps.alignments.forEach((almt,i) => {
+        var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
+        var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
         if (e1 != undefined && e2 != undefined) {
-            console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
+            // console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
             const x = e2.x;
             const y = e1.x;
             matrix_mapG.append('rect')
-                .classed('mapping', true)
+                .classed('mapCell', true)
                 .attr('x', x)
                 .attr('y', y)
                 .attr('width', 18)
-                .attr('height', 18)
-                .style('fill', 'rgb(20, 165, 153)');
+                .attr('height', 18);
         } else {
-            console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
+            // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
         }
     });
 }
 
-function mapCellRect(a,i)
+/**
+ * Draws the table lines
+ * @param {number} row 
+ * @param {number} col 
+ * @param {number} cellSize 
+ * @param {boolean} drawsBg 
+ */
+function drawTableLines(row, col, cellSize, drawsBg)
+{
+    console.log('draw lines for table background.');
+
+    const tbG = d3.create('g');
+    if (drawsBg) {
+        tbG.append('rect')
+            .attr('height', row * cellSize)
+            .attr('width', col * cellSize)
+            .style('fill', '#EEE');
+    }
+    const rowG = tbG.append('g').classed('row', true);
+    for (let i=0; i<row+1; i++) {
+        rowG.append('line')
+            .attr('x1', 0)
+            .attr('y1', i * cellSize)
+            .attr('x2', col * cellSize)
+            .attr('y2', i * cellSize)
+            .style('stroke', '#CCC').style('stroke-width', '1px');
+    }
+    const colG = tbG.append('g').classed('col', true);
+    for (let i=0; i<col+1; i++) {
+        colG.append('line')
+            .attr('x1', i * cellSize)
+            .attr('y1', 0)
+            .attr('x2', i * cellSize)
+            .attr('y2', row * cellSize)
+            .style('stroke', '#CCC').style('stroke-width', '1px');
+    }
+    return tbG.node();
+}
+
+//TODO: why this isn't working??
+/**
+ * Draws a mapping cell(rect) of an alignment for matrix mapping
+ * @param {Object} almt a mapping alignment
+ * @param {number} i the index of almt within alignments
+ */
+function mapCellRect(almt,i)
 {
     console.log('mapCellRect() called');
     //TODO: update to handle more than one filtered results (there can be repetition)
-    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === a.entity1)[0];
-    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === a.entity2)[0];
+    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
+    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
 
     if (e1 != undefined && e2 != undefined) {
         console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
@@ -174,13 +225,14 @@ function mapCellRect(a,i)
         const y = e1.x;
         const cellSize = nodeHeight;
         var rect = d3.create('rect')
-            .classed('mapping', true)
-            .attr('x', x).attr('y', y)
-            .attr('width', cellSize).attr('height', cellSize)
-            .style('fill', 'red');
+            .classed('mapCell', true)
+            .attr('x', x)
+            .attr('y', y)
+            .attr('width', cellSize)
+            .attr('height', cellSize);
         return rect.node();
     } else {
-        console.log(`${i}. undefined for (${a.entity1}, ${a.entity1})`);
+        console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
         return d3.create('rect').node();
     }
 }

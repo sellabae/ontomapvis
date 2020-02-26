@@ -48,23 +48,30 @@
 }
 .node.leaf circle {
     fill: rgb(118, 177, 172);
-    /* fill: white; */
+    /* fill: white;
+    stroke: rgb(0, 131, 120);
+    stroke-width: 1px; */
 }
-.link {
+.nodelink {
     stroke: rgb(118, 177, 172);
     opacity: 1;
 }
 
-.mapping line {
+.mapLine {
+    fill: none;
     stroke: rgb(20, 165, 153);
     stroke-width: 1.5px;
-    stroke-opacity: 0.5;
-    /* fill: none; */
+    opacity: 0.9;
 }
-.mapping rect {
+.mapCell {
     fill: rgb(20, 165, 153);
     stroke: none;
     opacity: 1;
+}
+
+.tbG line {
+    stroke: #ddd;
+    stroke-width: 1px;
 }
 
 .muted {
@@ -72,7 +79,6 @@
 }
 
 
-.tilted.node g{
-    transform-origin: center left;
-    transform: rotate(45);
+.node.tilted text {
+    transform: rotate(25deg);
 }

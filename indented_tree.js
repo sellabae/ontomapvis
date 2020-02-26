@@ -2,7 +2,7 @@
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     nodeHeight = 18,
     nodeWidth = 250,
-    nodeIndent = 12;
+    nodeIndent = 10;
 
 //root: d3.tree object, align: left or righth
 treechart = (root, align) => {
@@ -35,7 +35,7 @@ treechart = (root, align) => {
     // .selectAll("path")
     //   .data(root.links())
     //   .join("path")
-    //     .classed('link', true)
+    //     .classed('nodelink', true)
     //     .attr("d", d3.linkHorizontal()  //TODO: Change the node link to edged path
     //         .x(d => d.y)
     //         .y(d => d.x));
