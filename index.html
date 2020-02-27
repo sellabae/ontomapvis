@@ -25,23 +25,52 @@
 </head>
 
 <body class="text-unselectable">
-    <div class="container-fluid">
-        <div>
-            <h2>Ontology Mapping Visualization</h2>
-            <p id="dataset-description"></p>
+    <div class="content container-fluid">
+        <h2 class="py-2">Ontology Mapping Visualization</h2>
+
+        <div id="info-panel" class="row">
+            <p id="dataset-description" class="col-10"></p>
+            <div class="col-2 align-right">
+                <div id="control-box" class="py-2" style="border: 1px solid grey; border-radius: 2px;">
+                    <div class="form-check">
+                        <input type="checkbox" value="mapping" onclick="show(this.value, this.checked)" checked>
+                        mapping
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" value="depth-guide" onclick="show(this.value, this.checked)" checked>
+                        depth-guide
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" value="nodemark" onclick="show(this.value, this.checked)" checked>
+                        nodemark
+                    </div>
+                </div>
+                <script>
+                    function show(value, visible) {
+                        console.log(`show(${value}, ${visible})`);
+                        d3.selectAll(`.${value}`)
+                            .attr('visibility', visible ? 'visible' : 'hidden');
+                    }
+                </script>
+            </div>
         </div>
-        <h4>baseline mapping</h4>
-        <div class="svgdiv">
-            <!-- svg for baseline mapping -->
-            <svg class="mapsvg" id="baseline-svg" width="800" height="600">
-            </svg>
+
+        <div id="vis-panel">
+            <h4>baseline mapping</h4>
+            <div class="svgdiv">
+                <!-- svg for baseline mapping -->
+                <svg class="mapsvg" id="baseline-svg" width="800" height="600">
+                </svg>
+            </div>
+            
+            <h4>matrix mapping</h4>
+            <div class="svgdiv">
+                <!-- svg for matrix mapping -->
+                <svg class="mapsvg" id="matrix-svg" width="800" height="600">
+                </svg>
+            </div>
         </div>
-        <h4>matrix mapping</h4>
-        <div class="svgdiv">
-            <!-- svg for matrix mapping -->
-            <svg class="mapsvg" id="matrix-svg" width="800" height="600">
-            </svg>
-        </div>
+
     </div>
 
 </body>

@@ -27,25 +27,8 @@ function treechart(root, align) {
     //Creates a detached g to return
     const g = d3.create("svg:g");
     g.classed('tree', true)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", '0.9em')
         .attr("transform", `translate(${root.dy / 3},${root.dx - x0})`);
       
-    // //Tree Links
-    // console.log(root.links());
-    // const link = g.append("g")
-    //   .attr("fill", "none")
-    //   .attr("stroke", "#555")
-    //   .attr("stroke-opacity", 0.4)
-    //   .attr("stroke-width", 1.5)
-    // .selectAll("path")
-    //   .data(root.links())
-    //   .join("path")
-    //     .classed('nodelink', true)
-    //     .attr("d", d3.linkHorizontal()  //TODO: Change the node link to edged path
-    //         .x(d => d.y)
-    //         .y(d => d.x));
-    
     //Tree Nodes
     const node = g.append("g")
         .attr("stroke-linejoin", "round")
@@ -58,13 +41,14 @@ function treechart(root, align) {
         .classed('leaf', d => d.children ? false : true)
         .attr("transform", d => `translate(${d.y},${d.x})`);
 
+    //node text
     node.append("text")
         .attr("dy", "0.31em")
         .attr("x", alignRight ? -8 : 8)
         .attr("text-anchor", alignRight ? "end" : "start")
         .text(d => d.data.name);
 
-    //nodemarks
+    //nodemark
     // different marks for leaf & non-leaf(branch) nodes
     const pointsStr = trianglePoints(nodemarkSize);
     g.selectAll('.node.branch')

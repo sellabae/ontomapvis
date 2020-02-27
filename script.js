@@ -36,8 +36,8 @@ function drawBaselineSvg()
     console.log("drawBaselineSvg()");
     
     const svg = d3.select("#baseline-svg")
-        .attr('height', 1900)
-        .attr('width', 1000);
+        .attr('height', 2100)   //TODO: calculate auto
+        .attr('width', 1050);   //TODO: adjust to the same width of svgdiv
     const svgWidth = +svg.attr('width');
     // //auto adjust the svg height
     // let newHeight = nodeHeight * Math.max(ont1TreeRoot.count(), ont2TreeRoot.count());
@@ -59,6 +59,7 @@ function drawBaselineSvg()
     base_mapG.selectAll('path')
         .data(dataset.maps.alignments)
         .join('path')
+            .classed('mapping', true)
             .classed('mapLine', true)
             .attr('d', (d,i) => mapLinePath(d,i));
 }
@@ -92,18 +93,18 @@ function drawMatrixSvg()
     console.log("drawMatrixSvg()");
     
     const svg = d3.select("#matrix-svg")
-        .attr('height', 2150)
-        .attr('width', 1800);
+        .attr('height', 2300)
+        .attr('width', 1950);
 
     let g = svg.append('g')
-        .attr('transform','translate(10,10)');
-    hVal = nodeHeight/2; //for header position adjustmant
+        .attr('transform',`translate(${treeWidth+10},${treeWidth-70})`);
+    hGap = nodeHeight/2; //gap between headers and matrix
     var matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','matrix_ont1G')
-        .attr('transform',`translate(${treeWidth-hVal},${treeWidth-50+hVal})`);
+        .attr('transform',`translate(${-hGap},${hGap})`);
     var matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
-        .attr('transform',`translate(${treeWidth+hVal},${treeWidth-50-hVal}), rotate(270)`);
+        .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`);
     
     //tilts the texts in the ont2 header
     matrix_ont2G.classed('tilted', true);
@@ -119,8 +120,7 @@ function drawMatrixSvg()
     //     .classed('map-bg-table', true)
     //     .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
     var tbG = g.append('g').lower()
-        .classed('tbG', true)
-        .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+        .classed('tbG', true);
     const rowG = tbG.append('g').classed('row', true);
     for (let i=0; i<row+1; i++) {
         rowG.append('line')
@@ -158,6 +158,7 @@ function drawMatrixSvg()
             const y = e1.x;
             const cellSize = nodeHeight;
             matrix_mapG.append('rect')
+                .classed('mapping', true)
                 .classed('mapCell', true)
                 .attr('x', x)
                 .attr('y', y)
