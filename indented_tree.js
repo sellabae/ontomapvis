@@ -40,6 +40,9 @@ function treechart(root, align) {
         .classed('branch', d => d.children ? true : false)
         .classed('leaf', d => d.children ? false : true)
         .attr("transform", d => `translate(${d.y},${d.x})`);
+    
+    //initial setting for fully expanded view
+    g.selectAll('.branch').classed('expanded', true);
 
     //node text
     node.append("text")
@@ -69,24 +72,24 @@ function treechart(root, align) {
         .attr('x', alignRight ? -nodeWidth+8 : -8)
         .attr('y', -nodeHeight/2);
 
-    //simplified node link with one vertical line
+    //hierarchy guide with one vertical line per branch
+    const guideGap = nodeHeight/1.6;
     g.selectAll('.node.branch')
         .append('line')
-            .classed('depth-guide', true)
+            .classed('hierarchy-guide', true)
             .attr('x1', 0)
-            .attr('y1', nodeHeight/2)
+            .attr('y1', guideGap)
             .attr('x2', 0)
-            .attr('y2', d => {
-                console.log(`d: ${d.data.name} chil.len: ${d.children.length}`);
-                return nodeHeight * d.children.length;
-            });
+            .attr('y2', d => nodeHeight * d.descendants().length - guideGap);
 
     // Interactions
     // mouseover effect
-    node.on('mouseover', (_, i, n) => {
+    node.on('mouseover', (d, i, n) => {
+        const thisNode = d3.select(n[i]);
         g.selectAll('.node').classed('muted', true);
-        d3.select(n[i]).classed('muted', false)
+        thisNode.classed('muted', false)
             .classed('highlight', true);
+        //TODO: highlight the parent's guide line not its own guide.
     }).on('mouseout', (_, i, n) => {
         d3.select(n[i]).classed('highlight', false);
         g.selectAll('.node').classed('muted', false);

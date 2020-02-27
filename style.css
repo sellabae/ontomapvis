@@ -18,7 +18,7 @@
 
 .svgdiv {
     width: 100%;
-    height: 600px;
+    height: 800px;
     overflow: scroll;
     border: 1px solid #ccc;
     border-radius: 2px;
@@ -33,10 +33,10 @@
     fill: black;
 }
 /* tree nodelinks */
-.nodelink, .depth-guide {
-    stroke: grey;
+.hierarchy-guide {
+    stroke: #ccc;
     stroke-width: 1px;
-    opacity: 1;
+    opacity: 0.5;
 }
 
 /* node selection helper */
@@ -50,7 +50,7 @@
 
 /* nodemarks */
 .nodemark {
-    transition: 0.2s;
+    transition: 0.1s;
     fill: rgb(0, 131, 120);
     opacity: 1;
     transform-origin: 50 50;
@@ -101,7 +101,7 @@
 }
 
 /* highlight and muted */
-.highlight {
+.highlight, .highlight .hierarchy-guide {
     opacity: 1;
 }
 .highlight text {

@@ -140,9 +140,7 @@ function drawMatrixSvg()
 
     //draw mapping cells
     console.log('draw matrix mapping');
-    var matrix_mapG = g.append('g')
-        .attr('id','matrix_mapG')
-        .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
+    var matrix_mapG = g.append('g').attr('id','matrix_mapG');
 
     // var mapCell = matrix_mapG.selectAll('rect')
     //     .data(dataset.maps.alignments)
