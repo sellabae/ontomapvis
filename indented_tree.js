@@ -85,6 +85,18 @@ function treechart(root, align) {
         .attr('x', alignRight ? -nodeWidth+8 : -8)
         .attr('y', -nodeHeight/2);
 
+    //simplified node link with one vertical line
+    g.selectAll('.node.branch')
+        .append('line')
+            .classed('depth-guide', true)
+            .attr('x1', 0)
+            .attr('y1', nodeHeight/2)
+            .attr('x2', 0)
+            .attr('y2', d => {
+                console.log(`d: ${d.data.name} chil.len: ${d.children.length}`);
+                return nodeHeight * d.children.length;
+            });
+
     // Interactions
     // mouseover effect
     node.on('mouseover', (_, i, n) => {
