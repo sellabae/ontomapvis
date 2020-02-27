@@ -55,6 +55,9 @@
     opacity: 1;
     transform-origin: 50 50;
 }
+.right-aligned-tree .nodemark {
+    transform: rotate(180deg);
+}
 .leaf .nodemark {
     /* fill: rgb(191, 218, 215); */
     /* fill: white;

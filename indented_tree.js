@@ -57,8 +57,7 @@ function treechart(root, align) {
     g.selectAll('.node.branch')
         .append('polygon')
             .classed('nodemark', true)
-            .attr('points', pointsStr)
-            .attr('transform', alignRight ? 'rotate(180)' : '');
+            .attr('points', pointsStr);
     g.selectAll('.node.leaf')
         .append("circle")
             .classed('nodemark', true)

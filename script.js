@@ -47,6 +47,7 @@ function drawBaselineSvg()
         .attr('transform',`translate(${svgWidth/2},20)`);
     const base_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','base_ont1G')
+        .classed('right-aligned-tree', true)
         .attr('transform',`translate(${-ontGap/2},0)`);
     const base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','base_ont2G')
@@ -78,6 +79,27 @@ function mapLinePath(almt, i)
         // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
         const x1 = e1.y, y1 = e1.x;
         const x2 = e2.y + ontGap, y2 = e2.x;
+        const c = 10;   //curve value
+        const gm = 50; //ontgap margin
+        const hgap = ((ontGap-gm) / dataset.maps.alignments.length * i).toFixed(0);
+        const hx = ((ontGap-50) / dataset.maps.alignments.length * i +gm/2).toFixed(0);
+        const vy = y2 > y1 ? y2-c : y2+c;
+        const cy = y2 > y1 ? c : -c;
+        return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
+    } else {
+        // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
+        return ``;
+    }
+}
+function mapLinePath_old(almt, i)
+{
+    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
+    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
+
+    if (e1 != undefined && e2 != undefined) {
+        // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
+        const x1 = e1.y, y1 = e1.x;
+        const x2 = e2.y + ontGap, y2 = e2.x;
         const q = Math.abs(y2 - y1)/2;
         const qx = (ontGap-20) / dataset.maps.alignments.length * i;
         const qy = y2 > y1 ? y2-q : y2+q;
@@ -101,6 +123,7 @@ function drawMatrixSvg()
     hGap = nodeHeight/2; //gap between headers and matrix
     var matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','matrix_ont1G')
+        .classed('right-aligned-tree', true)
         .attr('transform',`translate(${-hGap},${hGap})`);
     var matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
