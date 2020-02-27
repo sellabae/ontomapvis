@@ -106,8 +106,9 @@ function drawMatrixSvg()
         .attr('transform',`translate(${treeWidth+hVal},${treeWidth-50-hVal}), rotate(270)`);
     
     //tilts the texts in the ont2 header
-    matrix_ont2G.selectAll('.node')
-        .classed('tilted', true);
+    matrix_ont2G.classed('tilted', true);
+    // matrix_ont2G.selectAll('.node')
+    //     .classed('tilted', true);
     
     //draw matrix background table rows and columns
     const row = ont1TreeRoot.descendants().length;
@@ -155,12 +156,13 @@ function drawMatrixSvg()
             // console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
             const x = e2.x;
             const y = e1.x;
+            const cellSize = nodeHeight;
             matrix_mapG.append('rect')
                 .classed('mapCell', true)
                 .attr('x', x)
                 .attr('y', y)
-                .attr('width', 18)
-                .attr('height', 18);
+                .attr('width', cellSize)
+                .attr('height', cellSize);
         } else {
             // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
         }

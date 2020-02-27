@@ -26,19 +26,19 @@
     stroke: rgb(118, 177, 172);
     opacity: 1;
 }
-.node rect.selection-helper {
+
+/* node selection helper */
+.node .selection-helper {
     /* opacity: 0; */
-    transform: translateY(-9px);
-    fill: white;
-    stroke: green;
+    fill: transparent;
+    stroke: transparent;
+    /* stroke: red; */
     stroke-width: 1px;
 }
 
 /* nodemarks */
-.node.expanded .nodemark {
-    transform: rotate(90deg);
-}
 .nodemark {
+    transition: 0.2s;
     fill: rgb(0, 131, 120);
     opacity: 1;
     transform-origin: 50 50;
@@ -51,19 +51,16 @@
     opacity: 1;
 }
 
-
-/* highlight */
-.node.highlight {
-    opacity: 1;
+/* for tilted texts in matrix header */
+.tilted .node .selection-helper {
+    transform-origin: 12px 8px;
+    transform: rotate(25deg);
 }
-.node.highlight rect.selection-helper {
-    fill: rgb(82, 185, 177);
-}
-.node.highlight text {
-    font-weight: bold;
+.tilted .node text, .tilted .node .nodemark {
+    transform: rotate(25deg);
 }
 
-
+/* mappings */
 .mapLine {
     fill: none;
     stroke: rgb(20, 165, 153);
@@ -76,16 +73,28 @@
     opacity: 1;
 }
 
+/* matrix table background */
 .tbG line {
     stroke: #ddd;
     stroke-width: 1px;
 }
 
-.muted {
-    opacity: 0.4;
+
+/* Interactive features */
+.expanded .nodemark, .tilted .expanded .nodemark {
+    transform: rotate(90deg);
+}
+.expanded .nodemark .plus-line {
+    opacity: 0;
 }
 
-
-.node.tilted text, .node.tilted rect {
-    transform: rotate(25deg);
+/* highlight and muted */
+.highlight {
+    opacity: 1;
+}
+.highlight text {
+    font-weight: bold;
+}
+.muted {
+    opacity: 0.4;
 }

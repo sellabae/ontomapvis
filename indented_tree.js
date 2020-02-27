@@ -1,11 +1,16 @@
-//Global variable setting
+// global setting variable
 let margin = {top: 30, right: 20, bottom: 30, left: 20},
-    nodeHeight = 18,
-    nodeWidth = 250,
+    nodeHeight = 20,
+    nodeWidth = 300,
     nodeIndent = 10;
     nodemarkSize = 4.5;
 
-//root: d3.tree object, align: left or righth
+/**
+ * Draws an indented tree from d3.tree root
+ * and returns a svg:g element.
+ * @param {d3.tree object} root 
+ * @param {string} align left or right
+ */
 function treechart(root, align) {
     console.log('treechart() called. align:' + align);
     let alignRight = align === "right" ? true : false;
@@ -59,34 +64,36 @@ function treechart(root, align) {
         .attr("text-anchor", alignRight ? "end" : "start")
         .text(d => d.data.name);
 
-    //transparent rect for better node selection
-    node.append("rect").lower()
-        .classed('selection-helper', true)
-        .attr('width', nodeWidth)
-        .attr('height', nodeHeight)
-        .attr('stroke', 'red')
-        .attr('x', alignRight ? -nodeWidth+10 : -10);
-
     //nodemarks
     // different marks for leaf & non-leaf(branch) nodes
     const pointsStr = trianglePoints(nodemarkSize);
     g.selectAll('.node.branch')
         .append('polygon')
             .classed('nodemark', true)
-            .attr('points', pointsStr);
+            .attr('points', pointsStr)
+            .attr('transform', alignRight ? 'rotate(180)' : '');
     g.selectAll('.node.leaf')
         .append("circle")
             .classed('nodemark', true)
             .attr("r", 2);
 
+    //selection helper with transparent rect
+    node.append("rect").lower()
+        .classed('selection-helper', true)
+        .attr('width', nodeWidth)
+        .attr('height', nodeHeight)
+        .attr('x', alignRight ? -nodeWidth+8 : -8)
+        .attr('y', -nodeHeight/2);
 
+    // Interactions
     // mouseover effect
     node.on('mouseover', (_, i, n) => {
-        d3.select(n[i]).classed('highlight', true);
-        // g.selectAll('.node').classed('muted', true);
+        g.selectAll('.node').classed('muted', true);
+        d3.select(n[i]).classed('muted', false)
+            .classed('highlight', true);
     }).on('mouseout', (_, i, n) => {
         d3.select(n[i]).classed('highlight', false);
-        // g.selectAll('.node').classed('muted', false);
+        g.selectAll('.node').classed('muted', false);
     });
 
     //branch interaction collapse/expand
@@ -109,7 +116,7 @@ function tree(data, align) {
     //Sets the root position
     root.dx = 10;
     root.dy = 0;
-    const treeRoot =  d3.tree().nodeSize([root.dx, root.dy])(root)
+    const treeRoot =  d3.tree().nodeSize([root.dx, root.dy])(root);
 
     //TODO: flip the x,y later for clarity
     //Sets the node positions
