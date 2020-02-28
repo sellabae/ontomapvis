@@ -17,17 +17,17 @@ function treechart(root, align) {
     // const root = tree(data, align);
 
     //for node position exception
-    let x0 = Infinity;
-    let x1 = -x0;
+    let y0 = Infinity;
+    let y1 = -y0;
     root.each(d => {
-      if (d.x > x1) x1 = d.x;
-      if (d.x < x0) x0 = d.x;
+      if (d.y > y1) y1 = d.y;
+      if (d.y < y0) y0 = d.y;
     });
 
     //Creates a detached g to return
     const g = d3.create("svg:g");
     g.classed('tree', true)
-        .attr("transform", `translate(${root.dy / 3},${root.dx - x0})`);
+        .attr("transform", `translate(${root.dy / 3},${root.dx - y0})`);
       
     //Tree Nodes
     const node = g.append("g")
@@ -39,7 +39,7 @@ function treechart(root, align) {
         .classed('node', true)
         .classed('branch', d => d.children ? true : false)
         .classed('leaf', d => d.children ? false : true)
-        .attr("transform", d => `translate(${d.y},${d.x})`);
+        .attr("transform", d => `translate(${d.x},${d.y})`);
     
     //initial setting for fully expanded view
     g.selectAll('.branch').classed('expanded', true);
@@ -114,16 +114,18 @@ function tree(data, align) {
     //Sets the root position
     root.dx = 10;
     root.dy = 0;
+    root.descendants().forEach((d, i) => {
+        d.id = i;   //assign id to all nodes
+    });
     const treeRoot =  d3.tree().nodeSize([root.dx, root.dy])(root);
 
-    //TODO: flip the x,y later for clarity
     //Sets the node positions
     var index = -1;
-    treeRoot.eachBefore(function(n) {
-        n.x = ++index * nodeHeight;
-        n.y = n.depth * nodeIndent * (alignRight ? -1 : 1);
+    treeRoot.eachBefore(function(n) {   //breadth-first pre-order traversal
+        n.y = ++index * nodeHeight;
+        n.x = n.depth * nodeIndent * (alignRight ? -1 : 1);
     });
-
+    // console.log(treeRoot);
     return treeRoot;
 }
 
