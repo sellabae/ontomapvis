@@ -12,7 +12,7 @@ let margin = {top: 30, right: 20, bottom: 30, left: 20},
  * @param {string} align left or right
  */
 function treechart(root, align) {
-    console.log('treechart() called. align:' + align);
+    console.log(`treechart(root, align=${align})`);
     let alignRight = align === "right" ? true : false;
     // const root = tree(data, align);
 

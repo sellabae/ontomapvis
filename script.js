@@ -57,12 +57,36 @@ function drawBaselineSvg()
     const base_mapG = g.append('g').lower()
         .attr('id','base_mapG')
         .attr('transform',`translate(${-ontGap/2},0)`);
-    base_mapG.selectAll('path')
+    // base_mapG.selectAll('path')
+    //     .data(dataset.maps.alignments)
+    //     .join('path')
+    //         .attr('d', (d,i) => mapLinePath(d,i))
+    //         .attr("stroke", "white")    //for path background
+    //         .attr('stroke-width', '4px')
+    //         .attr('fill', 'none')
+    //         .clone(true)                //actual path
+    //             .classed('mapping', true)
+    //             .classed('mapLine', true);
+    base_mapG.selectAll('g')
         .data(dataset.maps.alignments)
-        .join('path')
-            .classed('mapping', true)
-            .classed('mapLine', true)
-            .attr('d', (d,i) => mapLinePath(d,i));
+        .join('g')
+        .classed('mapping', true)
+        .classed('mapLine', true)
+        .on('mouseover', (_, i, n) => {
+            d3.select(n[i]).classed('highlight', true).raise();
+            //TODO: add endpoints to each end of the path
+            //but then I better map the positions of aligned classes from both ontology tree
+        })
+        .on('mouseout', (_, i, n) => {
+            d3.select(n[i]).classed('highlight', false);
+        })
+            .append('path')          //foreground path
+                .attr('d', (d,i) => mapLinePath(d,i))
+                .attr('class', 'mapLine-fg')
+            .clone(true).lower() //background path
+                .attr('class', 'mapLine-bg')
+            .clone(true).lower() //path select helper
+                .attr('class', 'mapLine-select-helper');
 }
 
 /**
@@ -85,6 +109,13 @@ function mapLinePath(almt, i)
         const hx = ((ontGap-50) / dataset.maps.alignments.length * i +gm/2).toFixed(0);
         const vy = y2 > y1 ? y2-c : y2+c;
         const cy = y2 > y1 ? c : -c;
+        // console.log(`${i}. endpoints ${almt.entity1}(${x1},${y1}) and ${almt.entity2}(${x2},${y2})`);
+        // d3.select('#base_mapG').selectAll('circle')
+        //     .append('circle').attr('r', 8)
+        //         .attr('class', 'mapLine-endpoint')
+        //         .attr('x', x1).attr('y', y1)
+        //         .clone(true)
+        //             .attr('x', x2).attr('y', y2);
         return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
     } else {
         // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
