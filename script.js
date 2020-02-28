@@ -101,12 +101,12 @@ function mapLinePath(almt, i)
 
     if (e1 != undefined && e2 != undefined) {
         // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
-        const x1 = e1.y, y1 = e1.x;
-        const x2 = e2.y + ontGap, y2 = e2.x;
+        const x1 = e1.x, y1 = e1.y;
+        const x2 = e2.x + ontGap, y2 = e2.y;
         const c = 10;   //curve value
-        const gm = 50; //ontgap margin
-        const hgap = ((ontGap-gm) / dataset.maps.alignments.length * i).toFixed(0);
-        const hx = ((ontGap-50) / dataset.maps.alignments.length * i +gm/2).toFixed(0);
+        const gm = 20; //margin from ontGap
+        const hgap = ((ontGap-gm*2) / dataset.maps.alignments.length).toFixed(0);
+        const hx = hgap * i + gm;
         const vy = y2 > y1 ? y2-c : y2+c;
         const cy = y2 > y1 ? c : -c;
         // console.log(`${i}. endpoints ${almt.entity1}(${x1},${y1}) and ${almt.entity2}(${x2},${y2})`);
@@ -122,15 +122,16 @@ function mapLinePath(almt, i)
         return ``;
     }
 }
+
 function mapLinePath_old(almt, i)
 {
     var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
     var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
 
     if (e1 != undefined && e2 != undefined) {
-        // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
-        const x1 = e1.y, y1 = e1.x;
-        const x2 = e2.y + ontGap, y2 = e2.x;
+        // console.log(`${i}. e1:${e1.data.name} x:${e1.y} y:${e1.x}   e2:${e2.data.name} x:${e2.y} y:${e2.x}`);
+        const x1 = e1.x, y1 = e1.y;
+        const x2 = e2.x + ontGap, y2 = e2.y;
         const q = Math.abs(y2 - y1)/2;
         const qx = (ontGap-20) / dataset.maps.alignments.length * i;
         const qy = y2 > y1 ? y2-q : y2+q;
@@ -205,9 +206,9 @@ function drawMatrixSvg()
         var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
         var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
         if (e1 != undefined && e2 != undefined) {
-            // console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
-            const x = e2.x;
-            const y = e1.x;
+            // console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
+            const x = e2.y;
+            const y = e1.y;
             const cellSize = nodeHeight;
             matrix_mapG.append('rect')
                 .classed('mapping', true)
@@ -275,9 +276,9 @@ function mapCellRect(almt,i)
     var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
 
     if (e1 != undefined && e2 != undefined) {
-        console.log(`${i}. e1:${e1.data.name} x${e1.x} y${e1.y}\t e2:${e2.data.name} x${e2.x} y${e2.y}`);
-        const x = e2.x;
-        const y = e1.x;
+        console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
+        const x = e2.y;
+        const y = e1.y;
         const cellSize = nodeHeight;
         var rect = d3.create('svg:rect')
             .classed('mapCell', true)
