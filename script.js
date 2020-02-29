@@ -189,16 +189,13 @@ function drawMatrixSvg()
     const row = ont1TreeRoot.descendants().length;
     const col = ont2TreeRoot.descendants().length;
     const cellSize = nodeHeight;
-    
-    //background grid for mapping cells
-    g.append(() => grid(row, col, cellSize, true))
+    const gGrid = g.append(() => grid(row, col, cellSize, true))
         .classed('bg-grid', true);
 
     //draw mapping cells
     console.log('draw matrix mapping');
     const matrix_mapG = g.append('g')
         .attr('id','matrix_mapG');
-
     const enlarge = 4;
     const mapcell = matrix_mapG.selectAll('rect')
         .data(dataset.maps.alignments)
@@ -209,14 +206,29 @@ function drawMatrixSvg()
             .attr('y', d => d.e1pos.y)
             .attr('width', cellSize)
             .attr('height', cellSize);
+    mapcell.on('mouseenter', d => {
+        //guide rect to its mapped cell
+        console.log('drawing mapCell-guide');
+        const gCellGuide = gGrid.append('g')
+            .classed('mapCell-guide', true);
+        gCellGuide.append('rect')
+            .attr('x', d.e2pos.y).attr('y', 0)
+            .attr('width', cellSize).attr('height', cellSize * row);
+        gCellGuide.append('rect')
+            .attr('x', 0).attr('y', d.e1pos.y)
+            .attr('width', cellSize * col).attr('height', cellSize);
+        
+    });
     mapcell.on('mouseover', (d, i, n) => {
         // console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
         //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
-        d3.select(n[i]).classed('highlight', true)
+        d3.select(n[i])
+            .raise()
+            .classed('highlight', true)
             .attr('width', cellSize + enlarge)
             .attr('height', cellSize + enlarge)
             .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
-
+        
         highlightNode(
             matrix_ont1G.select('#n' + d.e1match[0].id),
             matrix_ont1G);
@@ -225,13 +237,16 @@ function drawMatrixSvg()
             matrix_ont2G);
     });
     mapcell.on('mouseout', (_, i, n) => {
-        d3.select(n[i]).classed('highlight', false)
+        d3.select(n[i])
+            .classed('highlight', false)
             .attr('width', cellSize)
             .attr('height', cellSize)
             .attr('transform', `translate(0,0)`);
 
         unmuteAllNode(matrix_ont1G);
         unmuteAllNode(matrix_ont2G);
+
+        gGrid.select('.mapCell-guide').remove();
     });
 
 }

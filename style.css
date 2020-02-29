@@ -1,3 +1,9 @@
+/* later to use css variable with sass*/
+/* :root {
+    color1: rgb(20, 165, 153);
+    color2: rgb(0, 131, 120);
+    color3: rgb(191, 218, 215);
+} */
 
 /* to check layout */
 /* div { border: 0.5px solid orange; } */
@@ -116,6 +122,10 @@
     stroke-width: 1px;
     fill: #f6f6f6;
 }
+.mapCell-guide {
+    fill: white;
+    opacity: 0.5;
+}
 
 
 /* Interactive features */
@@ -145,10 +155,10 @@
 .highlight .mapLine-bg {
     stroke-width: 7px;
 }
-.mapCell.highlight {
-    /* fill: rgb(240, 96, 0); */
-    /* transform: scale(1.5); */
-}
+/* .mapCell.highlight {
+    fill: rgb(240, 96, 0);
+    transform: scale(1.5);
+} */
 
 /* for testing */
 .highlight .nodemark {
