@@ -8,8 +8,11 @@ const dataset = {
 const treeWidth = 300;
 const ontGap = 200;
 
+console.log('ont1TreeRoot:');
 const ont1TreeRoot = tree(dataset.ont1.root, 'right');
+console.log('ont2TreeRoot:');
 const ont2TreeRoot = tree(dataset.ont2.root, 'left');
+
 updateData();
 
 window.addEventListener('load', function() {
@@ -34,7 +37,7 @@ function describeDataset()
 
 function updateData()
 {
-    console.log('reassigning positions of mapped classes to alignments');
+    console.log('updateData() reassigning positions of mapped classes to alignments');
     dataset.maps.alignments.forEach((almt,i) => {
         //asign id to each alignment
         almt.id = i;
@@ -60,7 +63,7 @@ function updateData()
         var e1 = almt.e1match[0];
         var e2 = almt.e2match[0];
         if (almt.isClassMapping) {
-            console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
+            // console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
             almt.e1pos = {x: e1.x, y: e1.y};
             almt.e2pos = {x: e2.x, y: e2.y};
         }
@@ -90,60 +93,52 @@ function drawBaselineSvg()
     const base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','base_ont2G')
         .attr('transform',`translate(${ontGap/2},0)`);
-    
-    console.log('draw baseline mapping');
-    const base_mapG = g.append('g')
-        // .lower()
+    const base_mapG = g.append('g')/*.lower()*/
         .attr('id','base_mapG')
         .attr('transform',`translate(${-ontGap/2},0)`); //to center
-    // base_mapG.selectAll('path')
-    //     .data(dataset.maps.alignments)
-    //     .join('path')
-    //         .attr('d', (d,i) => mapLinePath(d,i))
-    //         .attr("stroke", "white")    //for path background
-    //         .attr('stroke-width', '4px')
-    //         .attr('fill', 'none')
-    //         .clone(true)                //actual path
-    //             .classed('mapping', true)
-    //             .classed('mapLine', true);
-    base_mapG.selectAll('g')
+    
+    //mapline
+    console.log('draw baseline mapping');
+    const mapline = base_mapG.selectAll('g')
         .data(dataset.maps.alignments)
         .join('g')
         .classed('mapping', true)
-        .classed('mapLine', true)
-        .on('mouseover', (d, i, n) => {
-            d3.select(n[i]).classed('highlight', true).raise();
-            highlightNode(
-                base_ont1G.select('#n' + d.e1match[0].id),
-                base_ont1G);
-            highlightNode(
-                base_ont2G.select('#n' + d.e2match[0].id),
-                base_ont2G);
+        .classed('mapLine', true);
+    mapline.append('path')   //foreground path
+        .attr('d', (d,i) => calcMapLinePath(d,i))
+        .attr('class', 'mapLine-fg')
+        .clone(true).lower() //background path
+            .attr('class', 'mapLine-bg')
+        .clone(true).lower() //path select helper
+            .attr('class', 'mapLine-select-helper');
+    //mapline event
+    mapline.on('mouseover', (d, i, n) => {
+        d3.select(n[i]).classed('highlight', true).raise();
+        highlightNode(
+            base_ont1G.select('#n' + d.e1match[0].id),
+            base_ont1G);
+        highlightNode(
+            base_ont2G.select('#n' + d.e2match[0].id),
+            base_ont2G);
 
-            //FIXME: Why is it drawing on 0,0???
-            // console.log(`mouseover alignment. e1pos:${d.e1pos.x},${d.e1pos.y} e2pos:${d.e2pos.x},${d.e2pos.y}`);
-            if( ! d3.select(n[i]).select('.mapLine-endpoint') ) {
-                d3.select(n[i])
-                .append('circle').attr('r', 8)
-                    .classed('mapLine-endpoint', true)
-                    .attr('x', d.e1pos.x).attr('y', d.e1pos.y)
-                .clone(true)
-                    .attr('x', ontGap + d.e2pos.x).attr('y', d.e2pos.y);
-            }
-        })
-        .on('mouseout', (d, i, n) => {
-            d3.select(n[i]).classed('highlight', false)
-                .selectAll('.mapLine-endpoint').remove();
-            unmuteAllNode(base_ont1G);
-            unmuteAllNode(base_ont2G);
-        })
-            .append('path')          //foreground path
-                .attr('d', (d,i) => mapLinePath(d,i))
-                .attr('class', 'mapLine-fg')
-            .clone(true).lower() //background path
-                .attr('class', 'mapLine-bg')
-            .clone(true).lower() //path select helper
-                .attr('class', 'mapLine-select-helper');
+        //FIXME: Why is it drawing on 0,0???
+        // console.log(`mouseover alignment. e1pos:${d.e1pos.x},${d.e1pos.y} e2pos:${d.e2pos.x},${d.e2pos.y}`);
+        // if( ! d3.select(n[i]).select('.mapLine-endpoint') ) {
+        //     d3.select(n[i])
+        //     .append('circle').attr('r', 8)
+        //         .classed('mapLine-endpoint', true)
+        //         .attr('x', d.e1pos.x).attr('y', d.e1pos.y)
+        //     .clone(true)
+        //         .attr('x', ontGap + d.e2pos.x).attr('y', d.e2pos.y);
+        // }
+    });
+    mapline.on('mouseout', (d, i, n) => {
+        d3.select(n[i]).classed('highlight', false);
+        // d3.select(n[i]).selectAll('.mapLine-endpoint').remove();
+        unmuteAllNode(base_ont1G);
+        unmuteAllNode(base_ont2G);
+    });
+
 }
 
 /**
@@ -151,7 +146,7 @@ function drawBaselineSvg()
  * @param {Object} almt an alignment mapping
  * @param {number} i the index of the alignment
  */
-function mapLinePath(almt, i)
+function calcMapLinePath(almt, i)
 {
     if (!almt.isClassMapping) {
         return ``;
@@ -170,21 +165,6 @@ function mapLinePath(almt, i)
     return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
 }
 
-function mapLinePath_old(almt, i)
-{
-    if (!almt.isClassMapping) {
-        return ``;
-    }
-    const x1 = almt.e1pos.x,
-          y1 = almt.e1pos.y,
-          x2 = almt.e2pos.x + ontGap,
-          y2 = almt.e2pos.y;
-    const q = Math.abs(y2 - y1)/2;
-    const qx = ( (ontGap-20) / dataset.maps.alignments.length * i ).toFixed(0);
-    const qy = y2 > y1 ? y2-q : y2+q;
-    return `M ${x1} ${y1} Q ${qx} ${y1} ${qx} ${qy} T ${x2} ${y2}`;
-}
-
 function drawMatrixSvg()
 {
     console.log("drawMatrixSvg()");
@@ -193,14 +173,14 @@ function drawMatrixSvg()
         .attr('height', 2300)
         .attr('width', 1950);
 
-    let g = svg.append('g')
+    const g = svg.append('g')
         .attr('transform',`translate(${treeWidth+10},${treeWidth-70})`);
-    hGap = nodeHeight/2; //gap between headers and matrix
-    var matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
+    const hGap = nodeHeight/2; //gap between headers and matrix
+    const matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','matrix_ont1G')
         .classed('right-aligned-tree', true)
         .attr('transform',`translate(${-hGap},${hGap})`);
-    var matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
+    const matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
         .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`)
         .classed('tilted', true);
@@ -209,44 +189,18 @@ function drawMatrixSvg()
     const row = ont1TreeRoot.descendants().length;
     const col = ont2TreeRoot.descendants().length;
     const cellSize = nodeHeight;
-    // g.append(() => drawTableLines(row, col, cellSize, false))
-    //     .lower()
-    //     .classed('map-bg-table', true)
-    //     .attr('transform',`translate(${treeWidth},${treeWidth-50})`);
-    var tbG = g.append('g').lower()
-        .classed('tbG', true);
-    const rowG = tbG.append('g').classed('row', true);
-    for (let i=0; i<row+1; i++) {
-        rowG.append('line')
-            .attr('x1', 0)
-            .attr('y1', i * cellSize)
-            .attr('x2', col * cellSize)
-            .attr('y2', i * cellSize);
-    }
-    const colG = tbG.append('g').classed('col', true);
-    for (let i=0; i<col+1; i++) {
-        colG.append('line')
-            .attr('x1', i * cellSize)
-            .attr('y1', 0)
-            .attr('x2', i * cellSize)
-            .attr('y2', row * cellSize);
-    }
+    
+    //background grid for mapping cells
+    g.append(() => grid(row, col, cellSize, true))
+        .classed('bg-grid', true);
 
     //draw mapping cells
     console.log('draw matrix mapping');
-    var matrix_mapG = g.append('g').attr('id','matrix_mapG');
-
-    // var mapCell = matrix_mapG.selectAll('rect')
-    //     .data(dataset.maps.alignments)
-    //     .enter()
-    //     .append(d => mapCellRect(d));
-    //TODO: Why the above doesn't work? below is temporary solution to draw mapping cells
-    // base_mapG.selectAll('path')
-    //     .data(dataset.maps.alignments)
-    //     .join('path')
+    const matrix_mapG = g.append('g')
+        .attr('id','matrix_mapG');
 
     const enlarge = 4;
-    matrix_mapG.selectAll('rect')
+    const mapcell = matrix_mapG.selectAll('rect')
         .data(dataset.maps.alignments)
         .join('rect')
             .classed('mapping', true)
@@ -254,31 +208,31 @@ function drawMatrixSvg()
             .attr('x', d => d.e2pos.y)
             .attr('y', d => d.e1pos.y)
             .attr('width', cellSize)
+            .attr('height', cellSize);
+    mapcell.on('mouseover', (d, i, n) => {
+        // console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
+        //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
+        d3.select(n[i]).classed('highlight', true)
+            .attr('width', cellSize + enlarge)
+            .attr('height', cellSize + enlarge)
+            .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
+
+        highlightNode(
+            matrix_ont1G.select('#n' + d.e1match[0].id),
+            matrix_ont1G);
+        highlightNode(
+            matrix_ont2G.select('#n' + d.e2match[0].id),
+            matrix_ont2G);
+    });
+    mapcell.on('mouseout', (_, i, n) => {
+        d3.select(n[i]).classed('highlight', false)
+            .attr('width', cellSize)
             .attr('height', cellSize)
-            .on('mouseover', (d, i, n) => {
-                // console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
-                //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
-                d3.select(n[i]).classed('highlight', true)
-                    .attr('width', cellSize + enlarge)
-                    .attr('height', cellSize + enlarge)
-                    .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
+            .attr('transform', `translate(0,0)`);
 
-                highlightNode(
-                    matrix_ont1G.select('#n' + d.e1match[0].id),
-                    matrix_ont1G);
-                highlightNode(
-                    matrix_ont2G.select('#n' + d.e2match[0].id),
-                    matrix_ont2G);
-            })
-            .on('mouseout', (_, i, n) => {
-                d3.select(n[i]).classed('highlight', false)
-                    .attr('width', cellSize)
-                    .attr('height', cellSize)
-                    .attr('transform', `translate(0,0)`);
-
-                unmuteAllNode(matrix_ont1G);
-                unmuteAllNode(matrix_ont2G);
-            });
+        unmuteAllNode(matrix_ont1G);
+        unmuteAllNode(matrix_ont2G);
+    });
 
 }
 
@@ -289,59 +243,56 @@ function drawMatrixSvg()
  * @param {number} cellSize 
  * @param {boolean} drawsBg 
  */
-function drawTableLines(row, col, cellSize, drawsBg)
+function grid(row, col, cellSize, drawsBg)
 {
-    console.log('draw lines for table background.');
+    console.log('create background table lines.');
+    const g = d3.create('svg:g');
 
-    const tbG = d3.create('svg:g');
     if (drawsBg) {
-        tbG.append('rect')
+        g.append('rect')
+            .classed('bg-rect', true)
             .attr('height', row * cellSize)
-            .attr('width', col * cellSize)
-            .style('fill', '#EEE');
+            .attr('width', col * cellSize);
     }
-    const rowG = tbG.append('g').classed('row', true);
+
+    const rowG = g.append('g').classed('row', true);
     for (let i=0; i<row+1; i++) {
         rowG.append('line')
             .attr('x1', 0)
             .attr('y1', i * cellSize)
             .attr('x2', col * cellSize)
-            .attr('y2', i * cellSize)
-            .style('stroke', '#CCC').style('stroke-width', '1px');
+            .attr('y2', i * cellSize);
     }
-    const colG = tbG.append('g').classed('col', true);
+
+    const colG = g.append('g').classed('col', true);
     for (let i=0; i<col+1; i++) {
         colG.append('line')
             .attr('x1', i * cellSize)
             .attr('y1', 0)
             .attr('x2', i * cellSize)
-            .attr('y2', row * cellSize)
-            .style('stroke', '#CCC').style('stroke-width', '1px');
+            .attr('y2', row * cellSize);
     }
-    return tbG.node();
+
+    return g.node();
 }
 
-//TODO: why this isn't working??
-/**
- * Draws a mapping cell(rect) of an alignment for matrix mapping
- * @param {Object} almt a mapping alignment
- * @param {number} i the index of almt within alignments
- */
-function mapCellRect(almt)
-{
-    console.log(`mapCellRect() for alignmet${almt.id}`);
-    if (almt.isClassMapping) {
-        const x = almt.e2pos.y;
-        const y = almt.e1pos.y;
-        const cellSize = nodeHeight;
-        var rect = d3.create('svg:rect')
-            .classed('mapCell', true)
-            .attr('x', x)
-            .attr('y', y)
-            .attr('width', cellSize)
-            .attr('height', cellSize);
-        return rect.node();
-    } else {
-        return d3.create('svg:rect').node();
-    }
-}
+// /**
+//  * Draws a mapping cell(rect) of an alignment for matrix mapping
+//  * @param {Object} almt a mapping alignment
+//  * @param {number} cellSize width of a mapping cell
+//  */
+// function mapCellRect(almt, cellSize)
+// {
+//     console.log(`mapCellRect() for alignmet${almt.id}`);
+//     if (almt.isClassMapping) {
+//         var rect = d3.create('svg:rect')
+//             .classed('mapCell', true)
+//             .attr('x', almt.e2pos.y)
+//             .attr('y', almt.e1pos.y)
+//             .attr('width', cellSize)
+//             .attr('height', cellSize);
+//         return rect.node();
+//     } else {
+//         return d3.create('svg:rect').node();
+//     }
+// }

@@ -84,7 +84,7 @@
 /* mappings */
 .mapLine {
     fill: none;
-    opacity: 0.9;
+    opacity: 1;
     stroke: rgb(20, 165, 153);
     stroke-width: 1.5px;
     /* stroke-linecap: round; */
@@ -111,9 +111,10 @@
 }
 
 /* matrix table background */
-.tbG line {
-    stroke: #ddd;
+.bg-grid {
+    stroke: white;
     stroke-width: 1px;
+    fill: #f6f6f6;
 }
 
 

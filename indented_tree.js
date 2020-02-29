@@ -28,12 +28,10 @@ function treechart(root, align) {
     const g = d3.create("svg:g");
     g.classed('tree', true)
         .attr("transform", `translate(${root.dy / 3},${root.dx - y0})`);
+    console.log(`?? translate(${root.dy / 3},${root.dx - y0})`);
       
     //Tree Nodes
-    const node = g.append("g")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-width", 3)
-      .selectAll("g")
+    const node = g.selectAll("g")
       .data(root.descendants())
       .join("g")
         .attr('id', d => `n${d.id}`)
@@ -119,13 +117,13 @@ function unmuteAllNode(gTree) {
   
 
 function tree(data, align) {
-    console.log('tree() called.');
-    let alignRight = align == "right" ? true : false;
+    // console.log('tree() called.');
+    let alignRight = (align == "right") ? true : false;
 
     const root = d3.hierarchy(data);
 
     //Sets the root position
-    root.dx = 10;
+    root.dx = 10;  //TODO: seems not necessary??
     root.dy = 0;
     root.descendants().forEach((d, i) => {
         d.id = i;   //assign id to all nodes
