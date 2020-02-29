@@ -1,8 +1,8 @@
-/Ontologies
+/ontologies
 /resources
 /test
 /dataset
-
+/oldversion
 
 # etc.
 .DS_Store
