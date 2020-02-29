@@ -36,6 +36,7 @@ function treechart(root, align) {
       .selectAll("g")
       .data(root.descendants())
       .join("g")
+        .attr('id', d => `n${d.id}`)
         .classed('node', true)
         .classed('branch', d => d.children ? true : false)
         .classed('leaf', d => d.children ? false : true)
@@ -84,7 +85,7 @@ function treechart(root, align) {
     // Interactions
     // mouseover effect
     node.on('mouseover', (_,i,n) => highlightNode(d3.select(n[i]), g))
-        .on('mouseout', () => unmuteAll(g));
+        .on('mouseout', () => unmuteAllNode(g));
 
     //branch interaction collapse/expand
     g.selectAll('.node.branch')
@@ -110,7 +111,7 @@ function highlightNode(thisNode, gTree) {
         .classed('highlight', true);
     //TODO: highlight the parent's guide line not its own guide.
 }
-function unmuteAll(gTree) {
+function unmuteAllNode(gTree) {
     gTree.selectAll('.node')
         .classed('highlight', false)
         .classed('muted', false);

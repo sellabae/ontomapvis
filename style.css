@@ -127,7 +127,7 @@
 
 /* highlight and muted */
 .muted {
-    opacity: 0.3;
+    opacity: 0.5;
 }
 .highlight, .highlight .hierarchy-guide {
     opacity: 1;

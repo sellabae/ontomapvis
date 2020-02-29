@@ -113,6 +113,12 @@ function drawBaselineSvg()
         .classed('mapLine', true)
         .on('mouseover', (d, i, n) => {
             d3.select(n[i]).classed('highlight', true).raise();
+            highlightNode(
+                base_ont1G.select('#n' + d.e1match[0].id),
+                base_ont1G);
+            highlightNode(
+                base_ont2G.select('#n' + d.e2match[0].id),
+                base_ont2G);
 
             //FIXME: Why is it drawing on 0,0???
             // console.log(`mouseover alignment. e1pos:${d.e1pos.x},${d.e1pos.y} e2pos:${d.e2pos.x},${d.e2pos.y}`);
@@ -125,9 +131,11 @@ function drawBaselineSvg()
                     .attr('x', ontGap + d.e2pos.x).attr('y', d.e2pos.y);
             }
         })
-        .on('mouseout', (_, i, n) => {
+        .on('mouseout', (d, i, n) => {
             d3.select(n[i]).classed('highlight', false)
                 .selectAll('.mapLine-endpoint').remove();
+            unmuteAllNode(base_ont1G);
+            unmuteAllNode(base_ont2G);
         })
             .append('path')          //foreground path
                 .attr('d', (d,i) => mapLinePath(d,i))
@@ -233,35 +241,45 @@ function drawMatrixSvg()
     //     .enter()
     //     .append(d => mapCellRect(d));
     //TODO: Why the above doesn't work? below is temporary solution to draw mapping cells
-    dataset.maps.alignments.forEach( almt => {
-        if (almt.isClassMapping) {
-            const x = almt.e2pos.y;
-            const y = almt.e1pos.y;
-            const cellSize = nodeHeight;
-            const enlarge = 4;
-            matrix_mapG.append('rect')
-                .classed('mapping', true)
-                .classed('mapCell', true)
-                .attr('x', x)
-                .attr('y', y)
-                .attr('width', cellSize)
-                .attr('height', cellSize)
-                .attr('transform-origin', `${x} ${y}`)
-                .on('mouseover', (_, i, n) => {
-                    console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
-                    //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
-                    d3.select(n[i]).classed('highlight', true)
-                        .attr('width', cellSize + enlarge)
-                        .attr('height', cellSize + enlarge)
-                        .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
-                }).on('mouseout', (_, i, n) => {
-                    d3.select(n[i]).classed('highlight', false)
-                        .attr('width', cellSize)
-                        .attr('height', cellSize)
-                        .attr('transform', `translate(0,0)`);
-                });
-        }
-    });
+    // base_mapG.selectAll('path')
+    //     .data(dataset.maps.alignments)
+    //     .join('path')
+
+    const enlarge = 4;
+    matrix_mapG.selectAll('rect')
+        .data(dataset.maps.alignments)
+        .join('rect')
+            .classed('mapping', true)
+            .classed('mapCell', true)
+            .attr('x', d => d.e2pos.y)
+            .attr('y', d => d.e1pos.y)
+            .attr('width', cellSize)
+            .attr('height', cellSize)
+            .on('mouseover', (d, i, n) => {
+                // console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
+                //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
+                d3.select(n[i]).classed('highlight', true)
+                    .attr('width', cellSize + enlarge)
+                    .attr('height', cellSize + enlarge)
+                    .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
+
+                highlightNode(
+                    matrix_ont1G.select('#n' + d.e1match[0].id),
+                    matrix_ont1G);
+                highlightNode(
+                    matrix_ont2G.select('#n' + d.e2match[0].id),
+                    matrix_ont2G);
+            })
+            .on('mouseout', (_, i, n) => {
+                d3.select(n[i]).classed('highlight', false)
+                    .attr('width', cellSize)
+                    .attr('height', cellSize)
+                    .attr('transform', `translate(0,0)`);
+
+                unmuteAllNode(matrix_ont1G);
+                unmuteAllNode(matrix_ont2G);
+            });
+
 }
 
 /**
