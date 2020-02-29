@@ -58,6 +58,9 @@
 .right-aligned-tree .nodemark {
     transform: rotate(180deg);
 }
+.right-aligned-tree .highlight .nodemark {
+    transform: rotate(180deg) scale(1.5);
+}
 .leaf .nodemark {
     /* fill: rgb(191, 218, 215); */
     /* fill: white;
@@ -73,6 +76,9 @@
 }
 .tilted .node text, .tilted .node .nodemark {
     transform: rotate(25deg);
+}
+.tilted .node.highlight .nodemark {
+    transform: rotate(25deg) scale(1.5);
 }
 
 /* mappings */
@@ -99,7 +105,8 @@
 }
 .mapCell {
     fill: rgb(20, 165, 153);
-    stroke: none;
+    stroke: white;
+    stroke-width: 1px;
     opacity: 1;
 }
 
@@ -114,18 +121,19 @@
 .expanded .nodemark, .tilted .expanded .nodemark {
     transform: rotate(90deg);
 }
-.expanded .nodemark .plus-line {
-    opacity: 0;
+.highlight.expanded .nodemark, .tilted .highlight.expanded .nodemark {
+    transform: rotate(90deg) scale(1.5);
 }
 
 /* highlight and muted */
 .muted {
-    opacity: 0.4;
+    opacity: 0.3;
 }
 .highlight, .highlight .hierarchy-guide {
     opacity: 1;
 }
 .highlight text {
+    /* fill: rgb(20, 165, 153); */
     font-weight: bold;
 }
 .highlight .mapLine-fg {
@@ -135,4 +143,13 @@
 }
 .highlight .mapLine-bg {
     stroke-width: 7px;
+}
+.mapCell.highlight {
+    /* fill: rgb(240, 96, 0); */
+    /* transform: scale(1.5); */
+}
+
+/* for testing */
+.highlight .nodemark {
+    transform: scale(1.5);
 }

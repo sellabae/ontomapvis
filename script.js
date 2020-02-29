@@ -36,37 +36,36 @@ function updateData()
 {
     console.log('reassigning positions of mapped classes to alignments');
     dataset.maps.alignments.forEach((almt,i) => {
+        //asign id to each alignment
         almt.id = i;
         //filter match
-        //TODO: better give tree node object to the almt.e1 directly??
-        var e1match = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1);
-        var e2match = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2);
+        almt.e1match = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1);
+        almt.e2match = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2);
 
-        //mark only if the alignment is a mapping of class, not property
-        almt.isClassMapping = (e1match.length && e2match.length) ? true : false;
+        //mark if the alignment is for class, not property
+        almt.isClassMapping = (almt.e1match.length && almt.e2match.length) ? true : false;
         
-        //assign number of matches to each ontology
+        //TODO: handle multiple matches
         if (almt.isClassMapping) {
-            almt.e1match = e1match.length;
-            almt.e2match = e2match.length;
-            if (almt.e1match > 1) {
-                console.log(`${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
+            if (almt.e1match.length > 1) {
+                console.log(`**${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
             }
-            if (almt.e2match > 1) {
-                console.log(`${i}. multiple match e2:${almt.entity2} match:${almt.e2match}`);
+            if (almt.e2match.length > 1) {
+                console.log(`**${i}. multiple match e2:${almt.entity2} match:${almt.e2match}`);
             }
         }
 
         //assign position
-        //TODO: handle multiple match when needed
-        var e1 = e1match[0];
-        var e2 = e2match[0];
+        //TODO: this may be redundant now to almt.e1match[i].x and almt.e1match[i].y
+        var e1 = almt.e1match[0];
+        var e2 = almt.e2match[0];
         if (almt.isClassMapping) {
             console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
             almt.e1pos = {x: e1.x, y: e1.y};
             almt.e2pos = {x: e2.x, y: e2.y};
         }
     });
+    console.log('alignments:');
     console.log(dataset.maps.alignments);
 }
 
@@ -115,7 +114,7 @@ function drawBaselineSvg()
         .on('mouseover', (d, i, n) => {
             d3.select(n[i]).classed('highlight', true).raise();
 
-            //TODO: Why is it drawing on 0,0???
+            //FIXME: Why is it drawing on 0,0???
             // console.log(`mouseover alignment. e1pos:${d.e1pos.x},${d.e1pos.y} e2pos:${d.e2pos.x},${d.e2pos.y}`);
             if( ! d3.select(n[i]).select('.mapLine-endpoint') ) {
                 d3.select(n[i])
@@ -239,13 +238,28 @@ function drawMatrixSvg()
             const x = almt.e2pos.y;
             const y = almt.e1pos.y;
             const cellSize = nodeHeight;
+            const enlarge = 4;
             matrix_mapG.append('rect')
                 .classed('mapping', true)
                 .classed('mapCell', true)
                 .attr('x', x)
                 .attr('y', y)
                 .attr('width', cellSize)
-                .attr('height', cellSize);
+                .attr('height', cellSize)
+                .attr('transform-origin', `${x} ${y}`)
+                .on('mouseover', (_, i, n) => {
+                    console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
+                    //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
+                    d3.select(n[i]).classed('highlight', true)
+                        .attr('width', cellSize + enlarge)
+                        .attr('height', cellSize + enlarge)
+                        .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
+                }).on('mouseout', (_, i, n) => {
+                    d3.select(n[i]).classed('highlight', false)
+                        .attr('width', cellSize)
+                        .attr('height', cellSize)
+                        .attr('transform', `translate(0,0)`);
+                });
         }
     });
 }
