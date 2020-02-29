@@ -1,9 +1,9 @@
 // global setting variable
-let margin = {top: 30, right: 20, bottom: 30, left: 20},
-    nodeHeight = 20,
-    nodeWidth = 300,
-    nodeIndent = 10;
-    nodemarkSize = 4.5;
+const margin = {top: 30, right: 20, bottom: 30, left: 20},
+      nodeHeight = 20,
+      nodeWidth = 300,
+      nodeIndent = 10;
+      nodemarkSize = 4.5;
 
 /**
  * Draws an indented tree from d3.tree root
@@ -83,27 +83,39 @@ function treechart(root, align) {
 
     // Interactions
     // mouseover effect
-    node.on('mouseover', (d, i, n) => {
-        const thisNode = d3.select(n[i]);
-        g.selectAll('.node').classed('muted', true);
-        thisNode.classed('muted', false)
-            .classed('highlight', true);
-        //TODO: highlight the parent's guide line not its own guide.
-    }).on('mouseout', (_, i, n) => {
-        d3.select(n[i]).classed('highlight', false);
-        g.selectAll('.node').classed('muted', false);
-    });
+    node.on('mouseover', (_,i,n) => highlightNode(d3.select(n[i]), g))
+        .on('mouseout', () => unmuteAll(g));
 
     //branch interaction collapse/expand
     g.selectAll('.node.branch')
         .on('click', (_, i, n) => {
+            // console.log(n[i]); //the current DOM element
             const sel = d3.select(n[i]); //this selection
-            sel.classed('expanded', sel.classed('expanded') ? false : true);
+            sel.classed('expanded', 
+                sel.classed('expanded') ? false : true
+            );
         });
 
     return g.node();
-  }
+}
 
+/**
+ * Highlight a node and mute the others
+ * @param {*} thisNode the node to highlight
+ * @param {*} gTree the tree 'svg:g' where the node belong
+ */
+function highlightNode(thisNode, gTree) {
+    gTree.selectAll('.node').classed('muted', true);
+    thisNode.classed('muted', false)
+        .classed('highlight', true);
+    //TODO: highlight the parent's guide line not its own guide.
+}
+function unmuteAll(gTree) {
+    gTree.selectAll('.node')
+        .classed('highlight', false)
+        .classed('muted', false);
+}
+  
 
 function tree(data, align) {
     console.log('tree() called.');
@@ -125,7 +137,7 @@ function tree(data, align) {
         n.y = ++index * nodeHeight;
         n.x = n.depth * nodeIndent * (alignRight ? -1 : 1);
     });
-    // console.log(treeRoot);
+    console.log(treeRoot);
     return treeRoot;
 }
 

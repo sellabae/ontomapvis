@@ -1,15 +1,16 @@
-let dataset = {
+const dataset = {
     domain: 'conference',
     ont1: edas,
     ont2: ekaw,
     maps: mapping_edas_ekaw
 };
 
-let treeWidth = 300;
-let ontGap = 200;
+const treeWidth = 300;
+const ontGap = 200;
 
 const ont1TreeRoot = tree(dataset.ont1.root, 'right');
 const ont2TreeRoot = tree(dataset.ont2.root, 'left');
+updateData();
 
 window.addEventListener('load', function() {
     console.log("window loaded.");
@@ -26,9 +27,47 @@ function describeDataset()
         'domain: ' + dataset.domain +'<br>'+
         `onto1: \"${dataset.ont1.baseNS}\" ${dataset.ont1.classCount} classes` +'<br>'+
         `onto2: \"${dataset.ont2.baseNS}\" ${dataset.ont2.classCount} classes` +'<br>'+
-        `maps: ${dataset.maps.alignments.length} alignments`;
+        `maps: ${dataset.maps.alignments.length} class alignments`;
     // console.log(desc);
     return desc;
+}
+
+function updateData()
+{
+    console.log('reassigning positions of mapped classes to alignments');
+    dataset.maps.alignments.forEach((almt,i) => {
+        almt.id = i;
+        //filter match
+        //TODO: better give tree node object to the almt.e1 directly??
+        var e1match = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1);
+        var e2match = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2);
+
+        //mark only if the alignment is a mapping of class, not property
+        almt.isClassMapping = (e1match.length && e2match.length) ? true : false;
+        
+        //assign number of matches to each ontology
+        if (almt.isClassMapping) {
+            almt.e1match = e1match.length;
+            almt.e2match = e2match.length;
+            if (almt.e1match > 1) {
+                console.log(`${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
+            }
+            if (almt.e2match > 1) {
+                console.log(`${i}. multiple match e2:${almt.entity2} match:${almt.e2match}`);
+            }
+        }
+
+        //assign position
+        //TODO: handle multiple match when needed
+        var e1 = e1match[0];
+        var e2 = e2match[0];
+        if (almt.isClassMapping) {
+            console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
+            almt.e1pos = {x: e1.x, y: e1.y};
+            almt.e2pos = {x: e2.x, y: e2.y};
+        }
+    });
+    console.log(dataset.maps.alignments);
 }
 
 function drawBaselineSvg()
@@ -54,9 +93,10 @@ function drawBaselineSvg()
         .attr('transform',`translate(${ontGap/2},0)`);
     
     console.log('draw baseline mapping');
-    const base_mapG = g.append('g').lower()
+    const base_mapG = g.append('g')
+        // .lower()
         .attr('id','base_mapG')
-        .attr('transform',`translate(${-ontGap/2},0)`);
+        .attr('transform',`translate(${-ontGap/2},0)`); //to center
     // base_mapG.selectAll('path')
     //     .data(dataset.maps.alignments)
     //     .join('path')
@@ -72,13 +112,23 @@ function drawBaselineSvg()
         .join('g')
         .classed('mapping', true)
         .classed('mapLine', true)
-        .on('mouseover', (_, i, n) => {
+        .on('mouseover', (d, i, n) => {
             d3.select(n[i]).classed('highlight', true).raise();
-            //TODO: add endpoints to each end of the path
-            //but then I better map the positions of aligned classes from both ontology tree
+
+            //TODO: Why is it drawing on 0,0???
+            // console.log(`mouseover alignment. e1pos:${d.e1pos.x},${d.e1pos.y} e2pos:${d.e2pos.x},${d.e2pos.y}`);
+            if( ! d3.select(n[i]).select('.mapLine-endpoint') ) {
+                d3.select(n[i])
+                .append('circle').attr('r', 8)
+                    .classed('mapLine-endpoint', true)
+                    .attr('x', d.e1pos.x).attr('y', d.e1pos.y)
+                .clone(true)
+                    .attr('x', ontGap + d.e2pos.x).attr('y', d.e2pos.y);
+            }
         })
         .on('mouseout', (_, i, n) => {
-            d3.select(n[i]).classed('highlight', false);
+            d3.select(n[i]).classed('highlight', false)
+                .selectAll('.mapLine-endpoint').remove();
         })
             .append('path')          //foreground path
                 .attr('d', (d,i) => mapLinePath(d,i))
@@ -96,50 +146,36 @@ function drawBaselineSvg()
  */
 function mapLinePath(almt, i)
 {
-    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
-    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
-
-    if (e1 != undefined && e2 != undefined) {
-        // console.log(`${i}. e1:${e1.data.name} x:${e1.x} y:${e1.y}   e2:${e2.data.name} x:${e2.x} y:${e2.y}`);
-        const x1 = e1.x, y1 = e1.y;
-        const x2 = e2.x + ontGap, y2 = e2.y;
-        const c = 10;   //curve value
-        const gm = 20; //margin from ontGap
-        const hgap = ((ontGap-gm*2) / dataset.maps.alignments.length).toFixed(0);
-        const hx = hgap * i + gm;
-        const vy = y2 > y1 ? y2-c : y2+c;
-        const cy = y2 > y1 ? c : -c;
-        // console.log(`${i}. endpoints ${almt.entity1}(${x1},${y1}) and ${almt.entity2}(${x2},${y2})`);
-        // d3.select('#base_mapG').selectAll('circle')
-        //     .append('circle').attr('r', 8)
-        //         .attr('class', 'mapLine-endpoint')
-        //         .attr('x', x1).attr('y', y1)
-        //         .clone(true)
-        //             .attr('x', x2).attr('y', y2);
-        return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
-    } else {
-        // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
+    if (!almt.isClassMapping) {
         return ``;
     }
+    const dn = 6; //distance from the nodemark
+    const x1 = almt.e1pos.x + dn,
+          y1 = almt.e1pos.y,
+          x2 = almt.e2pos.x + ontGap - dn,
+          y2 = almt.e2pos.y;
+    const c = 10,   //curve value
+          gm = 20, //margin from ontGap
+          hgap = ((ontGap-gm*2) / dataset.maps.alignments.length).toFixed(0);
+    const hx = hgap * i + gm;
+    const vy = y2 > y1 ? y2-c : y2+c;
+    const cy = y2 > y1 ? c : -c;
+    return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
 }
 
 function mapLinePath_old(almt, i)
 {
-    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
-    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
-
-    if (e1 != undefined && e2 != undefined) {
-        // console.log(`${i}. e1:${e1.data.name} x:${e1.y} y:${e1.x}   e2:${e2.data.name} x:${e2.y} y:${e2.x}`);
-        const x1 = e1.x, y1 = e1.y;
-        const x2 = e2.x + ontGap, y2 = e2.y;
-        const q = Math.abs(y2 - y1)/2;
-        const qx = (ontGap-20) / dataset.maps.alignments.length * i;
-        const qy = y2 > y1 ? y2-q : y2+q;
-        return `M ${x1} ${y1} Q ${qx.toFixed(0)} ${y1} ${qx.toFixed(0)} ${qy} T ${x2} ${y2}`;
-    } else {
-        // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
+    if (!almt.isClassMapping) {
         return ``;
     }
+    const x1 = almt.e1pos.x,
+          y1 = almt.e1pos.y,
+          x2 = almt.e2pos.x + ontGap,
+          y2 = almt.e2pos.y;
+    const q = Math.abs(y2 - y1)/2;
+    const qx = ( (ontGap-20) / dataset.maps.alignments.length * i ).toFixed(0);
+    const qy = y2 > y1 ? y2-q : y2+q;
+    return `M ${x1} ${y1} Q ${qx} ${y1} ${qx} ${qy} T ${x2} ${y2}`;
 }
 
 function drawMatrixSvg()
@@ -159,12 +195,8 @@ function drawMatrixSvg()
         .attr('transform',`translate(${-hGap},${hGap})`);
     var matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
-        .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`);
-    
-    //tilts the texts in the ont2 header
-    matrix_ont2G.classed('tilted', true);
-    // matrix_ont2G.selectAll('.node')
-    //     .classed('tilted', true);
+        .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`)
+        .classed('tilted', true);
     
     //draw matrix background table rows and columns
     const row = ont1TreeRoot.descendants().length;
@@ -200,15 +232,12 @@ function drawMatrixSvg()
     // var mapCell = matrix_mapG.selectAll('rect')
     //     .data(dataset.maps.alignments)
     //     .enter()
-    //     .append((d,i) => mapCellRect(d,i));
-    //TODO: this is temporary to draw mapping cells
-    dataset.maps.alignments.forEach((almt,i) => {
-        var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
-        var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
-        if (e1 != undefined && e2 != undefined) {
-            // console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
-            const x = e2.y;
-            const y = e1.y;
+    //     .append(d => mapCellRect(d));
+    //TODO: Why the above doesn't work? below is temporary solution to draw mapping cells
+    dataset.maps.alignments.forEach( almt => {
+        if (almt.isClassMapping) {
+            const x = almt.e2pos.y;
+            const y = almt.e1pos.y;
             const cellSize = nodeHeight;
             matrix_mapG.append('rect')
                 .classed('mapping', true)
@@ -217,8 +246,6 @@ function drawMatrixSvg()
                 .attr('y', y)
                 .attr('width', cellSize)
                 .attr('height', cellSize);
-        } else {
-            // console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
         }
     });
 }
@@ -268,17 +295,12 @@ function drawTableLines(row, col, cellSize, drawsBg)
  * @param {Object} almt a mapping alignment
  * @param {number} i the index of almt within alignments
  */
-function mapCellRect(almt,i)
+function mapCellRect(almt)
 {
-    console.log('mapCellRect() called');
-    //TODO: update to handle more than one filtered results (there can be repetition)
-    var e1 = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1)[0];
-    var e2 = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2)[0];
-
-    if (e1 != undefined && e2 != undefined) {
-        console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
-        const x = e2.y;
-        const y = e1.y;
+    console.log(`mapCellRect() for alignmet${almt.id}`);
+    if (almt.isClassMapping) {
+        const x = almt.e2pos.y;
+        const y = almt.e1pos.y;
         const cellSize = nodeHeight;
         var rect = d3.create('svg:rect')
             .classed('mapCell', true)
@@ -288,7 +310,6 @@ function mapCellRect(almt,i)
             .attr('height', cellSize);
         return rect.node();
     } else {
-        console.log(`${i}. undefined for (${almt.entity1}, ${almt.entity1})`);
         return d3.create('svg:rect').node();
     }
 }
