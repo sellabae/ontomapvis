@@ -9,9 +9,9 @@ const treeWidth = 300;
 const ontGap = 200;
 
 console.log('ont1TreeRoot:');
-const ont1TreeRoot = tree(dataset.ont1.root, 'right');
+const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
 console.log('ont2TreeRoot:');
-const ont2TreeRoot = tree(dataset.ont2.root, 'left');
+const ont2TreeRoot = tree( hierarchy(dataset.ont2.root), 'left');
 
 updateData();
 
