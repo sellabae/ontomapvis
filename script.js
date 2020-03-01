@@ -139,6 +139,10 @@ function drawBaselineSvg()
         unmuteAllNode(base_ont2G);
     });
 
+    //test for mappings to covered nodes
+    mapline.on('click', (_,i,n) =>
+        d3.select(n[i]).classed('covered', true));
+
 }
 
 /**
@@ -248,6 +252,11 @@ function drawMatrixSvg()
 
         gGrid.select('.mapCell-guide').remove();
     });
+
+    //test for mappings to covered nodes
+    mapcell.on('click', (_,i,n) =>
+        d3.select(n[i]).classed('covered', true));
+    
 
 }
 

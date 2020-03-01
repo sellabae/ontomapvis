@@ -164,3 +164,23 @@
 .highlight .nodemark {
     transform: scale(1.5);
 }
+
+/* for mappings to covered nodes collapsed under their parent */
+.covered.mapLine .mapLine-fg {
+    stroke-dasharray: 3 2;
+    /* stroke-dasharray: 0 3; */
+    /* stroke-linecap: round; */
+}
+.covered.mapLine.highlight .mapLine-fg {
+    stroke-dasharray: 5 3;
+    /* stroke-dasharray: 0 7;
+    stroke-linecap: round; */
+}
+.covered.mapCell {
+    /* fill: orange; */
+    /* vertical striped pattern - use svg:defs:pattern*/
+    fill: url(#pattern-dot);
+}
+#pattern-dot-rect {
+    fill: rgb(56, 179, 168);
+}
