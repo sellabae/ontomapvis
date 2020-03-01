@@ -106,6 +106,7 @@ function drawBaselineSvg()
         .classed('mapLine', true);
     mapline.append('path')   //foreground path
         .attr('d', (d,i) => calcMapLinePath(d,i))
+        .attr('fill', 'none')
         .attr('class', 'mapLine-fg')
         .clone(true).lower() //background path
             .attr('class', 'mapLine-bg')
@@ -139,9 +140,9 @@ function drawBaselineSvg()
         unmuteAllNode(base_ont2G);
     });
 
-    //test for mappings to covered nodes
+    //test for mappings to nodes collapsed under parent
     mapline.on('click', (_,i,n) =>
-        d3.select(n[i]).classed('covered', true));
+        d3.select(n[i]).classed('map-to-collapsed', true));
 
 }
 
@@ -187,7 +188,7 @@ function drawMatrixSvg()
     const matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
         .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`)
-        .classed('tilted', true);
+    matrix_ont2G.selectAll('.node').classed('tilted', true);
     
     //draw matrix background table rows and columns
     const row = ont1TreeRoot.descendants().length;
@@ -253,9 +254,9 @@ function drawMatrixSvg()
         gGrid.select('.mapCell-guide').remove();
     });
 
-    //test for mappings to covered nodes
+    //test for mappings to nodes collapsed under parent
     mapcell.on('click', (_,i,n) =>
-        d3.select(n[i]).classed('covered', true));
+        d3.select(n[i]).classed('map-to-collapsed', true));
     
 
 }

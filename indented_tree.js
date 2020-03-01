@@ -64,7 +64,8 @@ function treechart(root, align) {
 
     //selection helper with transparent rect
     node.append("rect").lower()
-        .classed('selection-helper', true)
+        .classed('node-select-helper', true)
+        .attr('fill', 'transparent')
         .attr('width', nodeWidth)
         .attr('height', nodeHeight)
         .attr('x', alignRight ? -nodeWidth+8 : -8)
