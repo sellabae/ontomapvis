@@ -40,26 +40,21 @@
 
 /* node selection helper */
 .node .node-select-helper {
-  /* opacity: 0; */
   fill: transparent;
   stroke: transparent;
-  /* stroke: red; */
   stroke-width: 1px;
+}
+
+.node:hover text {
+  font-weight: bold;
 }
 
 /* nodemarks */
 .nodemark {
   transition: 0.1s;
-  fill: #008378;
+  fill: #14a599;
   opacity: 1;
   transform-origin: 50 50;
-}
-.leaf .nodemark {
-  /* fill: rgb(191, 218, 215); */
-  /* fill: white;
-  stroke: rgb(0, 131, 120);
-  stroke-width: 1px; */
-  opacity: 1;
 }
 .branch.expanded .nodemark {
   transform: rotate(90deg);
@@ -91,7 +86,7 @@
 .mapLine .mapLine-fg {
   stroke: #14a599;
   stroke-width: 1.5px;
-  /* stroke-linecap: round; */
+  stroke-linecap: round;
 }
 .mapLine .mapLine-bg {
   stroke: white;
@@ -101,11 +96,6 @@
   /* stroke: yellow; */
   stroke: transparent;
   stroke-width: 10px;
-}
-.mapLine .mapLine-endpoint {
-  fill: none;
-  stroke: red;
-  opacity: 1;
 }
 
 .mapCell {
@@ -128,7 +118,7 @@
 }
 
 .muted {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .highlight {
@@ -144,14 +134,17 @@
 .highlight.mapLine .mapLine-bg {
   stroke-width: 7px;
 }
+.highlight.mapCell {
+  fill: #008378;
+}
 
-.map-to-collapsed .mapLine-fg {
+.map-to-hidden .mapLine-fg {
   stroke-dasharray: 3 2;
 }
-.map-to-collapsed.highlight .mapLine-fg {
+.map-to-hidden.highlight .mapLine-fg {
   stroke-dasharray: 5 3;
 }
-.map-to-collapsed.mapCell {
+.map-to-hidden.mapCell {
   fill: url(#pattern-dot);
 }
 

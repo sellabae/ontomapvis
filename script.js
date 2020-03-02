@@ -13,7 +13,46 @@ const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
 console.log('ont2TreeRoot:');
 const ont2TreeRoot = tree( hierarchy(dataset.ont2.root), 'left');
 
-updateData();
+dataset.maps.alignments.forEach((almt,i) => {
+    //asign id to each alignment
+    almt.id = i;
+    //filter match
+    almt.e1match = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1);
+    almt.e2match = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2);
+
+    //mark if the alignment is for class, not property
+    almt.isClassMapping = (almt.e1match.length && almt.e2match.length) ? true : false;
+    
+    //TODO: handle multiple matches!
+    if (almt.isClassMapping) {
+        if (almt.e1match.length > 1) {
+            console.log(`**${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
+        }
+        if (almt.e2match.length > 1) {
+            console.log(`**${i}. multiple match e2:${almt.entity2} match:${almt.e2match}`);
+        }
+    }
+});
+
+const base_alignments = dataset.maps.alignments;
+
+ont1TreeRoot.each(d => {
+    const filtered = base_alignments.filter(a => a.entity1 === d.data.name);
+    d.mapping = filtered ? filtered[0] : null;
+    // console.log(d.mapping);
+});
+ont2TreeRoot.each(d => {
+    const filtered = base_alignments.filter(a => a.entity2 === d.data.name);
+    d.mapping = filtered ? filtered[0] : null;
+});
+
+//Separates interaction effects from the otehr mapping
+const mtrx_ont1root = ont1TreeRoot;
+const mtrx_ont2root = ont2TreeRoot;
+const mtrx_alignments = base_alignments;
+
+
+updateAlignment();
 
 window.addEventListener('load', function() {
     console.log("window loaded.");
@@ -35,29 +74,11 @@ function describeDataset()
     return desc;
 }
 
-function updateData()
+function updateAlignment()
 {
     console.log('updateData() reassigning positions of mapped classes to alignments');
+    
     dataset.maps.alignments.forEach((almt,i) => {
-        //asign id to each alignment
-        almt.id = i;
-        //filter match
-        almt.e1match = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1);
-        almt.e2match = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2);
-
-        //mark if the alignment is for class, not property
-        almt.isClassMapping = (almt.e1match.length && almt.e2match.length) ? true : false;
-        
-        //TODO: handle multiple matches
-        if (almt.isClassMapping) {
-            if (almt.e1match.length > 1) {
-                console.log(`**${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
-            }
-            if (almt.e2match.length > 1) {
-                console.log(`**${i}. multiple match e2:${almt.entity2} match:${almt.e2match}`);
-            }
-        }
-
         //assign position
         //TODO: this may be redundant now to almt.e1match[i].x and almt.e1match[i].y
         var e1 = almt.e1match[0];
@@ -86,22 +107,23 @@ function drawBaselineSvg()
 
     const g = svg.append('g')
         .attr('transform',`translate(${svgWidth/2},20)`);
-    const base_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
-        .attr('id','base_ont1G')
+    const gTree1 = g.append(() => treechart(ont1TreeRoot, "right"))
+        .attr('id','gTree1')
         .classed('right-aligned', true)
         .attr('transform',`translate(${-ontGap/2},0)`);
-    const base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
-        .attr('id','base_ont2G')
+    const gTree2 = g.append(() => treechart(ont2TreeRoot, "left"))
+        .attr('id','gTree2')
         .attr('transform',`translate(${ontGap/2},0)`);
-    const base_mapG = g.append('g')/*.lower()*/
-        .attr('id','base_mapG')
+    const gMap = g.append('g')/*.lower()*/
+        .attr('id','gMap')
         .attr('transform',`translate(${-ontGap/2},0)`); //to center
     
     //mapline
     console.log('draw baseline mapping');
-    const mapline = base_mapG.selectAll('g')
-        .data(dataset.maps.alignments)
+    const mapline = gMap.selectAll('g')
+        .data(base_alignments)
         .join('g')
+        .attr('id', d => `a${d.id}`)
         .classed('mapping', true)
         .classed('mapLine', true);
     mapline.append('path')   //foreground path
@@ -113,37 +135,13 @@ function drawBaselineSvg()
         .clone(true).lower() //path select helper
             .attr('class', 'mapLine-select-helper');
     //mapline event
-    mapline.on('mouseover', (d, i, n) => {
-        d3.select(n[i]).classed('highlight', true).raise();
-        highlightNode(
-            base_ont1G.select('#n' + d.e1match[0].id),
-            base_ont1G);
-        highlightNode(
-            base_ont2G.select('#n' + d.e2match[0].id),
-            base_ont2G);
+    mapline.on('mouseover', almt => highlightAlignment(almt, g));
+    mapline.on('mouseout', () => turnOffEffects(g));
 
-        //FIXME: Why is it drawing on 0,0???
-        // console.log(`mouseover alignment. e1pos:${d.e1pos.x},${d.e1pos.y} e2pos:${d.e2pos.x},${d.e2pos.y}`);
-        // if( ! d3.select(n[i]).select('.mapLine-endpoint') ) {
-        //     d3.select(n[i])
-        //     .append('circle').attr('r', 8)
-        //         .classed('mapLine-endpoint', true)
-        //         .attr('x', d.e1pos.x).attr('y', d.e1pos.y)
-        //     .clone(true)
-        //         .attr('x', ontGap + d.e2pos.x).attr('y', d.e2pos.y);
-        // }
-    });
-    mapline.on('mouseout', (d, i, n) => {
-        d3.select(n[i]).classed('highlight', false);
-        // d3.select(n[i]).selectAll('.mapLine-endpoint').remove();
-        unmuteAllNode(base_ont1G);
-        unmuteAllNode(base_ont2G);
-    });
-
-    //test for mappings to nodes collapsed under parent
-    mapline.on('click', (_,i,n) =>
-        d3.select(n[i]).classed('map-to-collapsed', true));
-
+    //highlight event on any nodes in svg
+    g.selectAll('.node')
+        .on('mouseover', d => highlightAlignment(d.mapping, g))
+        .on('mouseout', () => turnOffEffects(g));
 }
 
 /**
@@ -181,84 +179,68 @@ function drawMatrixSvg()
     const g = svg.append('g')
         .attr('transform',`translate(${treeWidth+10},${treeWidth-70})`);
     const hGap = nodeHeight/2; //gap between headers and matrix
-    const matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
-        .attr('id','matrix_ont1G')
+    const gTree1 = g.append(() => treechart(mtrx_ont1root, "right"))
+        .attr('id','gTree1')
         .attr('transform',`translate(${-hGap},${hGap})`)
         .classed('right-aligned', true);
-    const matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
-        .attr('id','matrix_ont2G')
+    const gTree2 = g.append(() => treechart(mtrx_ont2root, "left"))
+        .attr('id','gTree2')
         .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`)
         .classed('horizontal', true);
     
     //draw matrix background table rows and columns
-    const row = ont1TreeRoot.descendants().length;
-    const col = ont2TreeRoot.descendants().length;
+    const row = mtrx_ont1root.descendants().length;
+    const col = mtrx_ont2root.descendants().length;
     const cellSize = nodeHeight;
     const gGrid = g.append(() => grid(row, col, cellSize, true))
         .classed('bg-grid', true);
 
     //draw mapping cells
     console.log('draw matrix mapping');
-    const matrix_mapG = g.append('g')
-        .attr('id','matrix_mapG');
+    const gMap = g.append('g')
+        .attr('id','gMap');
     const enlarge = 4;
-    const mapcell = matrix_mapG.selectAll('rect')
-        .data(dataset.maps.alignments)
+    const mapcell = gMap.selectAll('rect')
+        .data(mtrx_alignments)
         .join('rect')
+            .attr('id', d => `a${d.id}`)
             .classed('mapping', true)
             .classed('mapCell', true)
             .attr('x', d => d.e2pos.y)
             .attr('y', d => d.e1pos.y)
             .attr('width', cellSize)
             .attr('height', cellSize);
-    mapcell.on('mouseenter', d => {
+    mapcell.on('mouseenter', almt => showCellGuide(almt))
+        .on('mouseover', almt => highlightAlignment(almt, g))
+        .on('mouseout', () => {
+            turnOffEffects(g);
+            gGrid.select('.mapCell-guide').remove();
+        });
+
+    //highlight event on any nodes in svg
+    g.selectAll('.node')
+        //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
+        .on('mouseenter', d => showCellGuide(d.mapping))
+        .on('mouseover', d => highlightAlignment(d.mapping, g))
+        .on('mouseout', () => {
+            turnOffEffects(g);
+            gGrid.select('.mapCell-guide').remove();
+        });
+
+    function showCellGuide(alignment) {
         //guide rect to its mapped cell
-        console.log('drawing mapCell-guide');
-        const gCellGuide = gGrid.append('g')
+        console.log('draw cell guide');
+        if(alignment) {
+            const gCellGuide = gGrid.append('g')
             .classed('mapCell-guide', true);
-        gCellGuide.append('rect')
-            .attr('x', d.e2pos.y).attr('y', 0)
-            .attr('width', cellSize).attr('height', cellSize * row);
-        gCellGuide.append('rect')
-            .attr('x', 0).attr('y', d.e1pos.y)
-            .attr('width', cellSize * col).attr('height', cellSize);
-        
-    });
-    mapcell.on('mouseover', (d, i, n) => {
-        // console.log(`mouseover cell ${d3.select(n[i]).attr('transform-origin')}`);
-        //TODO: With '.highlight' scale in css, but now transform-origin behaves weird
-        d3.select(n[i])
-            .raise()
-            .classed('highlight', true)
-            .attr('width', cellSize + enlarge)
-            .attr('height', cellSize + enlarge)
-            .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
-        
-        highlightNode(
-            matrix_ont1G.select('#n' + d.e1match[0].id),
-            matrix_ont1G);
-        highlightNode(
-            matrix_ont2G.select('#n' + d.e2match[0].id),
-            matrix_ont2G);
-    });
-    mapcell.on('mouseout', (_, i, n) => {
-        d3.select(n[i])
-            .classed('highlight', false)
-            .attr('width', cellSize)
-            .attr('height', cellSize)
-            .attr('transform', `translate(0,0)`);
-
-        unmuteAllNode(matrix_ont1G);
-        unmuteAllNode(matrix_ont2G);
-
-        gGrid.select('.mapCell-guide').remove();
-    });
-
-    //test for mappings to nodes collapsed under parent
-    mapcell.on('click', (_,i,n) =>
-        d3.select(n[i]).classed('map-to-collapsed', true));
-    
-
+            gCellGuide.append('rect')
+                .attr('x', alignment.e2pos.y).attr('y', 0)
+                .attr('width', cellSize).attr('height', cellSize * row);
+            gCellGuide.append('rect')
+                .attr('x', 0).attr('y', alignment.e1pos.y)
+                .attr('width', cellSize * col).attr('height', cellSize);
+        }
+    }
 }
 
 /**
@@ -321,3 +303,23 @@ function grid(row, col, cellSize, drawsBg)
 //         return d3.create('svg:rect').node();
 //     }
 // }
+
+function highlightAlignment(alignment, g) {
+    // console.log(`highligth alignment!`);
+    if(alignment) {
+        //alignment
+        const gMap = g.select("#gMap");
+        g.select('#a'+alignment.id).classed('highlight', true).raise();
+        //tree nodes
+        const gTree1 = g.select("#gTree1");
+        highlightNode(gTree1.select('#n' + alignment.e1match[0].id), gTree1);
+        const gTree2 = g.select("#gTree2");
+        highlightNode(gTree2.select('#n' + alignment.e2match[0].id), gTree2);
+    }
+}
+
+function turnOffEffects(g) {
+    g.selectAll("*")
+        .classed('highlight', false)
+        .classed('muted', false);
+}

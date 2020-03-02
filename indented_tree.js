@@ -17,6 +17,11 @@ function hierarchy(data) {
     root.dy = 0;
     root.descendants().forEach((d, i) => {
         d.id = i;   //assign id to all nodes in breadth-first order
+        //TODO: Organize this in the way, actually it's used.
+        d.isBranch = d.children ? true : false;
+        if(d.isBranch) d.collapsed = false; //assign the property 'd.collapsed' only to branch nodes
+        d.hidden = false;
+
         d._children = d.children;
         // if (d.depth && d.data.name.length !== 7) d.children = null; //??: what is this for?
     });
@@ -32,7 +37,7 @@ function hierarchy(data) {
  * @return {d3.tree object} d3.tree object
  */
 function tree(root, align) {
-    console.log('tree() called.');
+    console.log(`Computes tree layout. tree(root='${root.data.name}' align='${align}')`);
     let alignRight = (align == "right") ? true : false;
 
     //Creates tree root to return
@@ -43,7 +48,7 @@ function tree(root, align) {
         d.x = d.depth * nodeIndent * (alignRight ? -1 : 1); //gets indented
         d.y = ++index * nodeHeight;                         //lists down
     });
-    console.log(treeRoot);
+    // console.log(treeRoot);
     return treeRoot;
 }
 
@@ -100,21 +105,32 @@ function treechart(root, align) {
             .classed('branch expanded', d => d._children ? true : false) //added expanded as initial state
             .classed('leaf', d => d._children ? false : true)
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
-            .attr("opacity", 0);
-        // Handles events on nodeEnter
-        nodeEnter
-            .on('mouseover', (_,i,n) => highlightNode(d3.select(n[i]), gNode))
-            .on('mouseout', () => unmuteAllNode(gNode))
+            .attr("opacity", 0)
             .on("click", (d,i,n) => {
-                d.children = d.children ? null : d._children;
-                //update the expanded nodemark for branch nodes
-                //TODO: better place to do this? move somewhere else
-                const sel = d3.select(n[i]); //this selection
-                if(sel.classed('branch')) {
-                    sel.classed('expanded', !sel.classed('expanded'));
+                //for branc node, d.children: shown children, d._children: owned children.
+                //for leaf node, d.children:undefined, d._children: undefined
+                //gives null if d was the expanded branch to stop drawing,
+                //or restores from _children if d was collapsed branch.
+                d.children = d.children ? null : d._children;   
+                if(d.children == null) {
+                    d.collapsed = true;
+                    //TODO: give hidden mark to its descendants -> the code below is not valid
+                    //since collapsible tree works with _children not children to hold actual subnodes.
+                    // d.descendants().forEach(d => {d.hidden = true;});
+                    // d.hidden = false; //exclude self!
+                    // console.log(`${d.data.name}'s descendants gets hidden=true`);
+                    // console.log(d.descendants());
                 }
-                //update recursively
-                update(d);
+                if(d._children) { //only for branch nodes with children
+                    //update the expanded nodemark for branch nodes
+                    //TODO: better place to do this? move somewhere else
+                    const sel = d3.select(n[i]); //this selection
+                    if(sel.classed('branch')) {
+                        sel.classed('expanded', !sel.classed('expanded'));
+                    }
+                    //update recursively
+                    update(d);
+                }
             });
         // Appends nodemark, tedt, and select elper
         nodeEnter.append(d => {
@@ -197,11 +213,6 @@ function highlightNode(thisNode, gTree) {
     thisNode.classed('muted', false)
         .classed('highlight', true);
     //TODO: highlight the parent's guide line not its own guide.
-}
-function unmuteAllNode(gTree) {
-    gTree.selectAll('.node')
-        .classed('highlight', false)
-        .classed('muted', false);
 }
 
 

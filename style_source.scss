@@ -1,9 +1,16 @@
 //Scss variables
 $primary-color: #14a599;
 $darker-color: #008378;
-$lighter-color: rgb(190, 218, 215);
+$lighter-color: #bedad7;
 $text-color: black;
+$bg-grid-color: #f6f6f6;
 $bg-color: #fcfcfc;
+// $primary-color: #0077ff;
+// $darker-color: #005ae2;
+// $lighter-color: #dff0ff;
+// $text-color: black;
+// $bg-grid-color: #f6f6f6;
+// $bg-color: #fcfcfc;
 
 
 //to check layout
@@ -48,35 +55,34 @@ $bg-color: #fcfcfc;
 }
 
 /* node selection helper */
-.node .node-select-helper {
-    /* opacity: 0; */
-    fill: transparent;
-    stroke: transparent;
-    /* stroke: red; */
-    stroke-width: 1px;
+.node {
+    .node-select-helper {
+        fill: transparent;
+        stroke: transparent;
+        stroke-width: 1px;
+        // stroke: red;
+        // opacity: 0;
+    }
+}
+.node:hover {
+    text {
+        font-weight: bold;
+    }
 }
 
 /* nodemarks */
 .nodemark {
     transition: 0.1s;
-    fill: rgb(0, 131, 120);
+    fill: $primary-color;
     opacity: 1;
     transform-origin: 50 50;
 
-    .leaf & {
-        /* fill: rgb(191, 218, 215); */
-        /* fill: white;
-        stroke: rgb(0, 131, 120);
-        stroke-width: 1px; */
-        opacity: 1;
-    }
     .branch.expanded & {
         transform: rotate(90deg);
     }
 }
 
-//tree wit different orientation
-
+//tree with different orientation
 // opposite direction for right-aligned nodemark
 .right-aligned.tree {
     .nodemark {
@@ -108,7 +114,7 @@ $bg-color: #fcfcfc;
     .mapLine-fg {
         stroke: $primary-color;
         stroke-width: 1.5px;
-        /* stroke-linecap: round; */
+        stroke-linecap: round;
     }
     .mapLine-bg {
         stroke: white;
@@ -119,14 +125,9 @@ $bg-color: #fcfcfc;
         stroke: transparent;
         stroke-width: 10px;
     }
-    .mapLine-endpoint { //TODO: delete if not needed
-        fill: none;
-        stroke: red;
-        opacity: 1;
-    }
 }
 .mapCell {
-    fill: rgb(20, 165, 153);
+    fill: $primary-color;
     stroke: white;
     stroke-width: 1px;
     opacity: 1;
@@ -136,18 +137,16 @@ $bg-color: #fcfcfc;
 .bg-grid {
     stroke: white;
     stroke-width: 1px;
-    fill: #f6f6f6;
+    fill: $bg-grid-color;
 }
 .mapCell-guide {
     fill: white;
     opacity: 0.6;
 }
 
-
-
 //highlight and muted
 .muted {
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .highlight {
@@ -164,15 +163,22 @@ $bg-color: #fcfcfc;
             stroke-width: 7px;
         }
     }
-    // // why at wrong position even with transform-origin?
-    // &.mapCell {
-    //     fill: rgb(240, 96, 0);
-    //     transform: scale(1.5);
-    // }
+    &.mapCell {
+        fill: $darker-color;
+        // transform: scale(1.5); 
+        // why at wrong position even with transform-origin?
+        // when the scale doesn't work, put the code under mapCell.on('mouseover')
+        // d3.select(n[i])
+        //     .raise()
+        //     .classed('highlight', true)
+        //     .attr('width', cellSize + enlarge)
+        //     .attr('height', cellSize + enlarge)
+        //     .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
+    }
 }
 
 // for mappings to nodes collapsed under their parent
-.map-to-collapsed {
+.map-to-hidden {
     & .mapLine-fg {
         stroke-dasharray: 3 2;
         // stroke-dasharray: 0 3;
