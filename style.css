@@ -31,10 +31,11 @@
 }
 
 /* tree nodelinks */
-.hierarchy-guide {
-  stroke: #ccc;
+.hierarchy-guide, .nodelink {
+  fill: none;
+  stroke: #ddd;
   stroke-width: 1px;
-  opacity: 0.5;
+  opacity: 1;
 }
 
 /* node selection helper */
@@ -60,22 +61,26 @@
   stroke-width: 1px; */
   opacity: 1;
 }
-.right-aligned-tree .nodemark {
-  transform: rotate(180deg);
-}
-.right-aligned-tree .highlight .nodemark {
-  transform: rotate(180deg) scale(1.5);
+.branch.expanded .nodemark {
+  transform: rotate(90deg);
 }
 
-.tilted text, .tilted .nodemark {
+.right-aligned.tree .nodemark {
+  transform: rotate(180deg);
+}
+.right-aligned.tree .branch.expanded .nodemark {
+  transform: rotate(90deg);
+}
+
+.horizontal.tree text, .horizontal.tree .nodemark {
   transform: rotate(25deg);
 }
-.tilted .selection-helper {
+.horizontal.tree .branch.expanded .nodemark {
+  transform: rotate(90deg);
+}
+.horizontal.tree .node-select-helper {
   transform-origin: 12px 8px;
   transform: rotate(25deg);
-}
-.tilted.highlight .nodemark {
-  transform: rotate(25deg) scale(1.5);
 }
 
 /* mappings */
@@ -122,11 +127,6 @@
   opacity: 0.6;
 }
 
-/* Interactive features */
-.expanded .nodemark {
-  transform: rotate(90deg);
-}
-
 .muted {
   opacity: 0.5;
 }
@@ -134,17 +134,8 @@
 .highlight {
   opacity: 1;
 }
-.highlight .hierarchy-guide {
-  opacity: 1;
-}
 .highlight text {
   font-weight: bold;
-}
-.highlight .nodemark {
-  transform: scale(1.5);
-}
-.highlight.expanded .nodemark {
-  transform: rotate(90deg) scale(1.5);
 }
 .highlight.mapLine .mapLine-fg {
   stroke: #14a599;

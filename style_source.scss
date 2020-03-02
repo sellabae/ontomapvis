@@ -40,10 +40,11 @@ $bg-color: #fcfcfc;
     fill: $text-color;
 }
 /* tree nodelinks */
-.hierarchy-guide {
-    stroke: #ccc;
+.hierarchy-guide, .nodelink {
+    fill: none;
+    stroke: #ddd;
     stroke-width: 1px;
-    opacity: 0.5;
+    opacity: 1;
 }
 
 /* node selection helper */
@@ -69,27 +70,34 @@ $bg-color: #fcfcfc;
         stroke-width: 1px; */
         opacity: 1;
     }
+    .branch.expanded & {
+        transform: rotate(90deg);
+    }
+}
 
-    // opposite direction for right-aligned nodemark
-    .right-aligned-tree & {
+//tree wit different orientation
+
+// opposite direction for right-aligned nodemark
+.right-aligned.tree {
+    .nodemark {
         transform: rotate(180deg);
     }
-    .right-aligned-tree .highlight & {
-        transform: rotate(180deg) scale(1.5);
+    .branch.expanded .nodemark {
+        transform: rotate(90deg);
     }
 }
 
 // tilted texts in matrix column header
-.tilted {
+.horizontal.tree {
     text, .nodemark {
         transform: rotate(25deg);
     }
-    .selection-helper {
+    .branch.expanded .nodemark {
+        transform: rotate(90deg);
+    }
+    .node-select-helper {
         transform-origin: 12px 8px;
         transform: rotate(25deg);
-    }
-    &.highlight .nodemark {     //&: parent selector
-        transform: rotate(25deg) scale(1.5);
     }
 }
 
@@ -136,12 +144,6 @@ $bg-color: #fcfcfc;
 }
 
 
-/* Interactive features */
-.nodemark {
-    .expanded & {
-        transform: rotate(90deg);
-    }
-}
 
 //highlight and muted
 .muted {
@@ -150,17 +152,8 @@ $bg-color: #fcfcfc;
 
 .highlight {
     opacity: 1;
-    & .hierarchy-guide { //??: is it necessary?
-        opacity: 1;
-    }
     text {
         font-weight: bold;
-    }
-    .nodemark {
-        transform: scale(1.5);   
-    }
-    &.expanded .nodemark {
-        transform: rotate(90deg) scale(1.5);
     }
     &.mapLine {
         .mapLine-fg {

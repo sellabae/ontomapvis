@@ -6,9 +6,10 @@ const nodeHeight = 20,
       nodeMarkSize = 4.5;
 
 const pointsStr = trianglePoints(nodeMarkSize);
-
+const diagonal = d3.linkHorizontal().x(d => d.x).y(d => d.y);
 
 function hierarchy(data) {
+    console.log('hierarcy() called.');
     //Creates hierarchy from data
     const root = d3.hierarchy(data);
     //Sets the root position
@@ -38,9 +39,9 @@ function tree(root, align) {
     const treeRoot =  d3.tree().nodeSize([root.dx, root.dy])(root);
     //Sets the node positions
     var index = -1;
-    treeRoot.eachBefore(function(n) {   //breadth-first pre-order traversal
-        n.x = n.depth * nodeIndent * (alignRight ? -1 : 1); //gets indented
-        n.y = ++index * nodeHeight;                         //lists down
+    treeRoot.eachBefore(function(d) {   //breadth-first pre-order traversal
+        d.x = d.depth * nodeIndent * (alignRight ? -1 : 1); //gets indented
+        d.y = ++index * nodeHeight;                         //lists down
     });
     console.log(treeRoot);
     return treeRoot;
@@ -76,12 +77,12 @@ function treechart(root, align) {
         .classed('gNode', true);
 
     function update(source) {
-        const duration = d3.event && d3.event.altKey ? 2000 : 200;
+        const duration = d3.event && d3.event.altKey ? 1000 : 100;
         const nodes = root.descendants().reverse();  //for the z-order of svg elements
-        // const links = root.links();
+        const links = root.links();
 
         // Coputes the new tree layout.
-        tree(root);
+        tree(root, align);
 
         //TODO: auto resize the viewBox
         let lowest = 400;
@@ -96,11 +97,10 @@ function treechart(root, align) {
         // Enters any new nodes at the parent's previous position.
         const nodeEnter = node.enter().append("g").classed('node', true)
             .attr('id', d => `n${d.id}`)
-            .classed('branch', d => d._children ? true : false)
+            .classed('branch expanded', d => d._children ? true : false) //added expanded as initial state
             .classed('leaf', d => d._children ? false : true)
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
             .attr("opacity", 0);
-        
         // Handles events on nodeEnter
         nodeEnter
             .on('mouseover', (_,i,n) => highlightNode(d3.select(n[i]), gNode))
@@ -116,25 +116,16 @@ function treechart(root, align) {
                 //update recursively
                 update(d);
             });
-        //initial setting for fully expanded view
-        // gNode.selectAll('.branch').classed('expanded', true);
-    
-        //nodemark to nodeEnter
+        // Appends nodemark, tedt, and select elper
         nodeEnter.append(d => {
                 if(d._children) return d3.create("svg:polygon").attr('points', pointsStr).node();  //branch nodemark
                 else            return d3.create("svg:circle").attr('r', 2).node();                //leaf nodemark
             }).classed('nodemark', true);
-        // gNode.selectAll('.branch.node').append('polygon').classed('nodemark', true).attr('points', pointsStr);
-        // gNode.selectAll('.leaf.node').append("circle").classed('nodemark', true).attr("r", 2);
-
-        //nodetext to nodeEnter
         nodeEnter.append("text")
             .attr("dy", "0.31em")
             .attr("x", alignRight ? -8 : 8)
             .attr("text-anchor", alignRight ? "end" : "start")
             .text(d => d.data.name);
-
-        //selection helper with transparent rect
         nodeEnter.append("rect").classed('node-select-helper', true)
             .attr('fill', 'transparent')
             .attr('width', nodeWidth)
@@ -145,7 +136,7 @@ function treechart(root, align) {
 
         // Transition nodes to their new position.
         const nodeUpdate = node.merge(nodeEnter).transition(transition)
-            .attr("transform", d => `translate(${d.x},${d.y})`)
+            .attr("transform", (d,i,n) => `translate(${d.x},${d.y})`)
             .attr("opacity", 1);
             
         // Transition exiting nodes to the parent's new position.
@@ -153,22 +144,42 @@ function treechart(root, align) {
             .attr("transform", d => `translate(${source.x},${source.y})`)
             .attr("opacity", 0);
 
+        // Update the links…
+        const link = gLink.selectAll("path")
+            .data(links, d => d.target.id);
+        // Enter any new links at the parent's previous position.
+        const linkEnter = link.enter().append("path")
+            .classed('nodelink', true)
+            .attr("d", d => {
+                const o = {x: source.x0, y: source.y0};
+                return diagonal({source: o, target: o});
+            });
+        // Transition links to their new position.
+        link.merge(linkEnter).transition(transition)
+            .attr("d", diagonal);
+        // Transition exiting nodes to the parent's new position.
+        link.exit().transition(transition).remove()
+            .attr("d", d => {
+                const o = {x: source.x, y: source.y};
+                return diagonal({source: o, target: o});
+            });
+
+        // //TODO: do this with gLink and links
+        // //hierarchy guide with one vertical line per branch
+        // const guideGap = nodeHeight/1.6;
+        // gNode.selectAll('.branch.node')
+        //     .append('line')
+        //         .classed('hierarchy-guide', true)
+        //         .attr('x1', 0)
+        //         .attr('y1', guideGap)
+        //         .attr('x2', 0)
+        //         .attr('y2', d => nodeHeight * d.descendants().length - guideGap);
+
         // Stash the old positions for transition.  <- for expand animation
         root.eachBefore(d => {
             d.x0 = d.x;
             d.y0 = d.y;
         });
-
-        //TODO: do this with gLink and links
-        //hierarchy guide with one vertical line per branch
-        const guideGap = nodeHeight/1.6;
-        gNode.selectAll('.branch.node')
-            .append('line')
-                .classed('hierarchy-guide', true)
-                .attr('x1', 0)
-                .attr('y1', guideGap)
-                .attr('x2', 0)
-                .attr('y2', d => nodeHeight * d.descendants().length - guideGap);
     }
 
     update(root);

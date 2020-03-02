@@ -88,7 +88,7 @@ function drawBaselineSvg()
         .attr('transform',`translate(${svgWidth/2},20)`);
     const base_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','base_ont1G')
-        .classed('right-aligned-tree', true)
+        .classed('right-aligned', true)
         .attr('transform',`translate(${-ontGap/2},0)`);
     const base_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','base_ont2G')
@@ -183,12 +183,12 @@ function drawMatrixSvg()
     const hGap = nodeHeight/2; //gap between headers and matrix
     const matrix_ont1G = g.append(() => treechart(ont1TreeRoot, "right"))
         .attr('id','matrix_ont1G')
-        .classed('right-aligned-tree', true)
-        .attr('transform',`translate(${-hGap},${hGap})`);
+        .attr('transform',`translate(${-hGap},${hGap})`)
+        .classed('right-aligned', true);
     const matrix_ont2G = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','matrix_ont2G')
         .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`)
-    matrix_ont2G.selectAll('.node').classed('tilted', true);
+        .classed('horizontal', true);
     
     //draw matrix background table rows and columns
     const row = ont1TreeRoot.descendants().length;
