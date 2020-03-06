@@ -5,8 +5,9 @@ const nodeHeight = 20,
       nodeIndent = 10;
       nodeMarkSize = 4.5;
 
-const pointsStr = trianglePoints(nodeMarkSize);
-const diagonal = d3.linkHorizontal().x(d => d.x).y(d => d.y);
+const triangle = trianglePoints(nodeMarkSize);
+const verticalLink = d => `M ${d.source.x},${d.source.y} V ${d.target.y}`;
+
 
 function hierarchy(data) {
     console.log('hierarcy() called.');
@@ -17,7 +18,7 @@ function hierarchy(data) {
     root.dy = 0;
     root.descendants().forEach((d, i) => {
         d.id = i;   //assign id to all nodes in breadth-first order
-        //TODO: Organize this in the way, actually it's used.
+        //TODO: Organize the below in the way it's practically used.
         d.isBranch = d.children ? true : false;
         if(d.isBranch) d.collapsed = false; //assign the property 'd.collapsed' only to branch nodes
         d.hidden = false;
@@ -77,14 +78,15 @@ function treechart(root, align) {
         .classed('tree', true)
         .attr("transform", `translate(0,10)`); //??: why?
     const gLink = gTree.append("g")         //TODO: put the hierarchy guide here
-        .classed('gLink', true);
+        .classed('gLink', true)
+        .attr('transform', `translate(0,${nodeHeight/2.5})`);
     const gNode = gTree.append("g")
         .classed('gNode', true);
 
     function update(source) {
         const duration = d3.event && d3.event.altKey ? 1000 : 100;
         const nodes = root.descendants().reverse();  //for the z-order of svg elements
-        const links = root.links();
+        const links = linksToLastChild(root);
 
         // Coputes the new tree layout.
         tree(root, align);
@@ -134,7 +136,7 @@ function treechart(root, align) {
             });
         // Appends nodemark, tedt, and select elper
         nodeEnter.append(d => {
-                if(d._children) return d3.create("svg:polygon").attr('points', pointsStr).node();  //branch nodemark
+                if(d._children) return d3.create("svg:polygon").attr('points', triangle).node();  //branch nodemark
                 else            return d3.create("svg:circle").attr('r', 2).node();                //leaf nodemark
             }).classed('nodemark', true);
         nodeEnter.append("text")
@@ -160,7 +162,7 @@ function treechart(root, align) {
             .attr("transform", d => `translate(${source.x},${source.y})`)
             .attr("opacity", 0);
 
-        // Update the links…
+        // Update the deapth guide lines…
         const link = gLink.selectAll("path")
             .data(links, d => d.target.id);
         // Enter any new links at the parent's previous position.
@@ -168,28 +170,17 @@ function treechart(root, align) {
             .classed('nodelink', true)
             .attr("d", d => {
                 const o = {x: source.x0, y: source.y0};
-                return diagonal({source: o, target: o});
+                return verticalLink({source: o, target: o});
             });
         // Transition links to their new position.
         link.merge(linkEnter).transition(transition)
-            .attr("d", diagonal);
+            .attr("d", verticalLink);
         // Transition exiting nodes to the parent's new position.
         link.exit().transition(transition).remove()
             .attr("d", d => {
                 const o = {x: source.x, y: source.y};
-                return diagonal({source: o, target: o});
+                return verticalLink({source: o, target: o});
             });
-
-        // //TODO: do this with gLink and links
-        // //hierarchy guide with one vertical line per branch
-        // const guideGap = nodeHeight/1.6;
-        // gNode.selectAll('.branch.node')
-        //     .append('line')
-        //         .classed('hierarchy-guide', true)
-        //         .attr('x1', 0)
-        //         .attr('y1', guideGap)
-        //         .attr('x2', 0)
-        //         .attr('y2', d => nodeHeight * d.descendants().length - guideGap);
 
         // Stash the old positions for transition.  <- for expand animation
         root.eachBefore(d => {
@@ -201,6 +192,34 @@ function treechart(root, align) {
     update(root);
 
     return gTree.node(); //returning the html element
+}
+
+/**
+ * Generates a list of links that connects a parent to the last child of its last child.
+ * from the hierarchy root.
+ * This is to simplify the node link lines.
+ * @param {*} root 
+ */
+function linksToLastChild (root) {
+    console.log('deapthGuides()');
+    const list = [];
+    for (var node of root.descendants()) {
+        if (node.children) {    //if it's a branch node
+            list.push({source: node, target: getLastChild(node)});
+        }
+    }
+    return list;
+}
+/**
+ * Recursively find the last of the last child
+ * @param {*} node a parent node
+ */
+function getLastChild (node) {
+    if (node.children) {
+        return getLastChild(node.children[node.children.length - 1]);
+    } else {
+        return node;
+    }
 }
 
 /**
