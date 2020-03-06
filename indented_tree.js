@@ -201,24 +201,21 @@ function treechart(root, align) {
  * @param {*} root 
  */
 function linksToLastChild (root) {
-    console.log('deapthGuides()');
     const list = [];
     for (var node of root.descendants()) {
-        if (node.children) {    //if it's a branch node
+        if (node.children) {    //branch node with children
             list.push({source: node, target: getLastChild(node)});
         }
     }
     return list;
-}
-/**
- * Recursively find the last of the last child
- * @param {*} node a parent node
- */
-function getLastChild (node) {
-    if (node.children) {
-        return getLastChild(node.children[node.children.length - 1]);
-    } else {
-        return node;
+
+    // Recursively find the last of the last child
+    function getLastChild (node) {
+        if (node.children) {
+            return getLastChild(node.children[node.children.length - 1]);
+        } else {
+            return node;
+        }
     }
 }
 
