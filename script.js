@@ -6,7 +6,6 @@ const dataset = {
 };
 
 const treeWidth = 300;
-const ontGap = 200;
 
 console.log('ont1TreeRoot:');
 const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
@@ -48,12 +47,16 @@ ont2TreeRoot.each(d => {
 
 
 //Separates ontology trees and mappings from baseline for separate interaction effects 
+//FIXME: Separate the two data!
 const base_ont1root = ont1TreeRoot;
 const base_ont2root = ont2TreeRoot;
 const base_alignments = dataset.maps.alignments;
 const mtrx_ont1root = ont1TreeRoot;
 const mtrx_ont2root = ont2TreeRoot;
 const mtrx_alignments = dataset.maps.alignments;
+
+//To make highlight stay on mouse click on mapping line.
+let maplineClicked = false;
 
 updateAlignment();
 
@@ -99,6 +102,7 @@ function updateAlignment()
 function drawBaselineSvg()
 {
     console.log("drawBaselineSvg()");
+    const ontGap = 200;
     
     const svg = d3.select("#baseline-svg")
         .attr('height', 2100)   //TODO: calculate auto
@@ -109,11 +113,11 @@ function drawBaselineSvg()
     // svg.attr('height', newHeight);
     const g = svg.append('g')
         .attr('transform',`translate(${svgWidth/2},20)`);
-    const gTree1 = g.append(() => treechart(ont1TreeRoot, "right"))
+    const gTree1 = g.append(() => treechart(base_ont1root, "right"))
         .attr('id','gTree1')
         .classed('right-aligned', true)
         .attr('transform',`translate(${-ontGap/2},0)`);
-    const gTree2 = g.append(() => treechart(ont2TreeRoot, "left"))
+    const gTree2 = g.append(() => treechart(base_ont2root, "left"))
         .attr('id','gTree2')
         .attr('transform',`translate(${ontGap/2},0)`);
     const gMap = g.append('g')
@@ -129,8 +133,18 @@ function drawBaselineSvg()
             .classed('mapping', true)
             .classed('mapLine', true);
         //??: why not grabbing right alignment id after collapsing?
-        maplineEnter.on('mouseover', almt => highlightAlignment(almt, g))
-            .on('mouseout', () => turnOffEffects(g));
+        maplineEnter
+            .on('click', almt => {
+                console.log('mapLine clicked!');
+                maplineClicked = true;
+                highlightAlignment(almt, g);
+            })
+            .on('mouseover', almt => {
+                if (!maplineClicked) highlightAlignment(almt, g);
+            })
+            .on('mouseout', () => {
+                if (!maplineClicked) turnOffEffects(g);
+            });
         maplineEnter.append('path')   //foreground path
             .attr('d', (d,i) => calcMapLinePath(d,i))
             .attr('fill', 'none')
@@ -141,20 +155,24 @@ function drawBaselineSvg()
                 .attr('class', 'mapLine-select-helper');
         //highlight event on any nodes in svg
         g.selectAll('.node')
-            .on('mouseover', d => highlightAlignment(d.mapping, g))
-            .on('mouseout', () => turnOffEffects(g));
+            .on('mouseover', d => {
+                if (!maplineClicked) highlightAlignment(d.mapping, g);
+            })
+            .on('mouseout', () => {
+                if (!maplineClicked) turnOffEffects(g);
+            });
     }
     update();
 
     //Redraws mapping lines
     gTree1.on('click', () => {
         console.log('clicked on gTree1');
-        update();
+        // update();
         //TODO: should be something updating the mapped classes' x,y position
     });
     gTree2.on('click', () => {
         console.log('clicked on gTree2');
-        update();
+        // update();
         //TODO: should be something updating the mapped classes' x,y position
     });
 
@@ -164,15 +182,17 @@ function drawBaselineSvg()
     svg.selectAll('.root.node')
         .on('mouseover', () => msgBox.attr('visibility', 'visible'))
         .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
-
-    //TODO: Make the highlight stay
-    gMap.selectAll('.mapLine')
-        .on('click', (d,i,n) => {
-            console.log(`a mapping line clicked. d.id:${d.id}`);
-            console.log(d3.select(n[i]).attr('id'));
+    
+    //Turns off the highlight when clicked on other part in svg
+    document.getElementById('baseline-svg')
+        .addEventListener('click', (e) =>{
+            const isMapLineTargeted = d3.select(e.target.parentNode).classed('mapLine');
+            if(maplineClicked && !isMapLineTargeted) {
+                console.log('baseline svg clicked! Turning off the highlight.');
+                maplineClicked = false;
+                turnOffEffects(g);
+            }
         });
-    //TODO: Unselect any.
-    svg.on('click', () => turnOffEffects(g));
 }
 
 /**
@@ -182,6 +202,7 @@ function drawBaselineSvg()
  */
 function calcMapLinePath(almt, i)
 {
+    const ontGap = 200;
     if (!almt.isClassMapping) {
         return ``;
     }
