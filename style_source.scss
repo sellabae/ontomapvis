@@ -2,9 +2,11 @@
 $primary-color: #14a599;
 $darker-color: #008378;
 $lighter-color: #bedad7;
-$text-color: black;
 $bg-grid-color: #f6f6f6;
 $bg-color: #fcfcfc;
+$text-color: black;
+$text-color-muted: gray;
+$text-size: 0.9em;
 // $primary-color: #0077ff;
 // $darker-color: #005ae2;
 // $lighter-color: #dff0ff;
@@ -43,7 +45,7 @@ $bg-color: #fcfcfc;
 /* indented tree styling */
 .tree text {
     /* font-family: sans-serif; */
-    font-size: 0.9em;
+    font-size: $text-size;
     fill: $text-color;
 }
 /* tree nodelinks */
@@ -197,4 +199,23 @@ $bg-color: #fcfcfc;
 
 #pattern-dot-rect {
     fill: $primary-color;
+}
+
+//pointer cursor as a click event indicator
+.branch:hover, .mapping:hover {
+    cursor: pointer;
+}
+
+.message-box {
+    rect {
+        // fill: white;
+        fill: transparent;
+        rx: 3px;
+    }
+    text {
+        // fill: $text-color-muted;
+        font-size: $text-size;;
+        alignment-baseline: hanging;
+        font-weight: lighter;
+    }
 }

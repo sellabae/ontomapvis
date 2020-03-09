@@ -152,4 +152,18 @@
   fill: #14a599;
 }
 
+.branch:hover, .mapping:hover {
+  cursor: pointer;
+}
+
+.message-box rect {
+  fill: transparent;
+  rx: 3px;
+}
+.message-box text {
+  font-size: 0.9em;
+  alignment-baseline: hanging;
+  font-weight: lighter;
+}
+
 /*# sourceMappingURL=style.css.map */

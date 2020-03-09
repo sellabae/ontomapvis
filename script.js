@@ -13,6 +13,7 @@ const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
 console.log('ont2TreeRoot:');
 const ont2TreeRoot = tree( hierarchy(dataset.ont2.root), 'left');
 
+//Preps alignment data
 dataset.maps.alignments.forEach((almt,i) => {
     //asign id to each alignment
     almt.id = i;
@@ -33,24 +34,26 @@ dataset.maps.alignments.forEach((almt,i) => {
         }
     }
 });
-
-const base_alignments = dataset.maps.alignments;
-
+//FIXME: some part either above or below is redundant!
+//Adds a mapping field to a node in tree if there's an alignment for it.
 ont1TreeRoot.each(d => {
-    const filtered = base_alignments.filter(a => a.entity1 === d.data.name);
+    const filtered = dataset.maps.alignments.filter(a => a.entity1 === d.data.name);
     d.mapping = filtered ? filtered[0] : null;
     // console.log(d.mapping);
 });
 ont2TreeRoot.each(d => {
-    const filtered = base_alignments.filter(a => a.entity2 === d.data.name);
+    const filtered = dataset.maps.alignments.filter(a => a.entity2 === d.data.name);
     d.mapping = filtered ? filtered[0] : null;
 });
 
-//Separates interaction effects from the otehr mapping
+
+//Separates ontology trees and mappings from baseline for separate interaction effects 
+const base_ont1root = ont1TreeRoot;
+const base_ont2root = ont2TreeRoot;
+const base_alignments = dataset.maps.alignments;
 const mtrx_ont1root = ont1TreeRoot;
 const mtrx_ont2root = ont2TreeRoot;
-const mtrx_alignments = base_alignments;
-
+const mtrx_alignments = dataset.maps.alignments;
 
 updateAlignment();
 
@@ -65,7 +68,7 @@ window.addEventListener('load', function() {
 
 function describeDataset()
 {
-    var desc = /*'[Dataset]' +'<br>' +*/
+    var desc = '[Dataset]' +'<br>' +
         'domain: ' + dataset.domain +'<br>'+
         `onto1: \"${dataset.ont1.baseNS}\" ${dataset.ont1.classCount} classes` +'<br>'+
         `onto2: \"${dataset.ont2.baseNS}\" ${dataset.ont2.classCount} classes` +'<br>'+
@@ -104,7 +107,6 @@ function drawBaselineSvg()
     // //auto adjust the svg height
     // let newHeight = nodeHeight * Math.max(ont1TreeRoot.count(), ont2TreeRoot.count());
     // svg.attr('height', newHeight);
-
     const g = svg.append('g')
         .attr('transform',`translate(${svgWidth/2},20)`);
     const gTree1 = g.append(() => treechart(ont1TreeRoot, "right"))
@@ -114,34 +116,54 @@ function drawBaselineSvg()
     const gTree2 = g.append(() => treechart(ont2TreeRoot, "left"))
         .attr('id','gTree2')
         .attr('transform',`translate(${ontGap/2},0)`);
-    const gMap = g.append('g')/*.lower()*/
+    const gMap = g.append('g')
         .attr('id','gMap')
         .attr('transform',`translate(${-ontGap/2},0)`); //to center
     
-    //mapline
-    console.log('draw baseline mapping');
-    const mapline = gMap.selectAll('g')
-        .data(base_alignments)
-        .join('g')
-        .attr('id', d => `a${d.id}`)
-        .classed('mapping', true)
-        .classed('mapLine', true);
-    mapline.append('path')   //foreground path
-        .attr('d', (d,i) => calcMapLinePath(d,i))
-        .attr('fill', 'none')
-        .attr('class', 'mapLine-fg')
-        .clone(true).lower() //background path
-            .attr('class', 'mapLine-bg')
-        .clone(true).lower() //path select helper
-            .attr('class', 'mapLine-select-helper');
-    //mapline event
-    mapline.on('mouseover', almt => highlightAlignment(almt, g));
-    mapline.on('mouseout', () => turnOffEffects(g));
+    function update() {
+        console.log('draw baseline mapping');
+        const mapline = gMap.selectAll('g')
+            .data(base_alignments);
+        const maplineEnter = mapline.enter().append('g')
+            .attr('id', d => `a${d.id}`)
+            .classed('mapping', true)
+            .classed('mapLine', true)
+        //??: why not grabbing right alignment id after collapsing?
+        maplineEnter.on('mouseover', almt => highlightAlignment(almt, g))
+            .on('mouseout', () => turnOffEffects(g));
+        maplineEnter.append('path')   //foreground path
+            .attr('d', (d,i) => calcMapLinePath(d,i))
+            .attr('fill', 'none')
+            .attr('class', 'mapLine-fg')
+            .clone(true).lower() //background path
+                .attr('class', 'mapLine-bg')
+            .clone(true).lower() //path select helper
+                .attr('class', 'mapLine-select-helper');
+        //highlight event on any nodes in svg
+        g.selectAll('.node')
+            .on('mouseover', d => highlightAlignment(d.mapping, g))
+            .on('mouseout', () => turnOffEffects(g));
+    }
+    update();
 
-    //highlight event on any nodes in svg
-    g.selectAll('.node')
-        .on('mouseover', d => highlightAlignment(d.mapping, g))
-        .on('mouseout', () => turnOffEffects(g));
+    //Redraws mapping lines
+    gTree1.on('click', () => {
+        console.log('clicked on gTree1');
+        update();
+        //TODO: should be something updating the mapped classes' x,y position
+    });
+    gTree2.on('click', () => {
+        console.log('clicked on gTree2');
+        update();
+        //TODO: should be something updating the mapped classes' x,y position
+    });
+
+    //Show message when mouseover on 'Thing'
+    const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
+        .attr('visibility', 'hidden');
+    svg.selectAll('.root.node')
+        .on('mouseover', () => msgBox.attr('visibility', 'visible'))
+        .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
 }
 
 /**
@@ -199,7 +221,6 @@ function drawMatrixSvg()
     console.log('draw matrix mapping');
     const gMap = g.append('g')
         .attr('id','gMap');
-    const enlarge = 4;
     const mapcell = gMap.selectAll('rect')
         .data(mtrx_alignments)
         .join('rect')
@@ -241,6 +262,13 @@ function drawMatrixSvg()
                 .attr('width', cellSize * col).attr('height', cellSize);
         }
     }
+
+    //Show message when mouseover on 'Thing'
+    const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
+        .attr('visibility', 'hidden');
+    svg.selectAll('.root.node')
+        .on('mouseover', () => msgBox.attr('visibility', 'visible'))
+        .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
 }
 
 /**
@@ -305,7 +333,7 @@ function grid(row, col, cellSize, drawsBg)
 // }
 
 function highlightAlignment(alignment, g) {
-    // console.log(`highligth alignment!`);
+    console.log(`highligth alignment! id: ` + alignment.id);
     if(alignment) {
         //alignment
         const gMap = g.select("#gMap");
@@ -315,6 +343,8 @@ function highlightAlignment(alignment, g) {
         highlightNode(gTree1.select('#n' + alignment.e1match[0].id), gTree1);
         const gTree2 = g.select("#gTree2");
         highlightNode(gTree2.select('#n' + alignment.e2match[0].id), gTree2);
+
+        console.log(`highlighted alignment: gMap #a${alignment.id}, gTree1 #n${alignment.e1match[0].id}, gTree2 #n${alignment.e2match[0].id}`);
     }
 }
 
@@ -323,3 +353,18 @@ function turnOffEffects(g) {
         .classed('highlight', false)
         .classed('muted', false);
 }
+
+/**
+ * create message box and return svg:g
+ * @param {string} msg 
+ */
+const messageBox = function(msg) {
+    const box = d3.create('svg:g').classed('message-box', true);
+    box.append('rect')
+        .attr('width', msg.length * 6.5 + 5)
+        .attr('height', 22);
+    box.append('text')
+        .text(msg)
+        .attr('x', 5).attr('y', 5);
+    return box.node();
+};

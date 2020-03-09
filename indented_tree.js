@@ -1,7 +1,7 @@
 // global setting variable
 const margin = {top: 30, right: 20, bottom: 30, left: 20};
 const nodeHeight = 20,
-      nodeWidth = 300,
+      nodeWidth = 200,
       nodeIndent = 10;
       nodeMarkSize = 4.5;
 
@@ -85,7 +85,7 @@ function treechart(root, align) {
 
     function update(source) {
         const duration = d3.event && d3.event.altKey ? 1000 : 100;
-        const nodes = root.descendants().reverse();  //for the z-order of svg elements
+        const nodes = root.descendants().reverse();  //for the z-order
         const links = linksToLastChild(root);
 
         // Coputes the new tree layout.
@@ -104,7 +104,9 @@ function treechart(root, align) {
         // Enters any new nodes at the parent's previous position.
         const nodeEnter = node.enter().append("g").classed('node', true)
             .attr('id', d => `n${d.id}`)
-            .classed('branch expanded', d => d._children ? true : false) //added expanded as initial state
+            .classed('root', d => d==root)
+            .classed('branch', d => d._children ? true : false) 
+            .classed('expanded', d => d._children ? true : false) //added expanded as initial state
             .classed('leaf', d => d._children ? false : true)
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
             .attr("opacity", 0)
@@ -123,7 +125,7 @@ function treechart(root, align) {
                     // console.log(`${d.data.name}'s descendants gets hidden=true`);
                     // console.log(d.descendants());
                 }
-                if(d._children) { //only for branch nodes with children
+                if(d._children && d!=root) { //only for branch nodes with children
                     //update the expanded nodemark for branch nodes
                     //TODO: better place to do this? move somewhere else
                     const sel = d3.select(n[i]); //this selection
