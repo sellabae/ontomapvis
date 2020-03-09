@@ -204,31 +204,50 @@ function drawMatrixSvg()
     console.log("drawMatrixSvg()");
     
     const svg = d3.select("#matrix-svg")
-        .attr('height', 2300)
-        .attr('width', 1950);
+        .attr('width', 1950).attr('height', 2300);
 
+    const gPos = {x: treeWidth+10, y: treeWidth-70};
     const g = svg.append('g')
-        .attr('transform',`translate(${treeWidth+10},${treeWidth-70})`);
+        .attr('transform',`translate(${gPos.x},${gPos.y})`);
+
+    //For fixed header effect
+    const headSize = 600;
+    const gContent = g.append('g').attr('id','gContent');
+    const gRowHead = g.append('g')
+        .attr('id','gRowHead').classed('matrix-head', true);
+    gRowHead.append('rect').attr('x', -headSize)
+        .attr('width', headSize).attr('height', 2300);
+    const gColHead = g.append('g')
+        .attr('id','gColHead').classed('matrix-head', true);
+    gColHead.append('rect').attr('y', -headSize)
+        .attr('width',1950).attr('height', headSize);
+    const gAnchorHead = g.append('g')
+        .attr('id','gAnchorHead').classed('matrix-head', true);
+    gAnchorHead.append('rect')
+        .attr('x', -headSize).attr('y', -headSize)
+        .attr('width', headSize).attr('height', headSize);
+
+    //Adds ontology treecharts
     const hGap = nodeHeight/2; //gap between headers and matrix
-    const gTree1 = g.append(() => treechart(mtrx_ont1root, "right"))
+    const gTree1 = gRowHead.append(() => treechart(mtrx_ont1root, "right"))
         .attr('id','gTree1')
         .attr('transform',`translate(${-hGap},${hGap})`)
         .classed('right-aligned', true);
-    const gTree2 = g.append(() => treechart(mtrx_ont2root, "left"))
+    const gTree2 = gColHead.append(() => treechart(mtrx_ont2root, "left"))
         .attr('id','gTree2')
         .attr('transform',`translate(${hGap},${-hGap}), rotate(270)`)
         .classed('horizontal', true);
     
-    //draw matrix background table rows and columns
+    //Draws matrix background table rows and columns
     const row = mtrx_ont1root.descendants().length;
     const col = mtrx_ont2root.descendants().length;
     const cellSize = nodeHeight;
-    const gGrid = g.append(() => grid(row, col, cellSize, true))
-        .classed('bg-grid', true);
+    const gGrid = gContent.append(() => grid(row, col, cellSize, true))
+        .attr('id','gGrid').classed('bg-grid', true);
 
-    //draw mapping cells
+    //Draws mapping cells
     console.log('draw matrix mapping');
-    const gMap = g.append('g')
+    const gMap = gContent.append('g')
         .attr('id','gMap');
     const mapcell = gMap.selectAll('rect')
         .data(mtrx_alignments)
@@ -272,12 +291,23 @@ function drawMatrixSvg()
         }
     }
 
-    //Show message when mouseover on 'Thing'
+    //Shows message when mouseover on 'Thing'
     const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
         .attr('visibility', 'hidden');
     svg.selectAll('.root.node')
         .on('mouseover', () => msgBox.attr('visibility', 'visible'))
         .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
+
+    //Freezes headers on svg on 'scroll' event
+    document.getElementById('matrix-svgdiv')
+        .addEventListener('scroll', (e) => {
+            const top = e.target.scrollTop;
+            const left = e.target.scrollLeft;
+            console.log(`scroll event on matrix. top:${top} left:${left}`);
+            gAnchorHead.attr('transform', `translate(${left},${top})`);
+            gRowHead.attr('transform', `translate(${left},0)`);
+            gColHead.attr('transform', `translate(0,${top})`);
+        });
 }
 
 /**

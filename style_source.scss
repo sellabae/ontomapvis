@@ -1,4 +1,5 @@
 //Scss variables
+//turquoise theme
 $primary-color: #14a599;
 $darker-color: #008378;
 $lighter-color: #bedad7;
@@ -7,13 +8,13 @@ $bg-color: #fcfcfc;
 $text-color: black;
 $text-color-muted: gray;
 $text-size: 0.9em;
+// //blue theme
 // $primary-color: #0077ff;
 // $darker-color: #005ae2;
 // $lighter-color: #dff0ff;
 // $text-color: black;
 // $bg-grid-color: #f6f6f6;
 // $bg-color: #fcfcfc;
-
 
 //to check layout
 /* div { border: 0.5px solid orange; } */
@@ -34,7 +35,7 @@ $text-size: 0.9em;
 
 .svgdiv {
     width: 100%;
-    height: 800px;
+    height: 600px;
     overflow: scroll;
     border: 1px solid #ccc;
     border-radius: 2px;
@@ -206,6 +207,7 @@ $text-size: 0.9em;
     cursor: pointer;
 }
 
+//message in svg
 .message-box {
     rect {
         // fill: white;
@@ -218,4 +220,12 @@ $text-size: 0.9em;
         alignment-baseline: hanging;
         font-weight: lighter;
     }
+}
+
+//freezed matrix headers
+.matrix-head rect {
+    // fill: orange;
+    // stroke: orange;
+    // fill-opacity: 0.5;
+    fill: $bg-color;
 }

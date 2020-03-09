@@ -15,7 +15,7 @@
 
 .svgdiv {
   width: 100%;
-  height: 800px;
+  height: 600px;
   overflow: scroll;
   border: 1px solid #ccc;
   border-radius: 2px;
@@ -164,6 +164,10 @@
   font-size: 0.9em;
   alignment-baseline: hanging;
   font-weight: lighter;
+}
+
+.matrix-head rect {
+  fill: #fcfcfc;
 }
 
 /*# sourceMappingURL=style.css.map */
