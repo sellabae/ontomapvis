@@ -179,9 +179,13 @@ function drawBaselineSvg()
     //Show message when mouseover on 'Thing'
     const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
         .attr('visibility', 'hidden');
+    //TODO: enable this for doubleclick on Thing
     svg.selectAll('.root.node')
         .on('mouseover', () => msgBox.attr('visibility', 'visible'))
-        .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
+        .on('mouseout', () => msgBox.attr('visibility', 'hidden'))
+        .on('dblclick', () => {
+            console.log('root double-clicked!');
+        });
     
     //Turns off the highlight when clicked on other part in svg
     document.getElementById('baseline-svg')
