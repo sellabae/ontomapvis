@@ -111,6 +111,10 @@ function treechart(root, align) {
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
             .attr("opacity", 0)
             .on("click", (d,i,n) => {
+                if(d==root) {   //skip for root node
+                    console.log('root node clicked.');
+                    return;
+                }
                 //for branc node, d.children: shown children, d._children: owned children.
                 //for leaf node, d.children:undefined, d._children: undefined
                 //gives null if d was the expanded branch to stop drawing,
@@ -125,7 +129,7 @@ function treechart(root, align) {
                     // console.log(`${d.data.name}'s descendants gets hidden=true`);
                     // console.log(d.descendants());
                 }
-                if(d._children && d!=root) { //only for branch nodes with children
+                if(d._children) { //only for branch nodes with children
                     //update the expanded nodemark for branch nodes
                     //TODO: better place to do this? move somewhere else
                     const sel = d3.select(n[i]); //this selection

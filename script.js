@@ -127,7 +127,7 @@ function drawBaselineSvg()
         const maplineEnter = mapline.enter().append('g')
             .attr('id', d => `a${d.id}`)
             .classed('mapping', true)
-            .classed('mapLine', true)
+            .classed('mapLine', true);
         //??: why not grabbing right alignment id after collapsing?
         maplineEnter.on('mouseover', almt => highlightAlignment(almt, g))
             .on('mouseout', () => turnOffEffects(g));
@@ -164,6 +164,15 @@ function drawBaselineSvg()
     svg.selectAll('.root.node')
         .on('mouseover', () => msgBox.attr('visibility', 'visible'))
         .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
+
+    //TODO: Make the highlight stay
+    gMap.selectAll('.mapLine')
+        .on('click', (d,i,n) => {
+            console.log(`a mapping line clicked. d.id:${d.id}`);
+            console.log(d3.select(n[i]).attr('id'));
+        });
+    //TODO: Unselect any.
+    svg.on('click', () => turnOffEffects(g));
 }
 
 /**
@@ -333,8 +342,8 @@ function grid(row, col, cellSize, drawsBg)
 // }
 
 function highlightAlignment(alignment, g) {
-    console.log(`highligth alignment! id: ` + alignment.id);
     if(alignment) {
+        console.log(`highligth alignment! id: ` + alignment.id);
         //alignment
         const gMap = g.select("#gMap");
         g.select('#a'+alignment.id).classed('highlight', true).raise();
