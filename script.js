@@ -174,8 +174,9 @@ function drawBaselineSvg()
                 });
         const maplineExit = mapline.exit().transition(t).remove();
 
-        console.log(base_alignments);
+        // console.log(base_alignments);
     }
+
     update();
     //Redraws mapping lines
     gTree1.on('click', () => update());
@@ -279,10 +280,10 @@ function drawMatrixSvg()
         .classed('horizontal', true);
     
     //Draws matrix background table rows and columns
-    const row = mtrx_ont1root.descendants().length;
-    const col = mtrx_ont2root.descendants().length;
     const cellSize = nodeHeight;
-    const gGrid = gContent.append(() => grid(row, col, cellSize, true))
+    let row = mtrx_ont1root.descendants().length;
+    let col = mtrx_ont2root.descendants().length;
+    let gGrid = gContent.append(() => grid(row, col, cellSize, true))
         .attr('id','gGrid').classed('bg-grid', true);
 
     //Draws mapping cells
@@ -308,7 +309,8 @@ function drawMatrixSvg()
                 .transition(t)
                     .attr('x', d => d.e2pos.y)
                     .attr('y', d => d.e1pos.y)
-        )   .attr('id', d => `a${d.id}`)
+            )
+            .attr('id', d => `a${d.id}`)
             .classed('mapping', true).classed('mapCell', true)
             .attr('width', cellSize).attr('height', cellSize);
         mapcell
@@ -318,24 +320,32 @@ function drawMatrixSvg()
                 turnOffEffects(g);
                 gGrid.selectAll('.mapCell-guide').remove();
             });
-        
-        console.log(mtrx_alignments);
+
+        //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
+        //Highlights alignments for mouse events on tree nodes
+        g.selectAll('.node')
+            .filter(d => d.mappings != undefined)
+            .on('mouseenter', d => showCellGuide(d.mappings))
+            .on('mouseover', d => highlightAlignment(d.mappings, g, mtrx_alignments))
+            .on('mouseout', () => {
+                turnOffEffects(g);
+                gGrid.selectAll('.mapCell-guide').remove();
+            });
+
+        //FIXME: mouseover on mapCell doesn't work at initial state after updating the gGrid
+        row = mtrx_ont1root.descendants().length;
+        col = mtrx_ont2root.descendants().length;
+        gContent.select('#gGrid').remove();
+        gGrid = gContent.append(() => grid(row, col, cellSize, true))
+            .attr('id','gGrid').classed('bg-grid', true)
+            .lower();
+        // console.log(mtrx_alignments);
     }
+
     update();
     //Redraws mapping cells
     gTree1.on('click', () => update());
     gTree2.on('click', () => update());
-
-    //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
-    //Highlights alignments for mouse events on tree nodes
-    g.selectAll('.node')
-        .filter(d => d.mappings != undefined)
-        .on('mouseenter', d => showCellGuide(d.mappings))
-        .on('mouseover', d => highlightAlignment(d.mappings, g, mtrx_alignments))
-        .on('mouseout', () => {
-            turnOffEffects(g);
-            gGrid.selectAll('.mapCell-guide').remove();
-        });
 
     function showCellGuide(alignments) {
         if (!alignments) { return; }    //for undefined
@@ -348,7 +358,7 @@ function drawMatrixSvg()
         //guide rect to its mapped cell
         for(let almt of alignments) {
             const gCellGuide = gGrid.append('g')
-            .classed('mapCell-guide', true);
+                .classed('mapCell-guide', true).raise();
             gCellGuide.append('rect')
                 .attr('x', 0).attr('y', almt.e1pos.y)
                 .attr('width', cellSize * col).attr('height', cellSize);
