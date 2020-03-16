@@ -226,19 +226,6 @@ function linksToLastChild (root) {
 }
 
 /**
- * Highlight a node and mute the others
- * @param {*} thisNode the node to highlight
- * @param {*} gTree the tree 'svg:g' where the node belong
- */
-function highlightNode(thisNode, gTree) {
-    gTree.selectAll('.node').classed('muted', true);
-    thisNode.classed('muted', false)
-        .classed('highlight', true);
-    //TODO: highlight the parent's guide line not its own guide.
-}
-
-
-/**
  * Calculates triangle points
  * @param {number} s radius size
  */

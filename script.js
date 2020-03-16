@@ -25,6 +25,7 @@ dataset.maps.alignments.forEach((almt,i) => {
     
     //TODO: handle multiple matches!
     if (almt.isClassMapping) {
+
         if (almt.e1match.length > 1) {
             console.log(`**${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
         }
@@ -33,16 +34,44 @@ dataset.maps.alignments.forEach((almt,i) => {
         }
     }
 });
-//FIXME: some part either above or below is redundant!
+
+const newAlignments = buildNewAlignments(dataset.maps.alignments, ont1TreeRoot, ont2TreeRoot);
+
+/**
+ * Builds alignment list with "id, entity1, and entity2" pairs including redundant matches
+ * @param {*} sourceAlmts 
+ * @returns {*} newAlmts
+ */
+function buildNewAlignments(sourceAlmts, ont1root, ont2root) {
+    console.log('buildNewAlignments()');
+    let newAlmts = [];
+    let id = 0;
+    sourceAlmts.forEach(almt => {
+        e1matches = ont1root.descendants().filter(d => d.data.name === almt.entity1);
+        e2matches = ont2root.descendants().filter(d => d.data.name === almt.entity2);
+        namePair = {entity1: almt.entity1, entity2: almt.entity2};
+        for (let e1 of e1matches) {
+            for (let e2 of e2matches) {
+                newAlmts.push({id:id++, namePair:namePair, e1:e1, e2:e2});
+            }
+        }
+    });
+    console.log(newAlmts);
+    return newAlmts;
+}
+
 //Adds a mapping field to a node in tree if there's an alignment for it.
 ont1TreeRoot.each(d => {
-    const filtered = dataset.maps.alignments.filter(a => a.entity1 === d.data.name);
-    d.mapping = filtered ? filtered[0] : null;
-    // console.log(d.mapping);
+    const filtered = newAlignments.filter(a => a.e1.id === d.id);
+    if (filtered.length) {
+        d.mappings = filtered;
+    }
 });
 ont2TreeRoot.each(d => {
-    const filtered = dataset.maps.alignments.filter(a => a.entity2 === d.data.name);
-    d.mapping = filtered ? filtered[0] : null;
+    const filtered = newAlignments.filter(a => a.e2.id === d.id);
+    if (filtered.length) {
+        d.mappings = filtered;
+    }
 });
 
 
@@ -50,15 +79,13 @@ ont2TreeRoot.each(d => {
 //FIXME: Separate the two data!
 const base_ont1root = ont1TreeRoot;
 const base_ont2root = ont2TreeRoot;
-const base_alignments = dataset.maps.alignments;
+const base_alignments = newAlignments;
 const mtrx_ont1root = ont1TreeRoot;
 const mtrx_ont2root = ont2TreeRoot;
-const mtrx_alignments = dataset.maps.alignments;
+const mtrx_alignments = newAlignments;
 
 //To make highlight stay on mouse click on mapping line.
 let maplineClicked = false;
-
-updateAlignment();
 
 window.addEventListener('load', function() {
     console.log("window loaded.");
@@ -80,24 +107,10 @@ function describeDataset()
     return desc;
 }
 
-function updateAlignment()
-{
-    console.log('updateData() reassigning positions of mapped classes to alignments');
-    
-    dataset.maps.alignments.forEach((almt,i) => {
-        //assign position
-        //TODO: this may be redundant now to almt.e1match[i].x and almt.e1match[i].y
-        var e1 = almt.e1match[0];
-        var e2 = almt.e2match[0];
-        if (almt.isClassMapping) {
-            // console.log(`${i}. e1:${e1.data.name} x${e1.y} y${e1.x}\t e2:${e2.data.name} x${e2.y} y${e2.x}`);
-            almt.e1pos = {x: e1.x, y: e1.y};
-            almt.e2pos = {x: e2.x, y: e2.y};
-        }
-    });
-    console.log('alignments:');
-    console.log(dataset.maps.alignments);
-}
+console.log('baseline data');
+console.log(base_alignments);
+console.log(base_ont1root);
+console.log(base_ont2root);
 
 function drawBaselineSvg()
 {
@@ -155,8 +168,9 @@ function drawBaselineSvg()
                 .attr('class', 'mapLine-select-helper');
         //highlight event on any nodes in svg
         g.selectAll('.node')
+            .filter(d => d.mappings != undefined)
             .on('mouseover', d => {
-                if (!maplineClicked) highlightAlignment(d.mapping, g);
+                if (!maplineClicked) highlightAlignment(d.mappings, g);
             })
             .on('mouseout', () => {
                 if (!maplineClicked) turnOffEffects(g);
@@ -197,32 +211,33 @@ function drawBaselineSvg()
                 turnOffEffects(g);
             }
         });
+
+    /**
+     * Calculates the svg:path for a baseline mapping line
+     * @param {Object} almt an alignment mapping
+     * @param {number} i the index of the alignment
+     */
+    function calcMapLinePath(almt, i)
+    {
+        const ontGap = 200;
+        if (!almt) {
+            return ``;
+        }
+        const dn = 6; //distance from the nodemark
+        const x1 = almt.e1.x + dn,
+            y1 = almt.e1.y,
+            x2 = almt.e2.x + ontGap - dn,
+            y2 = almt.e2.y;
+        const c = 10,   //curve value
+            gm = 20, //margin from ontGap
+            hgap = ((ontGap-gm*2) / base_alignments.length).toFixed(0);
+        const hx = hgap * i + gm;
+        const vy = y2 > y1 ? y2-c : y2+c;
+        const cy = y2 > y1 ? c : -c;
+        return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
+    }
 }
 
-/**
- * Calculates the svg:path for a baseline mapping line
- * @param {Object} almt an alignment mapping
- * @param {number} i the index of the alignment
- */
-function calcMapLinePath(almt, i)
-{
-    const ontGap = 200;
-    if (!almt.isClassMapping) {
-        return ``;
-    }
-    const dn = 6; //distance from the nodemark
-    const x1 = almt.e1pos.x + dn,
-          y1 = almt.e1pos.y,
-          x2 = almt.e2pos.x + ontGap - dn,
-          y2 = almt.e2pos.y;
-    const c = 10,   //curve value
-          gm = 20, //margin from ontGap
-          hgap = ((ontGap-gm*2) / dataset.maps.alignments.length).toFixed(0);
-    const hx = hgap * i + gm;
-    const vy = y2 > y1 ? y2-c : y2+c;
-    const cy = y2 > y1 ? c : -c;
-    return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
-}
 
 function drawMatrixSvg()
 {
@@ -280,39 +295,46 @@ function drawMatrixSvg()
             .attr('id', d => `a${d.id}`)
             .classed('mapping', true)
             .classed('mapCell', true)
-            .attr('x', d => d.e2pos.y)
-            .attr('y', d => d.e1pos.y)
+            .attr('x', d => d.e2.y)
+            .attr('y', d => d.e1.y)
             .attr('width', cellSize)
             .attr('height', cellSize);
     mapcell.on('mouseenter', almt => showCellGuide(almt))
         .on('mouseover', almt => highlightAlignment(almt, g))
         .on('mouseout', () => {
             turnOffEffects(g);
-            gGrid.select('.mapCell-guide').remove();
+            gGrid.selectAll('.mapCell-guide').remove();
         });
 
+    //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
     //highlight event on any nodes in svg
     g.selectAll('.node')
-        //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
-        .on('mouseenter', d => showCellGuide(d.mapping))
-        .on('mouseover', d => highlightAlignment(d.mapping, g))
+        .filter(d => d.mappings != undefined)
+        .on('mouseenter', d => showCellGuide(d.mappings))
+        .on('mouseover', d => highlightAlignment(d.mappings, g))
         .on('mouseout', () => {
             turnOffEffects(g);
-            gGrid.select('.mapCell-guide').remove();
+            gGrid.selectAll('.mapCell-guide').remove();
         });
 
-    function showCellGuide(alignment) {
-        //guide rect to its mapped cell
+    function showCellGuide(alignments) {
+        if (!alignments) { return; }    //for undefined
         console.log('draw cell guide');
-        if(alignment) {
+
+        alignments = Array.isArray(alignments) ? alignments : [alignments];
+        //To highlight any redundant alignment sets
+        alignments = mtrx_alignments.filter(d => d.namePair === alignments[0].namePair);
+
+        //guide rect to its mapped cell
+        for(let almt of alignments) {
             const gCellGuide = gGrid.append('g')
             .classed('mapCell-guide', true);
             gCellGuide.append('rect')
-                .attr('x', alignment.e2pos.y).attr('y', 0)
-                .attr('width', cellSize).attr('height', cellSize * row);
-            gCellGuide.append('rect')
-                .attr('x', 0).attr('y', alignment.e1pos.y)
+                .attr('x', 0).attr('y', almt.e1.y)
                 .attr('width', cellSize * col).attr('height', cellSize);
+            gCellGuide.append('rect')
+                .attr('x', almt.e2.y).attr('y', 0)
+                .attr('width', cellSize).attr('height', cellSize * row);
         }
     }
 
@@ -328,7 +350,7 @@ function drawMatrixSvg()
         .addEventListener('scroll', (e) => {
             const top = e.target.scrollTop;
             const left = e.target.scrollLeft;
-            console.log(`scroll event on matrix. top:${top} left:${left}`);
+            // console.log(`scroll event on matrix. top:${top} left:${left}`);
             gAnchorHead.attr('transform', `translate(${left},${top})`);
             gRowHead.attr('transform', `translate(${left},0)`);
             gColHead.attr('transform', `translate(0,${top})`);
@@ -375,40 +397,37 @@ function grid(row, col, cellSize, drawsBg)
     return g.node();
 }
 
-// /**
-//  * Draws a mapping cell(rect) of an alignment for matrix mapping
-//  * @param {Object} almt a mapping alignment
-//  * @param {number} cellSize width of a mapping cell
-//  */
-// function mapCellRect(almt, cellSize)
-// {
-//     console.log(`mapCellRect() for alignmet${almt.id}`);
-//     if (almt.isClassMapping) {
-//         var rect = d3.create('svg:rect')
-//             .classed('mapCell', true)
-//             .attr('x', almt.e2pos.y)
-//             .attr('y', almt.e1pos.y)
-//             .attr('width', cellSize)
-//             .attr('height', cellSize);
-//         return rect.node();
-//     } else {
-//         return d3.create('svg:rect').node();
-//     }
-// }
+/**
+ * Give 'highlight' class to the DOM elements of the list of alignments
+ * @param {*} alignments one alignment or an array of alignments
+ * @param {*} g svg:g of baseline or matrix
+ */
+function highlightAlignment(alignments, g) {
+    if (!alignments) { return; }    //for undefined
+    console.log('highlightAlignment()');
+    alignments = Array.isArray(alignments) ? alignments : [alignments];
+    //To highlight any redundant alignment sets
+    alignments = newAlignments.filter(d => d.namePair === alignments[0].namePair);
 
-function highlightAlignment(alignment, g) {
-    if(alignment) {
-        console.log(`highligth alignment! id: ` + alignment.id);
+    //Mutes all mapping and nodes in the group
+    g.selectAll('.node').classed('muted', true);
+    g.selectAll('.mapping').classed('muted', true);
+
+    for (let almt of alignments) {
+        console.log(`highlight alignment: gMap #a${almt.id}, gTree1 #n${almt.e1.id}, gTree2 #n${almt.e2.id}`);
+        // console.log(almt);
+
         //alignment
-        const gMap = g.select("#gMap");
-        g.select('#a'+alignment.id).classed('highlight', true).raise();
+        g.select("#gMap").select('#a'+almt.id)
+            .classed('muted', false)
+            .classed('highlight', true).raise();
         //tree nodes
-        const gTree1 = g.select("#gTree1");
-        highlightNode(gTree1.select('#n' + alignment.e1match[0].id), gTree1);
-        const gTree2 = g.select("#gTree2");
-        highlightNode(gTree2.select('#n' + alignment.e2match[0].id), gTree2);
-
-        console.log(`highlighted alignment: gMap #a${alignment.id}, gTree1 #n${alignment.e1match[0].id}, gTree2 #n${alignment.e2match[0].id}`);
+        g.select("#gTree1").select('#n'+almt.e1.id)
+            .classed('muted', false)
+            .classed('highlight', true);
+        g.select("#gTree2").select('#n'+almt.e2.id)
+            .classed('muted', false)
+            .classed('highlight', true);
     }
 }
 

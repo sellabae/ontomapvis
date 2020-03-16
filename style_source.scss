@@ -1,7 +1,7 @@
 //Scss variables
 //turquoise theme
 $primary-color: #14a599;
-$darker-color: #008378;
+$darker-color: #00978b;
 $lighter-color: #bedad7;
 $bg-grid-color: #f6f6f6;
 $bg-color: #fcfcfc;
@@ -144,7 +144,7 @@ $text-size: 0.9em;
 }
 .mapCell-guide {
     fill: white;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 //highlight and muted
@@ -168,15 +168,6 @@ $text-size: 0.9em;
     }
     &.mapCell {
         fill: $darker-color;
-        // transform: scale(1.5); 
-        // why at wrong position even with transform-origin?
-        // when the scale doesn't work, put the code under mapCell.on('mouseover')
-        // d3.select(n[i])
-        //     .raise()
-        //     .classed('highlight', true)
-        //     .attr('width', cellSize + enlarge)
-        //     .attr('height', cellSize + enlarge)
-        //     .attr('transform', `translate(${-enlarge/2},${-enlarge/2})`);
     }
 }
 
