@@ -17,14 +17,9 @@ function hierarchy(data) {
     root.dx = 10;  //??: seems not necessary??
     root.dy = 0;
     root.descendants().forEach((d, i) => {
-        d.id = i;   //assign id to all nodes in breadth-first order
-        //TODO: Organize the below in the way it's practically used.
-        d.isBranch = d.children ? true : false;
-        if(d.isBranch) d.collapsed = false; //assign the property 'd.collapsed' only to branch nodes
+        d.id = i;   //assign id in breadth-first order
+        d._children = d.children;   //for collapsing action
         d.hidden = false;
-
-        d._children = d.children;
-        // if (d.depth && d.data.name.length !== 7) d.children = null; //??: what is this for?
     });
     console.log(root);
     return root;
@@ -62,29 +57,18 @@ function tree(root, align) {
 function treechart(root, align) {
     console.log(`treechart(root, align=${align})`);
     let alignRight = align === "right" ? true : false;
-    // const root = tree(data, align);
-
-    //TODO: delete this
-    // //for node position exception
-    // let y0 = Infinity;
-    // let y1 = -y0;
-    // root.each(d => {
-    //   if (d.y > y1) y1 = d.y;
-    //   if (d.y < y0) y0 = d.y;
-    // });
 
     //Creates a detached g to return
     const gTree = d3.create("svg:g")
         .classed('tree', true)
         .attr("transform", `translate(0,10)`); //??: why?
-    const gLink = gTree.append("g")         //TODO: put the hierarchy guide here
+    const gLink = gTree.append("g")
         .classed('gLink', true)
         .attr('transform', `translate(0,${nodeHeight/2.5})`);
     const gNode = gTree.append("g")
         .classed('gNode', true);
 
     function update(source) {
-        const duration = d3.event && d3.event.altKey ? 1000 : 100;
         const nodes = root.descendants().reverse();  //for the z-order
         const links = linksToLastChild(root);
 
@@ -94,8 +78,8 @@ function treechart(root, align) {
         //TODO: auto resize the viewBox
         let lowest = 400;
         //...
-        const transition = gTree.transition()
-            .duration(duration);
+        const t = gTree.transition()
+            .duration(100);
         
         // Updates the nodes...
         const node = gNode.selectAll("g")
@@ -109,13 +93,14 @@ function treechart(root, align) {
             .classed('expanded', d => d._children ? true : false) //added expanded as initial state
             .classed('leaf', d => d._children ? false : true)
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
-            .attr("opacity", 0)
+            .attr("opacity", 0);
+        nodeEnter
             .on("click", (d,i,n) => {
                 if(d==root) {   //skip for root node
                     console.log('root node clicked.');
                     return;
                 }
-                //for branc node, d.children: shown children, d._children: owned children.
+                //for branch node, d.children: shown children, d._children: owned children.
                 //for leaf node, d.children:undefined, d._children: undefined
                 //gives null if d was the expanded branch to stop drawing,
                 //or restores from _children if d was collapsed branch.
@@ -140,7 +125,7 @@ function treechart(root, align) {
                     update(d);
                 }
             });
-        // Appends nodemark, tedt, and select elper
+        // Appends nodemark, text, and select helper
         nodeEnter.append(d => {
                 if(d._children) return d3.create("svg:polygon").attr('points', triangle).node();  //branch nodemark
                 else            return d3.create("svg:circle").attr('r', 2).node();                //leaf nodemark
@@ -159,12 +144,12 @@ function treechart(root, align) {
             .lower();
 
         // Transition nodes to their new position.
-        const nodeUpdate = node.merge(nodeEnter).transition(transition)
+        const nodeUpdate = node.merge(nodeEnter).transition(t)
             .attr("transform", (d,i,n) => `translate(${d.x},${d.y})`)
             .attr("opacity", 1);
             
         // Transition exiting nodes to the parent's new position.
-        const nodeExit = node.exit().transition(transition).remove()
+        const nodeExit = node.exit().transition(t).remove()
             .attr("transform", d => `translate(${source.x},${source.y})`)
             .attr("opacity", 0);
 
@@ -179,10 +164,10 @@ function treechart(root, align) {
                 return verticalLink({source: o, target: o});
             });
         // Transition links to their new position.
-        link.merge(linkEnter).transition(transition)
+        link.merge(linkEnter).transition(t)
             .attr("d", verticalLink);
         // Transition exiting nodes to the parent's new position.
-        link.exit().transition(transition).remove()
+        link.exit().transition(t).remove()
             .attr("d", d => {
                 const o = {x: source.x, y: source.y};
                 return verticalLink({source: o, target: o});

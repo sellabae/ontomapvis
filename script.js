@@ -12,29 +12,6 @@ const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
 console.log('ont2TreeRoot:');
 const ont2TreeRoot = tree( hierarchy(dataset.ont2.root), 'left');
 
-//Preps alignment data
-dataset.maps.alignments.forEach((almt,i) => {
-    //asign id to each alignment
-    almt.id = i;
-    //filter match
-    almt.e1match = ont1TreeRoot.descendants().filter(d => d.data.name === almt.entity1);
-    almt.e2match = ont2TreeRoot.descendants().filter(d => d.data.name === almt.entity2);
-
-    //mark if the alignment is for class, not property
-    almt.isClassMapping = (almt.e1match.length && almt.e2match.length) ? true : false;
-    
-    //TODO: handle multiple matches!
-    if (almt.isClassMapping) {
-
-        if (almt.e1match.length > 1) {
-            console.log(`**${i}. multiple match e1:${almt.entity1} match:${almt.e1match}`);
-        }
-        if (almt.e2match.length > 1) {
-            console.log(`**${i}. multiple match e2:${almt.entity2} match:${almt.e2match}`);
-        }
-    }
-});
-
 const newAlignments = buildNewAlignments(dataset.maps.alignments, ont1TreeRoot, ont2TreeRoot);
 
 /**
@@ -107,10 +84,12 @@ function describeDataset()
     return desc;
 }
 
-console.log('baseline data');
-console.log(base_alignments);
-console.log(base_ont1root);
-console.log(base_ont2root);
+function updateMappingPos(alignments) {
+    alignments.forEach(a => {
+        a.e1pos = {x: a.e1.x, y: a.e1.y};
+        a.e2pos = {x: a.e2.x, y: a.e2.y};
+    });
+}
 
 function drawBaselineSvg()
 {
@@ -137,23 +116,29 @@ function drawBaselineSvg()
         .attr('id','gMap')
         .attr('transform',`translate(${-ontGap/2},0)`); //to center
     
+    console.log('draw baseline mapping');
+
     function update() {
-        console.log('draw baseline mapping');
+        console.log('update mapLines');
+
+        updateMappingPos(base_alignments);
+
+        const t = gMap.transition().duration(100);
+
         const mapline = gMap.selectAll('g')
-            .data(base_alignments);
-        const maplineEnter = mapline.enter().append('g')
-            .attr('id', d => `a${d.id}`)
-            .classed('mapping', true)
-            .classed('mapLine', true);
-        //??: why not grabbing right alignment id after collapsing?
+            .data(base_alignments, d => d.id);
+        const maplineEnter = mapline.enter()
+            .append('g')
+                .attr('id', d => `a${d.id}`)
+                .classed('mapping', true).classed('mapLine', true);
         maplineEnter
             .on('click', almt => {
                 console.log('mapLine clicked!');
                 maplineClicked = true;
-                highlightAlignment(almt, g);
+                highlightAlignment(almt, g, base_alignments);
             })
             .on('mouseover', almt => {
-                if (!maplineClicked) highlightAlignment(almt, g);
+                if (!maplineClicked) highlightAlignment(almt, g, base_alignments);
             })
             .on('mouseout', () => {
                 if (!maplineClicked) turnOffEffects(g);
@@ -166,41 +151,29 @@ function drawBaselineSvg()
                 .attr('class', 'mapLine-bg')
             .clone(true).lower() //path select helper
                 .attr('class', 'mapLine-select-helper');
-        //highlight event on any nodes in svg
-        g.selectAll('.node')
-            .filter(d => d.mappings != undefined)
-            .on('mouseover', d => {
-                if (!maplineClicked) highlightAlignment(d.mappings, g);
-            })
-            .on('mouseout', () => {
-                if (!maplineClicked) turnOffEffects(g);
+        const maplineUpdate = mapline.transition(t)
+            .each( (d,i,n) => {
+                d3.select(n[i]).selectAll('path')
+                    .attr('d', () => calcMapLinePath(d,i));
             });
+        const maplineExit = mapline.exit().transition(t).remove();
+
+        console.log(base_alignments);
     }
     update();
-
     //Redraws mapping lines
-    gTree1.on('click', () => {
-        console.log('clicked on gTree1');
-        // update();
-        //TODO: should be something updating the mapped classes' x,y position
-    });
-    gTree2.on('click', () => {
-        console.log('clicked on gTree2');
-        // update();
-        //TODO: should be something updating the mapped classes' x,y position
-    });
+    gTree1.on('click', () => update());
+    gTree2.on('click', () => update());
 
-    //Show message when mouseover on 'Thing'
-    const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
-        .attr('visibility', 'hidden');
-    //TODO: enable this for doubleclick on Thing
-    svg.selectAll('.root.node')
-        .on('mouseover', () => msgBox.attr('visibility', 'visible'))
-        .on('mouseout', () => msgBox.attr('visibility', 'hidden'))
-        .on('dblclick', () => {
-            console.log('root double-clicked!');
+    //Highlights alignments for mouse events on tree nodes
+    g.selectAll('.node')
+        .filter(d => d.mappings != undefined)
+        .on('mouseover', d => {
+            if (!maplineClicked) highlightAlignment(d.mappings, g, base_alignments);
+        })
+        .on('mouseout', () => {
+            if (!maplineClicked) turnOffEffects(g);
         });
-    
     //Turns off the highlight when clicked on other part in svg
     document.getElementById('baseline-svg')
         .addEventListener('click', (e) =>{
@@ -212,6 +185,17 @@ function drawBaselineSvg()
             }
         });
 
+    // //Show message when mouseover on 'Thing'
+    // const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
+    //     .attr('visibility', 'hidden');
+    // //TODO: enable this for doubleclick on Thing
+    // svg.selectAll('.root.node')
+    //     .on('mouseover', () => msgBox.attr('visibility', 'visible'))
+    //     .on('mouseout', () => msgBox.attr('visibility', 'hidden'))
+    //     .on('dblclick', () => {
+    //         console.log('root double-clicked!');
+    //     });
+    
     /**
      * Calculates the svg:path for a baseline mapping line
      * @param {Object} almt an alignment mapping
@@ -219,15 +203,16 @@ function drawBaselineSvg()
      */
     function calcMapLinePath(almt, i)
     {
+        if (!almt) { return ``; }
+        console.log(`calcMapLinePath(almt=${almt}, i=${i})`);
+        console.log(`calcMapLinePath() id:${almt.id} e1pos:${almt.e1pos.x},${almt.e1pos.y} e2pos:${almt.e2pos.x},${almt.e2pos.y}`);
+
         const ontGap = 200;
-        if (!almt) {
-            return ``;
-        }
         const dn = 6; //distance from the nodemark
-        const x1 = almt.e1.x + dn,
-            y1 = almt.e1.y,
-            x2 = almt.e2.x + ontGap - dn,
-            y2 = almt.e2.y;
+        const x1 = almt.e1pos.x + dn,
+            y1 = almt.e1pos.y,
+            x2 = almt.e2pos.x + ontGap - dn,
+            y2 = almt.e2pos.y;
         const c = 10,   //curve value
             gm = 20, //margin from ontGap
             hgap = ((ontGap-gm*2) / base_alignments.length).toFixed(0);
@@ -289,29 +274,47 @@ function drawMatrixSvg()
     console.log('draw matrix mapping');
     const gMap = gContent.append('g')
         .attr('id','gMap');
-    const mapcell = gMap.selectAll('rect')
-        .data(mtrx_alignments)
-        .join('rect')
-            .attr('id', d => `a${d.id}`)
-            .classed('mapping', true)
-            .classed('mapCell', true)
-            .attr('x', d => d.e2.y)
-            .attr('y', d => d.e1.y)
-            .attr('width', cellSize)
-            .attr('height', cellSize);
-    mapcell.on('mouseenter', almt => showCellGuide(almt))
-        .on('mouseover', almt => highlightAlignment(almt, g))
-        .on('mouseout', () => {
-            turnOffEffects(g);
-            gGrid.selectAll('.mapCell-guide').remove();
-        });
+    
+    function update() {
+        console.log('update mapCells');
+
+        updateMappingPos(mtrx_alignments);
+
+        const t = gMap.transition().duration(100);
+
+        const mapcell = gMap.selectAll('rect')
+            .data(mtrx_alignments, d => d.id);
+        mapcell.join(
+            enter => enter.append('rect')
+                .attr('x', d => d.e2pos.y)
+                .attr('y', d => d.e1pos.y),
+            update => update.transition(t)
+                    .attr('x', d => d.e2pos.y)
+                    .attr('y', d => d.e1pos.y)
+        )   .attr('id', d => `a${d.id}`)
+            .classed('mapping', true).classed('mapCell', true)
+            .attr('width', cellSize).attr('height', cellSize);
+        mapcell
+            .on('mouseenter', almt => showCellGuide(almt))
+            .on('mouseover', almt => highlightAlignment(almt, g, mtrx_alignments))
+            .on('mouseout', () => {
+                turnOffEffects(g);
+                gGrid.selectAll('.mapCell-guide').remove();
+            });
+        
+        console.log(mtrx_alignments);
+    }
+    update();
+    //Redraws mapping cells
+    gTree1.on('click', () => update());
+    gTree2.on('click', () => update());
 
     //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
-    //highlight event on any nodes in svg
+    //Highlights alignments for mouse events on tree nodes
     g.selectAll('.node')
         .filter(d => d.mappings != undefined)
         .on('mouseenter', d => showCellGuide(d.mappings))
-        .on('mouseover', d => highlightAlignment(d.mappings, g))
+        .on('mouseover', d => highlightAlignment(d.mappings, g, mtrx_alignments))
         .on('mouseout', () => {
             turnOffEffects(g);
             gGrid.selectAll('.mapCell-guide').remove();
@@ -330,20 +333,20 @@ function drawMatrixSvg()
             const gCellGuide = gGrid.append('g')
             .classed('mapCell-guide', true);
             gCellGuide.append('rect')
-                .attr('x', 0).attr('y', almt.e1.y)
+                .attr('x', 0).attr('y', almt.e1pos.y)
                 .attr('width', cellSize * col).attr('height', cellSize);
             gCellGuide.append('rect')
-                .attr('x', almt.e2.y).attr('y', 0)
+                .attr('x', almt.e2pos.y).attr('y', 0)
                 .attr('width', cellSize).attr('height', cellSize * row);
         }
     }
 
-    //Shows message when mouseover on 'Thing'
-    const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
-        .attr('visibility', 'hidden');
-    svg.selectAll('.root.node')
-        .on('mouseover', () => msgBox.attr('visibility', 'visible'))
-        .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
+    // //Shows message when mouseover on 'Thing'
+    // const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
+    //     .attr('visibility', 'hidden');
+    // svg.selectAll('.root.node')
+    //     .on('mouseover', () => msgBox.attr('visibility', 'visible'))
+    //     .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
 
     //Freezes headers on svg on 'scroll' event
     document.getElementById('matrix-svgdiv')
@@ -401,21 +404,22 @@ function grid(row, col, cellSize, drawsBg)
  * Give 'highlight' class to the DOM elements of the list of alignments
  * @param {*} alignments one alignment or an array of alignments
  * @param {*} g svg:g of baseline or matrix
+ * @param {*} alignmentSet base_alignment or mtrx_alignment
  */
-function highlightAlignment(alignments, g) {
+function highlightAlignment(alignments, g, alignmentSet) {
     if (!alignments) { return; }    //for undefined
     console.log('highlightAlignment()');
     alignments = Array.isArray(alignments) ? alignments : [alignments];
     //To highlight any redundant alignment sets
-    alignments = newAlignments.filter(d => d.namePair === alignments[0].namePair);
+    alignments = alignmentSet.filter(d => d.namePair === alignments[0].namePair);
 
     //Mutes all mapping and nodes in the group
     g.selectAll('.node').classed('muted', true);
     g.selectAll('.mapping').classed('muted', true);
 
+    //Highlights mappings and their class nodes
     for (let almt of alignments) {
-        console.log(`highlight alignment: gMap #a${almt.id}, gTree1 #n${almt.e1.id}, gTree2 #n${almt.e2.id}`);
-        // console.log(almt);
+        console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
 
         //alignment
         g.select("#gMap").select('#a'+almt.id)
