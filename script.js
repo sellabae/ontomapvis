@@ -235,6 +235,7 @@ function drawBaselineSvg()
         const hx = hgap * i + gm;
         const vy = y2 > y1 ? y2-c : y2+c;
         const cy = y2 > y1 ? c : -c;
+        if (y1 == y2) { return `M${x1},${y1} H${x2}`; } //return straight line
         return `M${x1},${y1} H${hx} s${c},0,${c},${cy} V${vy} s0,${cy},${c},${cy} H${x2}`;
     }
 }

@@ -107,28 +107,20 @@ function treechart(root, align) {
                 d.children = d.children ? null : d._children;   
                 if(d.children == null) {    //if it's collapsed branch node
                     console.log(`branch node '${d.data.name}' collapsed`);
-                    d.collapsed = true;
-                    //Gives hidden mark to its descendants -> the code below is not valid
-                    //actual subnodes in d._children
-                    //FIXME: NEED recursive function to iterate in d._children
+                    d.expanded = false;
+                    //Sets shown=false to its actual descendants under d._children
                     d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = false;}));
                     d.shown = true; //exclude self!
                     console.log(`${d.data.name}'s descendants gets shown=false`);
                     console.log(d._children);
                 } else if(d.children) {     //if it's expanded branch node
                     console.log(`branch node '${d.data.name}' expanded`);
-                    d.collapsed = false;
+                    d.expanded = true;
                     d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = true;}));
+                    console.log(d._children);
                 }
                 if(d._children) { //only for branch nodes with children
-                    //update the expanded nodemark for branch nodes
-                    //FIXME: nodemark doesn't correspond after collapsed branch under d..
-                    const sel = d3.select(n[i]); //this selection
-                    if(sel.classed('branch')) {
-                        sel.classed('expanded', !d.collapsed);
-                    }
-                    //update recursively
-                    update(d);
+                    update(d); //update recursively
                 }
             });
         // Appends nodemark, text, and select helper
@@ -150,9 +142,17 @@ function treechart(root, align) {
             .lower();
 
         // Transition nodes to their new position.
-        const nodeUpdate = node.merge(nodeEnter).transition(t)
-            .attr("transform", (d,i,n) => `translate(${d.x},${d.y})`)
-            .attr("opacity", 1);
+        const nodeUpdate = node.merge(nodeEnter)
+            .each((d,i,n) => {
+                //Updates branch nodemark for expanded/collapsed
+                if(d._children) {
+                    console.log('branch! expanded? '+d.expanded);
+                    d3.select(n[i]).classed('expanded', d.expanded==false ? false : true);
+                }
+            })
+            .transition(t)
+                .attr("transform", (d,i,n) => `translate(${d.x},${d.y})`)
+                .attr("opacity", 1);
             
         // Transition exiting nodes to the parent's new position.
         const nodeExit = node.exit().transition(t).remove()

@@ -152,7 +152,7 @@
   fill: #14a599;
 }
 
-.branch:hover, .mapping:hover {
+.branch:not(.root):hover, .mapping:hover {
   cursor: pointer;
 }
 

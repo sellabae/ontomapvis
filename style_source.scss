@@ -194,7 +194,7 @@ $text-size: 0.9em;
 }
 
 //pointer cursor as a click event indicator
-.branch:hover, .mapping:hover {
+.branch:not(.root):hover, .mapping:hover {
     cursor: pointer;
 }
 
