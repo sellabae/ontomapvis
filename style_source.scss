@@ -174,12 +174,12 @@ $text-size: 0.9em;
 // for mappings to nodes collapsed under their parent
 .map-to-hidden {
     & .mapLine-fg {
-        stroke-dasharray: 3 2;
+        stroke-dasharray: 4 6;
         // stroke-dasharray: 0 3;
         // stroke-linecap: round;
     }
     &.highlight .mapLine-fg {
-        stroke-dasharray: 5 3;
+        stroke-dasharray: 4 8;
         // stroke-dasharray: 0 7;
         // stroke-linecap: round;
     }

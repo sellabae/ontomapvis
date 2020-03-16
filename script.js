@@ -86,8 +86,22 @@ function describeDataset()
 
 function updateMappingPos(alignments) {
     alignments.forEach(a => {
-        a.e1pos = {x: a.e1.x, y: a.e1.y};
-        a.e2pos = {x: a.e2.x, y: a.e2.y};
+        //Updates the positions
+        if (a.e1.shown) {
+            a.e1pos = {x: a.e1.x, y: a.e1.y};
+        } else {
+            const nearestShownAnc = a.e1.ancestors().filter(d => d.shown)[0];
+            a.e1pos = {x: nearestShownAnc.x, y: nearestShownAnc.y};
+        }
+        if (a.e2.shown) {
+            a.e2pos = {x: a.e2.x, y: a.e2.y};
+        } else {
+            const nearestShownAnc = a.e2.ancestors().filter(d => d.shown)[0];
+            a.e2pos = {x: nearestShownAnc.x, y: nearestShownAnc.y};
+        }
+
+        //Marks mapToHidden if one of mappedEntity is shown false
+        a.mapToHidden = !(a.e1.shown && a.e2.shown);
     });
 }
 
@@ -151,11 +165,13 @@ function drawBaselineSvg()
                 .attr('class', 'mapLine-bg')
             .clone(true).lower() //path select helper
                 .attr('class', 'mapLine-select-helper');
-        const maplineUpdate = mapline.transition(t)
-            .each( (d,i,n) => {
-                d3.select(n[i]).selectAll('path')
-                    .attr('d', () => calcMapLinePath(d,i));
-            });
+        const maplineUpdate = mapline
+            .classed('map-to-hidden', d => d.mapToHidden)
+            .transition(t)
+                .each( (d,i,n) => {
+                    d3.select(n[i]).selectAll('path')
+                        .attr('d', () => calcMapLinePath(d,i));
+                });
         const maplineExit = mapline.exit().transition(t).remove();
 
         console.log(base_alignments);
@@ -204,8 +220,7 @@ function drawBaselineSvg()
     function calcMapLinePath(almt, i)
     {
         if (!almt) { return ``; }
-        console.log(`calcMapLinePath(almt=${almt}, i=${i})`);
-        console.log(`calcMapLinePath() id:${almt.id} e1pos:${almt.e1pos.x},${almt.e1pos.y} e2pos:${almt.e2pos.x},${almt.e2pos.y}`);
+        // console.log(`calcMapLinePath() id:${almt.id} e1pos:${almt.e1pos.x},${almt.e1pos.y} e2pos:${almt.e2pos.x},${almt.e2pos.y}`);
 
         const ontGap = 200;
         const dn = 6; //distance from the nodemark
@@ -288,7 +303,9 @@ function drawMatrixSvg()
             enter => enter.append('rect')
                 .attr('x', d => d.e2pos.y)
                 .attr('y', d => d.e1pos.y),
-            update => update.transition(t)
+            update => update
+                .classed('map-to-hidden', d => d.mapToHidden)
+                .transition(t)
                     .attr('x', d => d.e2pos.y)
                     .attr('y', d => d.e1pos.y)
         )   .attr('id', d => `a${d.id}`)

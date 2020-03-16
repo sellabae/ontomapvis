@@ -19,7 +19,7 @@ function hierarchy(data) {
     root.descendants().forEach((d, i) => {
         d.id = i;   //assign id in breadth-first order
         d._children = d.children;   //for collapsing action
-        d.hidden = false;
+        d.shown = true;
     });
     console.log(root);
     return root;
@@ -105,21 +105,27 @@ function treechart(root, align) {
                 //gives null if d was the expanded branch to stop drawing,
                 //or restores from _children if d was collapsed branch.
                 d.children = d.children ? null : d._children;   
-                if(d.children == null) {
+                if(d.children == null) {    //if it's collapsed branch node
+                    console.log(`branch node '${d.data.name}' collapsed`);
                     d.collapsed = true;
-                    //TODO: give hidden mark to its descendants -> the code below is not valid
-                    //since collapsible tree works with _children not children to hold actual subnodes.
-                    // d.descendants().forEach(d => {d.hidden = true;});
-                    // d.hidden = false; //exclude self!
-                    // console.log(`${d.data.name}'s descendants gets hidden=true`);
-                    // console.log(d.descendants());
+                    //Gives hidden mark to its descendants -> the code below is not valid
+                    //actual subnodes in d._children
+                    //FIXME: NEED recursive function to iterate in d._children
+                    d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = false;}));
+                    d.shown = true; //exclude self!
+                    console.log(`${d.data.name}'s descendants gets shown=false`);
+                    console.log(d._children);
+                } else if(d.children) {     //if it's expanded branch node
+                    console.log(`branch node '${d.data.name}' expanded`);
+                    d.collapsed = false;
+                    d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = true;}));
                 }
                 if(d._children) { //only for branch nodes with children
                     //update the expanded nodemark for branch nodes
-                    //TODO: better place to do this? move somewhere else
+                    //FIXME: nodemark doesn't correspond after collapsed branch under d..
                     const sel = d3.select(n[i]); //this selection
                     if(sel.classed('branch')) {
-                        sel.classed('expanded', !sel.classed('expanded'));
+                        sel.classed('expanded', !d.collapsed);
                     }
                     //update recursively
                     update(d);

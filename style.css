@@ -139,10 +139,10 @@
 }
 
 .map-to-hidden .mapLine-fg {
-  stroke-dasharray: 3 2;
+  stroke-dasharray: 4 6;
 }
 .map-to-hidden.highlight .mapLine-fg {
-  stroke-dasharray: 5 3;
+  stroke-dasharray: 4 8;
 }
 .map-to-hidden.mapCell {
   fill: url(#pattern-dot);
