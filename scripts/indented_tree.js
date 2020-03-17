@@ -4,6 +4,7 @@ const nodeHeight = 20,
       nodeWidth = 200,
       nodeIndent = 10;
       nodeMarkSize = 4.5;
+const treeWidth = 300;
 
 const triangle = trianglePoints(nodeMarkSize);
 const verticalLink = d => `M ${d.source.x},${d.source.y} V ${d.target.y}`;

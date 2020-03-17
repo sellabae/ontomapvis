@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ontology Mapping Visualization</title>
+    <title>OntoMapVis</title>
     <!-- <link id="favicon" rel="shortcut icon" href=""/> -->
 
     <!-- jQuery -->
@@ -15,7 +15,7 @@
     <!-- data -->
     <script src="data/edas-ekaw_dataset.js"></script>
     <!-- Script -->
-    <script src="indented_tree.js"></script>
+    <script src="scripts/indented_tree.js"></script>
     <script src="script.js"></script>
 
     <!-- CSS -->
@@ -25,49 +25,31 @@
 </head>
 
 <body class="text-unselectable">
-    <div class="content container-fluid">
+    <div class="content container-fluid text-center">
         <h2 class="py-2">Ontology Mapping Visualization</h2>
-
-        <div id="info-panel" class="row">
-            <p id="dataset-description" class="col-md-8 col-sm-6 col-12"></p>
-            <div class="col-md-4 col-sm-6 col-12 align-right">
-                <div>
-                    <!--
-                    <p class="m-0">prototype options</p>
-                    <div id="control-box" class="py-2 mb-4" style="border: 1px solid grey; border-radius: 2px;">
-                        <div class="form-check">
-                            <input type="checkbox" value="mapping" onclick="show(this.value, this.checked)" checked>
-                            mapping
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" value="nodelink" onclick="show(this.value, this.checked)" checked>
-                            depth guidelines in tree
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" value="nodemark" onclick="show(this.value, this.checked)" checked>
-                            nodemark
-                        </div>
-                    </div>
-                    <script>
-                        function show(value, visible) {
-                            console.log(`show(${value}, ${visible})`);
-                            d3.selectAll(`.${value}`)
-                                .attr('visibility', visible ? 'visible' : 'hidden');
-                        }
-                    </script>
-                    -->
-                </div>
-            </div>
+        <div class="m-4">
+            <p class="h5 mb-1">Dataset 1</p>
+            <p id="dataset-description" class="mb-1">...</p>
+            <a href="conference-baseline.html" class="btn btn-info">baseline</a>
+            <a href="conference-matrix.html" class="btn btn-info">matrix</a>
         </div>
+        <div class="m-4">
+            <p class="h5 mb-1">Dataset 2</p>
+            <p id="dataset-description" class="mb-1">...</p>
+            <a href="" class="btn btn-info">baseline</a>
+            <a href="" class="btn btn-info">matrix</a>
+        </div>
+
+
 
         <div id="vis-panel">
             <div class="row">
                 <div class="col-8">
                     <h4>baseline mapping</h4>
                 </div>
-                <!-- <div class="col-4 align-right">
+                <div class="col-4 align-right">
                     <button class="btn btn-light btn-sm">sort by name</button>
-                </div> -->
+                </div>
             </div>
             <div class="svgdiv" id="baseline-svgdiv">
                 <!-- svg for baseline mapping -->

@@ -5,8 +5,6 @@ const dataset = {
     maps: mapping_edas_ekaw
 };
 
-const treeWidth = 300;
-
 console.log('ont1TreeRoot:');
 const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
 console.log('ont2TreeRoot:');
@@ -75,8 +73,7 @@ window.addEventListener('load', function() {
 
 function describeDataset()
 {
-    var desc = '[Dataset]' +'<br>' +
-        'domain: ' + dataset.domain +'<br>'+
+    var desc = 'domain: ' + dataset.domain +'<br>'+
         `onto1: \"${dataset.ont1.baseNS}\" ${dataset.ont1.classCount} classes` +'<br>'+
         `onto2: \"${dataset.ont2.baseNS}\" ${dataset.ont2.classCount} classes` +'<br>'+
         `maps: ${dataset.maps.alignments.length} class alignments`;
