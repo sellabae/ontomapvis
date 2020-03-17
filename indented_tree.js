@@ -146,7 +146,7 @@ function treechart(root, align) {
             .each((d,i,n) => {
                 //Updates branch nodemark for expanded/collapsed
                 if(d._children) {
-                    console.log('branch! expanded? '+d.expanded);
+                    // console.log('branch! expanded? '+d.expanded);
                     d3.select(n[i]).classed('expanded', d.expanded==false ? false : true);
                 }
             })

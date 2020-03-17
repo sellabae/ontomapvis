@@ -447,7 +447,7 @@ function highlightAlignment(alignments, g, alignmentSet) {
 
     //Highlights mappings and their class nodes
     for (let almt of alignments) {
-        console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
+        // console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
 
         //alignment
         g.select("#gMap").select('#a'+almt.id)

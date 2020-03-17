@@ -31,28 +31,32 @@
         <div id="info-panel" class="row">
             <p id="dataset-description" class="col-md-8 col-sm-6 col-12"></p>
             <div class="col-md-4 col-sm-6 col-12 align-right">
-                <p class="m-0">prototype options</p>
-                <div id="control-box" class="py-2 mb-4" style="border: 1px solid grey; border-radius: 2px;">
-                    <div class="form-check">
-                        <input type="checkbox" value="mapping" onclick="show(this.value, this.checked)" checked>
-                        mapping
+                <div>
+                    <!--
+                    <p class="m-0">prototype options</p>
+                    <div id="control-box" class="py-2 mb-4" style="border: 1px solid grey; border-radius: 2px;">
+                        <div class="form-check">
+                            <input type="checkbox" value="mapping" onclick="show(this.value, this.checked)" checked>
+                            mapping
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" value="nodelink" onclick="show(this.value, this.checked)" checked>
+                            depth guidelines in tree
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" value="nodemark" onclick="show(this.value, this.checked)" checked>
+                            nodemark
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input type="checkbox" value="nodelink" onclick="show(this.value, this.checked)" checked>
-                        depth guidelines in tree
-                    </div>
-                    <!-- <div class="form-check">
-                        <input type="checkbox" value="nodemark" onclick="show(this.value, this.checked)" checked>
-                        nodemark
-                    </div> -->
+                    <script>
+                        function show(value, visible) {
+                            console.log(`show(${value}, ${visible})`);
+                            d3.selectAll(`.${value}`)
+                                .attr('visibility', visible ? 'visible' : 'hidden');
+                        }
+                    </script>
+                    -->
                 </div>
-                <script>
-                    function show(value, visible) {
-                        console.log(`show(${value}, ${visible})`);
-                        d3.selectAll(`.${value}`)
-                            .attr('visibility', visible ? 'visible' : 'hidden');
-                    }
-                </script>
             </div>
         </div>
 
