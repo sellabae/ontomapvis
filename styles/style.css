@@ -15,7 +15,7 @@
 
 .svgdiv {
   width: 100%;
-  height: 600px;
+  height: 700px;
   overflow: scroll;
   border: 1px solid #ccc;
   border-radius: 2px;
@@ -152,7 +152,7 @@
   fill: #14a599;
 }
 
-.branch:not(.root):hover, .mapping:hover {
+.branch:hover, .mapping:hover {
   cursor: pointer;
 }
 
@@ -168,6 +168,11 @@
 
 .matrix-head rect {
   fill: #fcfcfc;
+}
+
+.frozen-shadow {
+  stroke: #dddddd;
+  stroke-width: 3;
 }
 
 /*# sourceMappingURL=style.css.map */
