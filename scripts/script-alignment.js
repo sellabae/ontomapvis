@@ -82,7 +82,7 @@ function highlightAlignment(alignments, g, alignmentSet) {
     }
 }
 
-function turnOffEffects(g) {
+function unhighlightAll(g) {
     g.selectAll("*")
         .classed('highlight', false)
         .classed('muted', false);

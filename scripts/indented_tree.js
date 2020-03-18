@@ -96,11 +96,7 @@ function treechart(root, align) {
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
             .attr("opacity", 0);
         nodeEnter
-            .on("click", (d,i,n) => {
-                if(d==root) {   //skip for root node
-                    console.log('root node clicked.');
-                    return;
-                }
+            .on("click", d => {
                 //for branch node, d.children: shown children, d._children: owned children.
                 //for leaf node, d.children:undefined, d._children: undefined
                 //gives null if d was the expanded branch to stop drawing,
@@ -113,12 +109,12 @@ function treechart(root, align) {
                     d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = false;}));
                     d.shown = true; //exclude self!
                     console.log(`${d.data.name}'s descendants gets shown=false`);
-                    console.log(d._children);
+                    // console.log(d._children);
                 } else if(d.children) {     //if it's expanded branch node
                     console.log(`branch node '${d.data.name}' expanded`);
                     d.expanded = true;
                     d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = true;}));
-                    console.log(d._children);
+                    // console.log(d._children);
                 }
                 if(d._children) { //only for branch nodes with children
                     update(d); //update recursively

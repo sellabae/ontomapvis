@@ -100,7 +100,7 @@ function drawBaselineSvg()
                 if (!maplineClicked) highlightAlignment(almt, g, base_alignments);
             })
             .on('mouseout', () => {
-                if (!maplineClicked) turnOffEffects(g);
+                if (!maplineClicked) unhighlightAll(g);
             });
         maplineEnter.append('path')   //foreground path
             .attr('d', (d,i) => calcMapLinePath(d,i))
@@ -118,6 +118,18 @@ function drawBaselineSvg()
                         .attr('d', () => calcMapLinePath(d,i));
                 });
         const maplineExit = mapline.exit().transition(t).remove();
+        
+        //Highlights alignments for mouse events on tree nodes
+        g.selectAll('.node')
+            .filter(d => d.mappings != undefined)
+            .on('mouseover', d => {
+                console.log(`mouseover on '${d.data.name}'`);
+                if (!maplineClicked) highlightAlignment(d.mappings, g, base_alignments);
+            })
+            .on('mouseout', (d) => {
+                console.log(`mouseout from '${d.data.name}'`);
+                if (!maplineClicked) unhighlightAll(g);
+            });
 
         // console.log(base_alignments);
     }
@@ -127,15 +139,7 @@ function drawBaselineSvg()
     gTree1.on('click', () => update());
     gTree2.on('click', () => update());
 
-    //Highlights alignments for mouse events on tree nodes
-    g.selectAll('.node')
-        .filter(d => d.mappings != undefined)
-        .on('mouseover', d => {
-            if (!maplineClicked) highlightAlignment(d.mappings, g, base_alignments);
-        })
-        .on('mouseout', () => {
-            if (!maplineClicked) turnOffEffects(g);
-        });
+    
     //Turns off the highlight when clicked on other part in svg
     document.getElementById('baseline-svg')
         .addEventListener('click', (e) =>{
@@ -143,7 +147,7 @@ function drawBaselineSvg()
             if(maplineClicked && !isMapLineTargeted) {
                 console.log('baseline svg clicked! Turning off the highlight.');
                 maplineClicked = false;
-                turnOffEffects(g);
+                unhighlightAll(g);
             }
         });
     
