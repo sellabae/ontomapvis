@@ -74,6 +74,14 @@ function drawMatrixSvg()
     gAnchorHead.append('rect')
         .attr('x', -headSize).attr('y', -headSize)
         .attr('width', headSize).attr('height', headSize);
+    gAnchorHead.append('path')
+        .attr('class', 'frozen-shadow horizontal')
+        .attr('d', 'M-600,0 H1000')
+        .attr('visibility', 'hidden')
+        .clone()
+            .attr('class', 'frozen-shadow vertical')
+            .attr('d', 'M0,-600 V1000');
+
 
     //Adds ontology treecharts
     const hGap = nodeHeight/2; //gap between headers and matrix
@@ -118,34 +126,39 @@ function drawMatrixSvg()
                     .attr('y', d => d.e1pos.y)
             )
             .attr('id', d => `a${d.id}`)
-            .classed('mapping', true).classed('mapCell', true)
-            .attr('width', cellSize).attr('height', cellSize);
-        mapcell
-            .on('mouseenter', almt => showCellGuide(almt))
-            .on('mouseover', almt => highlightAlignment(almt, g, mtrx_alignments))
+            .classed('mapping', true)
+            .classed('mapCell', true)
+            .attr('width', cellSize)
+            .attr('height', cellSize)
+            .on('mouseover', almt => {
+                showCellGuide(almt);
+                highlightAlignment(almt, g, mtrx_alignments);
+            })
             .on('mouseout', () => {
-                turnOffEffects(g);
+                unhighlightAll(g);
                 gGrid.selectAll('.mapCell-guide').remove();
             });
 
-        //FIXME: unstable glitch in mouseenter. better make cellguide permanant and move along mouse event?
         //Highlights alignments for mouse events on tree nodes
         g.selectAll('.node')
             .filter(d => d.mappings != undefined)
-            .on('mouseenter', d => showCellGuide(d.mappings))
-            .on('mouseover', d => highlightAlignment(d.mappings, g, mtrx_alignments))
+            .on('mouseover', d => {
+                showCellGuide(d.mappings);
+                highlightAlignment(d.mappings, g, mtrx_alignments);
+            })
             .on('mouseout', () => {
-                turnOffEffects(g);
+                unhighlightAll(g);
                 gGrid.selectAll('.mapCell-guide').remove();
             });
 
-        //FIXME: mouseover on mapCell doesn't work at initial state after updating the gGrid
+        //Updates the grid in the matrix background
         row = mtrx_ont1root.descendants().length;
         col = mtrx_ont2root.descendants().length;
         gContent.select('#gGrid').remove();
         gGrid = gContent.append(() => grid(row, col, cellSize, true))
             .attr('id','gGrid').classed('bg-grid', true)
             .lower();
+
         // console.log(mtrx_alignments);
     }
 
@@ -157,6 +170,8 @@ function drawMatrixSvg()
     function showCellGuide(alignments) {
         if (!alignments) { return; }    //for undefined
         console.log('draw cell guide');
+        //Removes any pre-drawn cellGuides
+        gGrid.selectAll('.mapCell-guide').remove();
 
         alignments = Array.isArray(alignments) ? alignments : [alignments];
         //To highlight any redundant alignment sets
@@ -175,22 +190,22 @@ function drawMatrixSvg()
         }
     }
 
-    // //Shows message when mouseover on 'Thing'
-    // const msgBox = svg.append(() => messageBox("Double-click 'Thing' to expand/collapse all."))
-    //     .attr('visibility', 'hidden');
-    // svg.selectAll('.root.node')
-    //     .on('mouseover', () => msgBox.attr('visibility', 'visible'))
-    //     .on('mouseout', () => msgBox.attr('visibility', 'hidden'));
-
     //Freezes headers on svg on 'scroll' event
     document.getElementById('matrix-svgdiv')
         .addEventListener('scroll', (e) => {
             const top = e.target.scrollTop;
             const left = e.target.scrollLeft;
             // console.log(`scroll event on matrix. top:${top} left:${left}`);
+            //Moves the headers along
             gAnchorHead.attr('transform', `translate(${left},${top})`);
             gRowHead.attr('transform', `translate(${left},0)`);
             gColHead.attr('transform', `translate(0,${top})`);
+
+            //Shows shadow under frozen headers
+            gAnchorHead.selectAll('.frozen-shadow.horizontal')
+                .attr('visibility', top ? 'visible' : 'hidden');
+            gAnchorHead.selectAll('.frozen-shadow.vertical')
+                .attr('visibility', left ? 'visible' : 'hidden');
         });
 }
 
