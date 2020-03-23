@@ -27,6 +27,7 @@ function buildNewAlignments(sourceAlmts, ont1root, ont2root) {
  * @param {*} alignments 
  */
 function updateMappingPos(alignments) {
+    console.log('updateMappingPos()');
     alignments.forEach(a => {
         //Updates the positions
         if (a.e1.shown) {
@@ -71,7 +72,7 @@ function highlightAlignment(alignments, g, alignmentSet) {
 
     //Highlights mappings and their class nodes
     for (let almt of allAlignments.reverse()) {
-        console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
+        // console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
 
         //alignment
         g.select("#gMap").select('#a'+almt.id)

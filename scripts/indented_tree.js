@@ -69,6 +69,20 @@ function treechart(root, align) {
     const gNode = gTree.append("g")
         .classed('gNode', true);
 
+    //Sets initial state as tree collapsed to the top branches under root
+    console.log('Sets initial state as collapsed to top branches');
+    root.descendants().forEach(d => {
+        //Collapses all branches
+        if (d.depth > 0 && d.children) {
+            d.children = null;
+            d.collapsed = true;
+        }
+        //Not show any nodes deeper than depth 1
+        if (d.depth > 1) {
+            d.shown = false;
+        }
+    });
+
     function update(source) {
         const nodes = root.descendants().reverse();  //for the z-order
         const links = linksToLastChild(root);
@@ -90,7 +104,7 @@ function treechart(root, align) {
             .attr('id', d => `n${d.id}`)
             .classed('root', d => d==root)
             .classed('branch', d => d._children ? true : false) 
-            .classed('expanded', d => d._children ? true : false) //added expanded as initial state
+            .classed('expanded', d => (d.children && d._children) ? true : false) //added expanded as initial state
             .classed('leaf', d => d._children ? false : true)
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
             .attr("opacity", 0);
@@ -182,6 +196,7 @@ function treechart(root, align) {
         });
     }
 
+    //Initially updates the whole tree
     update(root);
 
     return gTree.node(); //returning the html element

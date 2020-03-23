@@ -131,7 +131,7 @@ function drawBaselineSvg()
                 .attr('class', 'mapLine-bg')
             .clone(true).lower() //path select helper
                 .attr('class', 'mapLine-select-helper');
-        const maplineUpdate = mapline
+        const maplineUpdate = mapline.merge(maplineEnter)
             .classed('map-to-hidden', d => d.mapToHidden)
             .transition(t)
                 .each( (d,i,n) => {
