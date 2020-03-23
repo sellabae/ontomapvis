@@ -3,6 +3,7 @@
 $primary-color: #14a599;
 $darker-color: #00978b;
 $lighter-color: #dddddd;
+$muted-color: #7db3ae;
 $bg-grid-color: #f6f6f6;
 $bg-color: #fcfcfc;
 $text-color: black;
@@ -173,24 +174,23 @@ $text-size: 0.9em;
 
 // for mappings to nodes collapsed under their parent
 .map-to-hidden {
-    & .mapLine-fg {
-        stroke-dasharray: 4 6;
-        // stroke-dasharray: 0 3;
-        // stroke-linecap: round;
-    }
-    &.highlight .mapLine-fg {
-        stroke-dasharray: 4 8;
-        // stroke-dasharray: 0 7;
-        // stroke-linecap: round;
+    &.mapLine {
+        & .mapLine-fg {
+            stroke: $muted-color;
+            stroke-dasharray: 2 4;
+        }
+        &.highlight .mapLine-fg {
+            stroke-width: 3px;
+            stroke-dasharray: 2 6;
+        }
     }
     &.mapCell {
         fill: url(#pattern-dot);
-        // fill: orange;
     }
 }
 
 #pattern-dot-rect {
-    fill: $primary-color;
+    fill: $muted-color;
 }
 
 //pointer cursor as a click event indicator
