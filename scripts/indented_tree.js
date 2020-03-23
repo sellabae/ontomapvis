@@ -78,9 +78,8 @@ function treechart(root, align) {
 
         //TODO: auto resize the viewBox
         let lowest = 400;
-        //...
-        const t = gTree.transition()
-            .duration(100);
+        
+        const t = gTree.transition().duration(100);
         
         // Updates the nodes...
         const node = gNode.selectAll("g")
@@ -104,7 +103,7 @@ function treechart(root, align) {
                 d.children = d.children ? null : d._children;   
                 if(d.children == null) {    //if it's collapsed branch node
                     console.log(`branch node '${d.data.name}' collapsed`);
-                    d.expanded = false;
+                    d.collapsed = true;
                     //Sets shown=false to its actual descendants under d._children
                     d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = false;}));
                     d.shown = true; //exclude self!
@@ -112,7 +111,7 @@ function treechart(root, align) {
                     // console.log(d._children);
                 } else if(d.children) {     //if it's expanded branch node
                     console.log(`branch node '${d.data.name}' expanded`);
-                    d.expanded = true;
+                    d.collapsed = false;
                     d._children.forEach(d => d.descendants().forEach(dd => {dd.shown = true;}));
                     // console.log(d._children);
                 }

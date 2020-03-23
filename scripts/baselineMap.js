@@ -34,6 +34,27 @@ ont2TreeRoot.each(d => {
         d.mappings = filtered;
     }
 });
+//Adds a function to each elements which fetch all exisiting mappings of its descendants
+let getAllDescendantMappings = function(d) {
+    mappings = d.mappings ? d.mappings : [];
+    //Includes those mappings of subnodes
+    if (d._children) {
+      for (let child of d._children) {
+        for (let dsc of child.descendants()) {
+          if (dsc.mappings) {
+            mappings = mappings.concat(dsc.mappings);
+          }
+        }
+      }
+    }
+    return mappings;
+};
+ont1TreeRoot.each(d => {
+    d.mappingsOfDescendants = getAllDescendantMappings(d);
+});
+ont2TreeRoot.each(d => {
+    d.mappingsOfDescendants = getAllDescendantMappings(d);
+});
 //Processed data to use
 const base_ont1root = ont1TreeRoot;
 const base_ont2root = ont2TreeRoot;
@@ -121,13 +142,16 @@ function drawBaselineSvg()
         
         //Highlights alignments for mouse events on tree nodes
         g.selectAll('.node')
-            .filter(d => d.mappings != undefined)
+            .filter(d => d.mappingsOfDescendants)
             .on('mouseover', d => {
-                console.log(`mouseover on '${d.data.name}'`);
-                if (!maplineClicked) highlightAlignment(d.mappings, g, base_alignments);
+                if (!maplineClicked) {
+                    mappings = d.collapsed ? d.mappingsOfDescendants : d.mappings;
+                    if(mappings) {
+                        highlightAlignment(mappings, g, base_alignments);
+                    }
+                }
             })
-            .on('mouseout', (d) => {
-                console.log(`mouseout from '${d.data.name}'`);
+            .on('mouseout', () => {
                 if (!maplineClicked) unhighlightAll(g);
             });
 

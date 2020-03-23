@@ -56,17 +56,22 @@ function updateMappingPos(alignments) {
 function highlightAlignment(alignments, g, alignmentSet) {
     if (!alignments) { return; }    //for undefined
     console.log('highlightAlignment()');
-    alignments = Array.isArray(alignments) ? alignments : [alignments];
-    //To highlight any redundant alignment sets
-    alignments = alignmentSet.filter(d => d.namePair === alignments[0].namePair);
-
     //Mutes all mapping and nodes in the group
     g.selectAll('.node').classed('muted', true);
     g.selectAll('.mapping').classed('muted', true);
 
+    //Includes any alignment sets mapped to redundant nodes
+    alignments = Array.isArray(alignments) ? alignments : [alignments];
+    const allAlignments = alignments;
+    for(let almt of alignments) {
+        //Adds additional redundant alignment except itself
+        filtered = alignmentSet.filter(d => (d.namePair === almt.namePair) && (d === almt));
+        allAlignments.concat(filtered);
+    }
+
     //Highlights mappings and their class nodes
-    for (let almt of alignments) {
-        // console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
+    for (let almt of allAlignments.reverse()) {
+        console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
 
         //alignment
         g.select("#gMap").select('#a'+almt.id)
