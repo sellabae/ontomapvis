@@ -23,6 +23,25 @@ function buildNewAlignments(sourceAlmts, ont1root, ont2root) {
 }
 
 /**
+ * Gets all mappings of its descendants
+ * @param {*} d tree node element
+ */
+function getAllDescendantMappings(d) {
+    mappings = d.mappings ? d.mappings : [];
+    //Includes those mappings of subnodes
+    if (d._children) {
+      for (let child of d._children) {
+        for (let dsc of child.descendants()) {
+          if (dsc.mappings) {
+            mappings = mappings.concat(dsc.mappings);
+          }
+        }
+      }
+    }
+    return mappings;
+}
+
+/**
  * Updates the mapped positions of alignments
  * @param {*} alignments 
  */

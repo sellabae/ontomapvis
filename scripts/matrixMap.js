@@ -1,3 +1,8 @@
+//Processed data to use
+let mtrx_ont1root;
+let mtrx_ont2root;
+let mtrx_alignments;
+
 /**
  * Creates matrixMapping and returns svg:g
  * @param {*} ont1root 
@@ -11,55 +16,46 @@ function matrixMapping(ont1root, ont2root, alignments) {
     const g = d3.create("svg:g");
 }
 
-const dataset = {
-    domain: 'conference',
-    ont1: edas,
-    ont2: ekaw,
-    maps: mapping_edas_ekaw
-};
-//Builds proper structures for ontologies and alignments
-const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
-const ont2TreeRoot = tree( hierarchy(dataset.ont2.root), 'left');
-const newAlignments = buildNewAlignments(dataset.maps.alignments, ont1TreeRoot, ont2TreeRoot);
-//Adds a mapping field to a node in tree if there's an alignment for it.
-ont1TreeRoot.each(d => {
-    const filtered = newAlignments.filter(a => a.e1.id === d.id);
-    if (filtered.length) {
-        d.mappings = filtered;
-    }
-});
-ont2TreeRoot.each(d => {
-    const filtered = newAlignments.filter(a => a.e2.id === d.id);
-    if (filtered.length) {
-        d.mappings = filtered;
-    }
-});
-//Adds a function to each elements which fetch all exisiting mappings of its descendants
-let getAllDescendantMappings = function(d) {
-    mappings = d.mappings ? d.mappings : [];
-    //Includes those mappings of subnodes
-    if (d._children) {
-      for (let child of d._children) {
-        for (let dsc of child.descendants()) {
-          if (dsc.mappings) {
-            mappings = mappings.concat(dsc.mappings);
-          }
+function setDataset(dataset) {
+    //Builds proper structures for ontologies and alignments
+    const ont1TreeRoot = tree( hierarchy(dataset.ont1.root), 'right');
+    const ont2TreeRoot = tree( hierarchy(dataset.ont2.root), 'left');
+    const newAlignments = buildNewAlignments(dataset.maps.alignments, ont1TreeRoot, ont2TreeRoot);
+    //Adds a mapping field to a node in tree if there's an alignment for it.
+    ont1TreeRoot.each(d => {
+        const filtered = newAlignments.filter(a => a.e1.id === d.id);
+        if (filtered.length) {
+            d.mappings = filtered;
         }
-      }
-    }
-    return mappings;
-};
-ont1TreeRoot.each(d => {
-    d.mappingsOfDescendants = getAllDescendantMappings(d);
-});
-ont2TreeRoot.each(d => {
-    d.mappingsOfDescendants = getAllDescendantMappings(d);
-});
-//Processed data to use
-const mtrx_ont1root = ont1TreeRoot;
-const mtrx_ont2root = ont2TreeRoot;
-const mtrx_alignments = newAlignments;
+    });
+    ont2TreeRoot.each(d => {
+        const filtered = newAlignments.filter(a => a.e2.id === d.id);
+        if (filtered.length) {
+            d.mappings = filtered;
+        }
+    });
+    //Adds a function to each elements which fetch all exisiting mappings of its descendants
+    ont1TreeRoot.each(d => {
+        d.mappingsOfDescendants = getAllDescendantMappings(d);
+    });
+    ont2TreeRoot.each(d => {
+        d.mappingsOfDescendants = getAllDescendantMappings(d);
+    });
 
+    mtrx_ont1root = ont1TreeRoot;
+    mtrx_ont2root = ont2TreeRoot;
+    mtrx_alignments = newAlignments;
+}
+
+
+// const dataset_edas_ekaw = {
+//     domain: 'conference',
+//     ont1: edas,
+//     ont2: ekaw,
+//     maps: mapping_edas_ekaw
+// };
+
+// setDataset(dataset_edas_ekaw);
 window.addEventListener('load', function() {
     console.log("window loaded.");
     drawMatrixSvg();

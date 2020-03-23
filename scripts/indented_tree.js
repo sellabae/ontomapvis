@@ -148,8 +148,8 @@ function treechart(root, align) {
             .attr('width', nodeWidth)
             .attr('height', nodeHeight)
             .attr('x', alignRight ? -nodeWidth+8 : -8)
-            .attr('y', -nodeHeight/2)
-            .lower();
+            .attr('y', -nodeHeight/2);
+            // .lower();
 
         // Transition nodes to their new position.
         const nodeUpdate = node.merge(nodeEnter)

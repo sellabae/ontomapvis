@@ -12,12 +12,21 @@
     <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     
-    <!-- data -->
-    <script src="data/edas-ekaw_dataset.js"></script>
     <!-- Script -->
     <script src="scripts/indented_tree.js"></script>
     <script src="scripts/script-alignment.js"></script>
     <script src="scripts/baselineMap.js"></script>
+    <!-- data -->
+    <script src="data/dataset_edas-ekaw.js"></script>
+    <script>
+        const dataset1 = {
+            domain: 'conference',
+            ont1: edas,
+            ont2: ekaw,
+            maps: mapping_edas_ekaw
+        };
+        setDataset(dataset1);
+    </script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="styles/style.css">
@@ -29,7 +38,7 @@
 
     <div class="content container-fluid py-2">
         <div class="mb-2">
-            <span class="h3 align-bottom">baseline mapping </span>
+            <span class="h3 align-bottom">Dataset1 Baseline mapping</span>
         </div>
         <div class="svgdiv" id="baseline-svgdiv">
             <!-- svg for baseline mapping -->

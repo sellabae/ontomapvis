@@ -1,17 +1,24 @@
-const dataset = {
-    domain: 'conference',
+const dataset1 = {
+    domain: 'conference edas-ekaw',
     ont1: edas,
     ont2: ekaw,
     maps: mapping_edas_ekaw
 };
+const dataset2 = {
+    domain: 'conference iasted-sigkdd',
+    ont1: iasted,
+    ont2: sigkdd,
+    maps: mapping_iasted_sigkdd
+};
 
 window.addEventListener('load', function() {
     console.log("window loaded.");
-    $('#dataset-description').html(describeDataset());
+    $('#dataset-description-1').html(describeDataset(dataset1));
+    $('#dataset-description-2').html(describeDataset(dataset2));
     
 });
 
-function describeDataset()
+function describeDataset(dataset)
 {
     var desc = 'domain: ' + dataset.domain +'<br>'+
         `onto1: \"${dataset.ont1.baseNS}\" ${dataset.ont1.classCount} classes` +'<br>'+

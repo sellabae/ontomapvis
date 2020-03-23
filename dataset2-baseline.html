@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OntoMapVis</title>
+    <title>OntoMapVis - Baseline Dataset2</title>
     <!-- <link id="favicon" rel="shortcut icon" href=""/> -->
 
     <!-- jQuery -->
@@ -12,12 +12,21 @@
     <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     
-    <!-- data -->
-    <script src="data/dataset_edas-ekaw.js"></script>
-    <script src="data/dataset_iasted-sigkdd.js"></script>
     <!-- Script -->
     <script src="scripts/indented_tree.js"></script>
-    <script src="script.js"></script>
+    <script src="scripts/script-alignment.js"></script>
+    <script src="scripts/baselineMap.js"></script>
+    <!-- data -->
+    <script src="data/dataset_iasted-sigkdd.js"></script>
+    <script>
+        const dataset2 = {
+            domain: 'conference',
+            ont1: iasted,
+            ont2: sigkdd,
+            maps: mapping_iasted_sigkdd
+        };
+        setDataset(dataset2);
+    </script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="styles/style.css">
@@ -27,19 +36,14 @@
 
 <body class="text-unselectable">
 
-    <div class="content container-fluid text-center">
-        <h2 class="py-2">Ontology Mapping Visualization</h2>
-        <div class="m-4">
-            <p class="h5 mb-1">Dataset 1</p>
-            <p id="dataset-description-1" class="mb-1">...</p>
-            <a href="dataset1-baseline.html" class="btn btn-info">baseline</a>
-            <a href="dataset1-matrix.html" class="btn btn-info">matrix</a>
+    <div class="content container-fluid py-2">
+        <div class="mb-2">
+            <span class="h3 align-bottom">Dataset2 Baseline mapping</span>
         </div>
-        <div class="m-4">
-            <p class="h5 mb-1">Dataset 2</p>
-            <p id="dataset-description-2" class="mb-1">...</p>
-            <a href="dataset2-baseline.html" class="btn btn-info">baseline</a>
-            <a href="dataset2-matrix.html" class="btn btn-info">matrix</a>
+        <div class="svgdiv" id="baseline-svgdiv">
+            <!-- svg for baseline mapping -->
+            <svg class="mapsvg" id="baseline-svg" width="800" height="600">
+            </svg>
         </div>
     </div>
 
