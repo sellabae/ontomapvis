@@ -19,6 +19,8 @@ function buildNewAlignments(sourceAlmts, ont1root, ont2root) {
         }
     });
     console.log(newAlmts);
+    updateMappingPos(newAlmts);
+    console.log(newAlmts);
     return newAlmts;
 }
 
@@ -65,6 +67,12 @@ function updateMappingPos(alignments) {
         //Marks mapToHidden if one of mappedEntity is shown false
         a.mapToHidden = !(a.e1.shown && a.e2.shown);
     });
+    
+    //Marks overlapped top nodes for triangle
+    alignments.forEach(a => {
+        const overlapped = alignments.filter(other => (a.e1pos.y == other.e1pos.y) && (a.e2pos.y == other.e2pos.y));
+        a.overlappedTop = (overlapped.length > 1 && !a.mapToHidden);
+    });
 }
 
 /**
@@ -89,6 +97,7 @@ function highlightAlignment(alignments, g, alignmentSet) {
         allAlignments.concat(filtered);
     }
 
+    console.log(allAlignments);
     //Highlights mappings and their class nodes
     for (let almt of allAlignments.reverse()) {
         // console.log(`highlight: gMap #a${almt.id}, gTree1 #n${almt.e1.id} '${almt.e1.data.name}', gTree2 #n${almt.e2.id} '${almt.e2.data.name}'`);
@@ -105,10 +114,18 @@ function highlightAlignment(alignments, g, alignmentSet) {
             .classed('muted', false)
             .classed('highlight', true);
     }
+    //Always place direct mappings on top.
+    g.selectAll('.mapping').filter(d => d.overlappedTop).raise();
+    allAlignments.forEach(almt => {
+        if(almt.overlappedTop)
+            g.select('#gMap').select('#a'+almt.id).raise();
+    });
 }
 
 function unhighlightAll(g) {
     g.selectAll("*")
         .classed('highlight', false)
         .classed('muted', false);
+    //Always place direct mappings on top.
+    g.selectAll('.map-to-hidden').lower();
 }

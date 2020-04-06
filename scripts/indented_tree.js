@@ -104,7 +104,7 @@ function treechart(root, align) {
             .attr('id', d => `n${d.id}`)
             .classed('root', d => d==root)
             .classed('branch', d => d._children ? true : false) 
-            .classed('expanded', d => (d.children && d._children) ? true : false) //added expanded as initial state
+            .classed('expanded', d => d._children && !d.collapsed)
             .classed('leaf', d => d._children ? false : true)
             .attr("transform", d => `translate(${source.x0},${source.y0})`)
             .attr("opacity", 0);
@@ -157,7 +157,7 @@ function treechart(root, align) {
                 //Updates branch nodemark for expanded/collapsed
                 if(d._children) {
                     // console.log('branch! expanded? '+d.expanded);
-                    d3.select(n[i]).classed('expanded', d.expanded==false ? false : true);
+                    d3.select(n[i]).classed('expanded', !d.collapsed);
                 }
             })
             .transition(t)

@@ -113,7 +113,9 @@ function drawBaselineSvg()
                 highlightAlignment(almt, g, base_alignments);
             })
             .on('mouseover', almt => {
-                if (!maplineClicked) highlightAlignment(almt, g, base_alignments);
+                if (!maplineClicked) {
+                    highlightAlignment(almt, g, base_alignments);
+                }
             })
             .on('mouseout', () => {
                 if (!maplineClicked) unhighlightAll(g);
@@ -133,6 +135,9 @@ function drawBaselineSvg()
                     d3.select(n[i]).selectAll('path')
                         .attr('d', () => calcMapLinePath(d,i));
                 });
+        //Always place direct mappings on top.
+        gMap.selectAll('.map-to-hidden').lower();
+
         const maplineExit = mapline.exit().transition(t).remove();
         
         //Highlights alignments for mouse events on tree nodes

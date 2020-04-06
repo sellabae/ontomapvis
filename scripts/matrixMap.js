@@ -3,6 +3,17 @@ let mtrx_ont1root;
 let mtrx_ont2root;
 let mtrx_alignments;
 
+const cw = 20; //cell width
+const cellRect = (x,y) => `M${x},${y} v${cw} h${cw} v-${cw} Z`;
+const cellTriangle = (x,y) => `M${x},${y} v${cw} l${cw},-${cw} Z`;
+const cellShape = d => {
+    const x = d.e2pos.y;
+    const y = d.e1pos.y;
+    const rectangle = `M${x},${y} v${cw} h${cw} v-${cw} Z`;
+    const triangle = `M${x},${y} v${cw} l${cw},-${cw} Z`;
+    return d.overlappedTop ? triangle : rectangle;
+};
+
 /**
  * Creates matrixMapping and returns svg:g
  * @param {*} ont1root 
@@ -130,17 +141,16 @@ function drawMatrixSvg()
 
         const t = gMap.transition().duration(100);
 
-        const mapcell = gMap.selectAll('rect')
+        const mapcell = gMap.selectAll('path')
             .data(mtrx_alignments, d => d.id);
         mapcell.join(
-            enter => enter.append('rect')
-                .attr('x', d => d.e2pos.y)
-                .attr('y', d => d.e1pos.y),
+            enter => enter.append('path')
+                .classed('map-to-hidden', d => d.mapToHidden)
+                .attr('d', cellShape),
             update => update
                 .classed('map-to-hidden', d => d.mapToHidden)
                 .transition(t)
-                    .attr('x', d => d.e2pos.y)
-                    .attr('y', d => d.e1pos.y)
+                    .attr('d', cellShape)
             )
             .attr('id', d => `a${d.id}`)
             .classed('mapping', true)
@@ -155,6 +165,8 @@ function drawMatrixSvg()
                 unhighlightAll(g);
                 gGrid.selectAll('.mapCell-guide').remove();
             });
+        //Always place direct mappings on top.
+        gMap.selectAll('.map-to-hidden').lower();
 
         //Highlights alignments for mouse events on tree nodes
         g.selectAll('.node')

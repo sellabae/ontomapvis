@@ -176,7 +176,6 @@ $text-size: 0.9em;
 .map-to-hidden {
     &.mapLine {
         & .mapLine-fg {
-            stroke: $muted-color;
             stroke-dasharray: 2 4;
         }
         &.highlight .mapLine-fg {
@@ -190,7 +189,7 @@ $text-size: 0.9em;
 }
 
 #pattern-dot-rect {
-    fill: $muted-color;
+    fill: $primary-color;
 }
 
 //pointer cursor as a click event indicator

@@ -139,7 +139,6 @@
 }
 
 .map-to-hidden.mapLine .mapLine-fg {
-  stroke: #7db3ae;
   stroke-dasharray: 2 4;
 }
 .map-to-hidden.mapLine.highlight .mapLine-fg {
@@ -151,7 +150,7 @@
 }
 
 #pattern-dot-rect {
-  fill: #7db3ae;
+  fill: #14a599;
 }
 
 .branch:hover, .mapping:hover {
