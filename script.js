@@ -1,14 +1,14 @@
 const dataset1 = {
-    domain: 'conference edas-ekaw',
+    domain: 'conference',
     ont1: edas,
     ont2: ekaw,
     maps: mapping_edas_ekaw
 };
 const dataset2 = {
-    domain: 'conference iasted-sigkdd',
-    ont1: iasted,
-    ont2: sigkdd,
-    maps: mapping_iasted_sigkdd
+    domain: 'anatomy',
+    ont1: human,
+    ont2: mouse,
+    maps: mapping_human_mouse
 };
 
 window.addEventListener('load', function() {
