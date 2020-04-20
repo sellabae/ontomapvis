@@ -14,6 +14,11 @@ function hierarchy(data) {
     console.log('hierarcy() called.');
     //Creates hierarchy from data
     const root = d3.hierarchy(data);
+    
+    //Sort nodes alphabetically
+    console.log('sort nodes in ascending order.');
+    root.sort( (a,b) => d3.ascending(a.data.name, b.data.name) );
+
     //Sets the root position
     root.dx = 10;  //??: seems not necessary??
     root.dy = 0;
