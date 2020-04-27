@@ -52,7 +52,7 @@
 /* nodemarks */
 .nodemark {
   transition: 0.1s;
-  fill: #14a599;
+  fill: #0077ff;
   opacity: 1;
   transform-origin: 50 50;
 }
@@ -84,7 +84,7 @@
   opacity: 1;
 }
 .mapLine .mapLine-fg {
-  stroke: #14a599;
+  stroke: #0077ff;
   stroke-width: 1.5px;
   stroke-linecap: round;
 }
@@ -99,7 +99,7 @@
 }
 
 .mapCell {
-  fill: #14a599;
+  fill: #0077ff;
   stroke: white;
   stroke-width: 1px;
   opacity: 1;
@@ -128,14 +128,14 @@
   font-weight: bold;
 }
 .highlight.mapLine .mapLine-fg {
-  stroke: #14a599;
+  stroke: #0077ff;
   stroke-width: 4px;
 }
 .highlight.mapLine .mapLine-bg {
   stroke-width: 7px;
 }
 .highlight.mapCell {
-  fill: #00978b;
+  fill: #005ae2;
 }
 
 .map-to-hidden.mapLine .mapLine-fg {
@@ -150,7 +150,7 @@
 }
 
 #pattern-dot-rect {
-  fill: #14a599;
+  fill: #0077ff;
 }
 
 .branch:hover, .mapping:hover {
