@@ -25,24 +25,24 @@ mapping_edas_ekaw = {
 		},
 		//incorrect mappings
 		{
-			"entity1": "IndustryOrganization",
+			"entity1": "IndustryOrganization", // "Organization"
 			"entity2": "Organisation"
 		},
 		{
 			"entity1": "Author",
-			"entity2": "Tutorial_Chair"
+			"entity2": "Tutorial_Chair" // "Paper_Author"
 		},
 		{
-			"entity1": "SecurityTopic",
+			"entity1": "SecurityTopic", // "Topic"
 			"entity2": "Research_Topic"
 		},
 		{
-			"entity1": "SlideSet",
+			"entity1": "SlideSet", // "Document"
 			"entity2": "Document"
 		},
 		{
 			"entity1": "RejectedPaper",
-			"entity2": "Assigned_Paper"
+			"entity2": "Assigned_Paper" // "Rejected_Paper"
 		},
 		//missing mappings
 		// {
