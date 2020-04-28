@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Study - Mapping Tutorial</title>
+    <!-- <link id="favicon" rel="shortcut icon" href=""/> -->
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="text-unselectable">
+    <div class="content container-fluid">
+        <h2 class="my-3">Mapping Tutorial</h2>
+        
+        <div style="width:800px">
+            <h5>What's an <b>ontology</b>?</h5>
+            <p>In computer science, an ontology is a specification of conceptualizations. <br>
+            Ontologies are used to capture knowledge about some domain of interest. <br>
+            An ontology describes the concepts in the domain and also the relationships that hold between those concepts.</p>
+            <p>An ontology typically contains Individuals (also called Instances), Properties, and Classes.
+            <ul>
+                <li>Individuals represent objects in the domain in which we are interested.</li>
+                <li>Properties are relations that link two individuals together.</li>
+                <li>Classes are interpreted as sets that contain individuals. </li>
+            </ul>
+            </p>
+            <p>Figure 1 shows an example ontology. There are three classes in this ontology, namely Person, Country and Pet. The Person class contains two individuals: Gemma and Matthew. The Country class contains three individuals: Italy, England and USA. The Pet class contains two individuals: Fluffy and Fido. The individual Matthew is associated to three other individuals through three properties, which describe him as a person who lives in England, has a sibling named Gemma and a pet called Fluffy. </p>
+            <div class="text-center">
+                <img src="figure1.png"/><br>
+                Figure 1. A Simple Ontology
+            </div>
+
+            <h5>What's <b>ontology mapping</b>?</h5>
+            <p>Ontologies are typically created by different authors. As a result, the concepts and structures (i.e. individuals, properties and classes) in them will differ even if these ontologies describe the same domain of interest.  <br>
+            In order to identify and associate concepts, ontology mapping arises as a way to generate correspondences between concepts belonging to different ontologies. </p>
+            <p>For example, given three different ontologies with "Queen Elizabeth", "The Queen" and "Elizabeth Windsor" in them, it would be useful to determine whether they all refer to the same individual. This determination process is essentially ontology mapping. </p>
+            <p>In this study, you will be shown exact mappings between a given ontology pair and your goal is to determine if these exact mappings are correct and complete. </p>
+            <p><b>Exact ontology mappings are those that you believe with a high degree of confidence that the concepts can be used interchangeably.</b> For instance, in the previous example, if you are highly confident that "Queen Elizabeth" (from one ontology) and "The Queen" (from another ontology) can be indeed used interchangeably, then this is an exact match. In other words, if you switched the use of the two original concepts, the conceptualizations of the given ontologies would still remain unchanged. It is also useful to navigate through the concepts and exam how they are structured in the given ontologies in order to determine whether a given mapping is correct.</p>
+
+            <h5>Any questions?</h5>
+            <p>If you have any questions about ontologies or ontology mappings, you should ask for clarification right away. </p>
+
+        </div>
+        <a href="3_task_instructions.html" class="btn btn-primary">Next</a>
+
+        <div class="mt-4">
+            <p style="color:gray; font-size:0.9em">Contents of this page is from Dr. Fu's the <u><a style="color:gray;" target="#" href="https://sites.google.com/site/uvicstudy/">CHISEL experiment setup page</a></u>.</p>
+        </div>
+    </div>
+
+</body>
+
+</html>
