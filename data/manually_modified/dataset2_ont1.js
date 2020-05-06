@@ -1,6 +1,6 @@
 var human = {
     "name": "human",
-    "baseNS": "http://human.owl#",
+    "baseNS": "http://human.owl",
     "classCount": 115,
     "root": {
       "depth": 0,

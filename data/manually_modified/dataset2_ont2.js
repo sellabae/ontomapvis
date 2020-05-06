@@ -1,6 +1,6 @@
 var mouse = {
     "name": "mouse",
-    "baseNS": "http://mouse.owl#",
+    "baseNS": "http://mouse.owl",
     "classCount": 97,
     "root": {
       "depth": 0,
