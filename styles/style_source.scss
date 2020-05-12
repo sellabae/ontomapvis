@@ -7,7 +7,8 @@ $primary-color: #0077ff;
 $darker-color: #005ae2;
 $lighter-color: #dddddd;
 $bg-grid-color: #f6f6f6;
-$bg-color: #fcfcfc;
+// $bg-color: #fcfcfc;
+$bg-color: white;
 $text-color: black;
 $text-color-muted: gray;
 $text-size: 0.9em;
@@ -145,7 +146,7 @@ $text-size: 0.9em;
 
 //highlight and muted
 .muted {
-    opacity: 0.4;
+    // opacity: 0.4;
 }
 
 .highlight {

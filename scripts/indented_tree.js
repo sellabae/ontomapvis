@@ -2,7 +2,7 @@
 const margin = {top: 30, right: 20, bottom: 30, left: 20};
 const nodeHeight = 20,
       nodeWidth = 200,
-      nodeIndent = 10;
+      nodeIndent = 15,
       nodeMarkSize = 4.5;
 const treeWidth = 300;
 

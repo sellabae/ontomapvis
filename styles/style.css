@@ -19,7 +19,7 @@
   overflow: scroll;
   border: 1px solid #ccc;
   border-radius: 2px;
-  background-color: #fcfcfc;
+  background-color: white;
   margin-bottom: 20px;
 }
 
@@ -117,10 +117,6 @@
   opacity: 0.8;
 }
 
-.muted {
-  /* opacity: 0.4; */
-}
-
 .highlight {
   opacity: 1;
 }
@@ -168,7 +164,7 @@
 }
 
 .matrix-head rect {
-  fill: #fcfcfc;
+  fill: white;
 }
 
 .frozen-shadow {
