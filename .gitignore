@@ -7,3 +7,4 @@
 # etc.
 .DS_Store
 .jshintrc
+.vscode/
