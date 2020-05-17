@@ -2,7 +2,7 @@
 /resources
 /test
 /dataset
-/oldversion
+*/oldversion
 
 # etc.
 .DS_Store
