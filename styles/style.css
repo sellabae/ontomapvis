@@ -55,9 +55,14 @@
   fill: #0077ff;
   opacity: 1;
   transform-origin: 50 50;
+  stroke: #0077ff;
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
 }
 .branch.expanded .nodemark {
   transform: rotate(90deg);
+  fill: white;
+  stroke: #0077ff;
 }
 
 .right-aligned.tree .nodemark {

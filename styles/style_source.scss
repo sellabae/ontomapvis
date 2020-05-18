@@ -76,9 +76,14 @@ $text-size: 0.9em;
     fill: $primary-color;
     opacity: 1;
     transform-origin: 50 50;
+    stroke: $primary-color;
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
 
     .branch.expanded & {
         transform: rotate(90deg);
+        fill: white;
+        stroke: $primary-color;
     }
 }
 
