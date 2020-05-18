@@ -4,6 +4,8 @@
 /dataset
 */oldversion
 
+.css.map
+
 # etc.
 .DS_Store
 .jshintrc
