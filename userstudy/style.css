@@ -1,15 +1,41 @@
+/* div {
+    border: blue solid 1px;
+} */
 .content {
-    width: 800px;
+  width: 800px;
 }
+
 h1, h2 {
-    color: #0077ff;
+  color: #0077ff;
 }
 
 .font_color_primary {
-    color: #0077ff;
+  color: #0077ff;
 }
 
-#task-form {
-    border: solid #000 1px;
-    color: red;
+.itemdiv {
+  border: #0077ff solid 1px;
+  border-radius: 3px;
+  padding: 10px 30px 10px 30px;
+  margin-bottom: 20px;
 }
+.itemdiv .qtext {
+  margin-bottom: 5px;
+}
+.itemdiv .qtext-sub {
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  line-height: 1.3em;
+  margin-left: 1.3em;
+  color: #333;
+}
+.itemdiv .answerdiv {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.itemdiv .answerdiv span {
+  font-size: 0.9em;
+  color: #6b6b6b;
+}
+
+/*# sourceMappingURL=style.css.map */

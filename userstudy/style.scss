@@ -1,0 +1,43 @@
+$primary-color: #0077ff;
+$muted-color: #6b6b6b;
+/* div {
+    border: blue solid 1px;
+} */
+
+.content {
+    width: 800px;
+}
+h1, h2 {
+    color: $primary-color;
+}
+
+.font_color_primary {
+    color: $primary-color;
+}
+
+.itemdiv {
+    border: $primary-color solid 1px;
+    border-radius: 3px;
+    padding: 10px 30px 10px 30px;
+    margin-bottom: 20px;
+    .qtext {
+        margin-bottom: 5px;
+    }
+    .qtext-sub {
+        margin-bottom: 5px;
+        font-size: 0.9em;
+        line-height: 1.3em;
+        margin-left: 1.3em;
+        color: #333;
+    }
+    .answerdiv {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .answerdiv span{
+        font-size: 0.9em;
+        color: $muted-color;
+    }
+}
+
+
