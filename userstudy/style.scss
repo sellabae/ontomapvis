@@ -1,5 +1,9 @@
 $primary-color: #0077ff;
-$muted-color: #6b6b6b;
+$muted-color: #616161;
+$card-color: #f9f9f9;
+$wordcard-color: #ececec;
+$wordcard-hover-color: #747474;
+
 /* div {
     border: blue solid 1px;
 } */
@@ -7,7 +11,7 @@ $muted-color: #6b6b6b;
 .content {
     width: 800px;
 }
-h1, h2 {
+h1, h2, .h2 {
     color: $primary-color;
 }
 
@@ -16,13 +20,17 @@ h1, h2 {
 }
 
 .itemdiv {
+    // background-color: $card-color;
     border: $primary-color solid 1px;
     border-radius: 3px;
-    padding: 10px 30px 10px 30px;
-    margin-bottom: 20px;
+
+    padding: 10px 20px 10px 20px;
+    margin: 10px 0 15px 0;
+    
     .qtext {
         margin-bottom: 5px;
     }
+
     .qtext-sub {
         margin-bottom: 5px;
         font-size: 0.9em;
@@ -30,14 +38,80 @@ h1, h2 {
         margin-left: 1.3em;
         color: #333;
     }
-    .answerdiv {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-    .answerdiv span{
+}
+
+.answerdiv {
+    padding-top: 20px;
+    padding-bottom: 10px;
+
+    label{
         font-size: 0.9em;
         color: $muted-color;
+        margin-bottom: 0;
+    }
+
+    .radiodiv {
+        padding: 10px;
+
+        label {
+            position: relative;
+            text-anchor: middle;
+            top: -1.4em;
+            left: 0.7em;
+        }
+    }
+
+    input[type=radio] {
+        cursor: pointer;
+    }
+    .form-check-inline {
+        margin-left: 0.75em;
+        margin-right: 0.75em;
     }
 }
 
+#form-head {
+    position: relative;
+    margin-bottom: 30px;
+}
+#form-identification {
+    position: absolute;
+    right: 0; 
+    top: 0;
 
+    /* hide identification info */
+    pointer-events:none;
+    // visibility: hidden;
+    opacity: 0.5;
+}
+
+.chosen-cards-div {
+    // border: red solid 1px;
+
+    #chosen-words {
+        color: $primary-color;
+        pointer-events:none;
+        margin-bottom: 10px;
+    }
+}
+
+.cards-div {
+    border: orange solid 1px;
+
+}
+
+.wordcard {
+    margin: 3px;
+    background-color: $wordcard-color;
+    border: none;
+    width: 130px;
+    // min-width: 90px;
+
+    &:hover {
+        background-color: $wordcard-hover-color;
+    }
+    &.selected {
+        background-color: $primary-color;
+        color: white;
+    }
+}

@@ -20,53 +20,28 @@
 
 <body class="text-unselectable p-4">
     <div class="content container-fluid">
-        <h2 class="mb-4">Your Feedback</h2>
-
-        <section id="form-board">
-            <div id="form-head">
-                <h4 id="form-title">title</h4>
-                <p id="form-message">...</p>
+        <form>
+            <div class="h2">Your Feedback</div>
+            <hr class="mb-4">
+            <section id="form-board" class="mx-2">
+                <div id="form-head">
+                    <!-- participant id and formtype -->
+                    <div class="h4" id="form-title">title</div>
+                    <div id="form-message">...</div>
+                    <div id="form-identification" class="text-right"></div>
+                </div>
+                <!-- form contents. item list -->
+                <div id="form-content" class="mx-4">
+                    <!-- item cards -->
+                </div>
+            </section>
+            <div id="form-submit-section" class="mt-4 text-right">
+                <hr>
+                <input type="submit" class="btn btn-primary" value="Submit">
+                <a href="4_survey_code.html" class="btn btn-secondary">Submit-alink</a>
             </div>
-            <div class="mx-4" id="form-content">
-                <!-- form items -->
-                <form>
-                    <div class="item-card">
-                        <div class="item-answer-group text-center">
-                            <div class="form-check-label-group">
-                                <label class="form-check-label" for="inlineRadio1">1</label>
-                                <label class="form-check-label" for="inlineRadio2">2</label>
-                                <label class="form-check-label" for="inlineRadio3">3</label>
-                                <label class="form-check-label" for="inlineRadio4">4</label>
-                                <label class="form-check-label" for="inlineRadio5">5</label>
-                            </div>
-                            <div class="form-check form-check-inline" role="radiogroup">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="3">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="4">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio5" value="5">
-                            </div>
-                        </div>
+        </form>
 
-                        <div class="text-center">
-                            <div class="form-check form-check-inline">
-                                <label class="form-check-label" for="inlineRadio1">1</label>
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <label class="form-check-label" for="inlineRadio2">2</label>
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <div class="mt-4 text-center">
-            <hr>
-            <a href="4_survey_code.html" class="btn btn-primary">Submit</a>
-        </div>
     </div>
 </body>
 </html>
