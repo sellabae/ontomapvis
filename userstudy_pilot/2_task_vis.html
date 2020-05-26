@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OntoMapVis - Baseline</title>
+    <!-- <link id="favicon" rel="shortcut icon" href=""/> -->
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    
+    <!-- Script -->
+    <script src="/scripts/indented_tree.js"></script>
+    <script src="/scripts/script-alignment.js"></script>
+    <script src="/scripts/baselineMap.js"></script>
+    <!-- data -->    
+    <script src="/data/dataset1/dataset1_ont1.js"></script>
+    <script src="/data/dataset1/dataset1_ont2.js"></script>
+    <script src="/data/dataset1/dataset1_map_modified.js"></script>
+    <script>
+        const dataset1 = {
+            domain: 'conference',
+            ont1: edas,
+            ont2: ekaw,
+            maps: mapping_edas_ekaw
+        };
+        setDataset(dataset1);
+    </script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/styles/style.css"> <!-- ontology visualization styles -->
+    <link rel="stylesheet" href="styles/style_task.css"> <!-- task form within userstudy -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body class="text-unselectable p-4">
+    <div class="content container-fluid">
+
+        <p class="h5">Use the visualization to answer the question</p>
+        
+        <!-- Task Area -->
+        <form id="taskForm" action="feedback_form.html" onsubmit="return validateForm();">
+            <div class="mb-4 px-4 py-3" id="taskDiv">
+                <p class="task-question">Is "Attendee" in Ontology A correctly mapped?</p>
+                <div id="answerDiv">
+                    <select class="task-answer form-control" id="inlineFormCustomSelectPref">
+                        <option selected>Choose...</option>
+                        <option value="y">Yes</option>
+                        <option value="n">No</option>
+                    </select>
+                </div>
+            </div>
+            <script>
+                function validateForm() {
+                    var select = $('select.task-answer').val();
+                    console.log(select);
+                    if (select != "y" && select != "n") {
+                        $('#validateMsg').html("Complete the task.");
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
+        </form>
+
+        <!-- Visualization -->
+        <div class="svgdiv" id="baseline-svgdiv">
+            <!-- svg for baseline mapping -->
+            <svg class="mapsvg" id="baseline-svg" width="800" height="500">
+            </svg>
+        </div>
+        
+        <!-- Finish button -->
+        <div class="mt-4 text-center">
+            <hr>
+            <input type="submit" form="taskForm" class="btn btn-primary" value="Finish Task">
+            <p id="validateMsg"></p>
+        </div>
+    </div>
+</body>
+
+</html>

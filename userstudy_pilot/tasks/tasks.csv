@@ -1,0 +1,10 @@
+type, question, answertype
+reading visualization, "How many mappings are there in the visualization in total?", number
+reading visualization, "How many classes is [ClassA] in Ontology A mapped to?", number
+reading visualization, "What is [ClassA] in Ontology A mapped to?", class name
+reading visualization, "Does this mapping from [ClassA] (in Ontology A) to [ClassB] (in Ontology B) exists in the visualization?", yes/no
+validation, "Is [ClassA] in Ontology A correctly mapped? / Is [ClassB] in Ontology B correctly mapped?", yes/no
+validation, "Do you think the mapping between [ClassA] and [ClassB] presented in the visualization is correct?", yes/no
+creation, "[ClassA] in Ontology A is mapped to an incorrect pair. Which class in Ontology B should [ClassA] be mapped to instead?", class name
+creation, "[ClassA] in Ontology A has no mapping shown in the visualization. But can [Class A] be mapped to another class in Ontology B?", yes/no
+creation, "[ClassA] in Ontology A actually has a mapping pair but not shown, which class in Ontology B should be it?", class name

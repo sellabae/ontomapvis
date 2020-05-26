@@ -1,0 +1,19 @@
+/* ////// Tasks */
+#taskDiv {
+    background-color: #f1f1f1;
+    /* border: solid 1px #07F; */
+    border-radius: 2px;
+    height:120px;
+}
+.task-question {
+    font-size: 1em;
+    font-weight: 500;
+}
+#answerDiv select {
+        max-width: 200px;
+}
+
+#validateMsg {
+    color: orangered;
+    margin-top: 5px;
+}
