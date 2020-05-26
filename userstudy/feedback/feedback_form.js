@@ -7,7 +7,7 @@ const FormCode = {
 window.addEventListener('load', function() {
     console.log("window loaded.");
 
-    var data = formdata.tlx;
+    var data = formdata.reaction; //formdata.tlx, formdata.sus, formdata.reaction
     generateForm(data);
 });
 
@@ -98,3 +98,70 @@ function createRadioGroup(inputName, scale) {
     return answerDiv;
 }
 
+/**
+ * Draws Reaction Cards form
+ * @param {*} data 
+ */
+function drawReactionForm(data) {
+    const limit = 5;
+
+    //Draw reaction cards
+    var cardsDiv = $('<div class="cards-div"></div>');
+    shuffle(data.items);
+    for (var word of data.items) {
+        var wordcard = $(`
+            <label class="btn wordcard">
+                ${word}
+                <input type="checkbox" class="word-checkbox" value="${word}" autocomplete="off">
+            </label>
+        `);
+        cardsDiv.append(wordcard);
+    }
+    $('#form-content').append(cardsDiv);
+
+    //Chosen words
+    var chosenCardsDiv = $('<div class="chosen-cards-div"></div>');
+    chosenCardsDiv.append($('<input id="chosen-words" type="text" name="words" value="" readonly>'));
+    $('#form-content').append(chosenCardsDiv);
+
+    //Checkbox interaction
+    $('input.word-checkbox').on('change', function() {
+        var checkbox = $(this);
+        var label = checkbox.parent('label');
+        
+        //Set limit
+        if ($('input.word-checkbox:checked').length > limit) {
+            $(this).prop('checked', false);
+            console.log('word selection limit 5');
+            return;
+        }
+        
+        //Sync with button
+        if (checkbox.is(':checked')) {
+            label.addClass('active');
+        } else {
+            label.removeClass('active');
+        }
+        
+        //list of words
+        var checkedboxes = $('input.word-checkbox:checked').toArray();
+        var words = checkedboxes.map(c => c.value);
+        console.log(words);
+        $('#chosen-words').val(words.join(', '));
+    });
+
+    //Create text input for reason
+    var reasonDiv = $(`
+        <div class="reason-div form-group">
+            <label for="formGroupExampleInput">${data.q2}</label>
+            <textarea class="form-control" id="reasonTextarea" rows="3" name="reason" placeholder="reasons of your choices"></textarea>
+        </div>`);
+    $('#form-content').append(reasonDiv);
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+}

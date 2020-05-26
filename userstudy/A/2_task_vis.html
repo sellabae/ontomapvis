@@ -38,52 +38,31 @@
 
 <body class="text-unselectable p-4">
     <div class="content container-fluid">
-        <h4>Complete two tasks using visualization</h4>
+        <p class="h5">Use the visualization to answer the question</p>
         <div class="mb-4 px-4 py-3" id="task-form" style="border: solid 1px #07F; border-radius: 2px; height:150px;">
-            <div class="row">
-                <div class="col-6" id="task1">
-                    <p><b>Task 1.</b> Check if the mapping below is correct.</p>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                            <th scope="col">Ontology 1 (left)</th>
-                            <th scope="col">Ontology 2 (right)</th>
-                            <th scope="col">Correct?</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="align-middle">AcademicEvent</td>
-                                <td class="align-middle">Scientific_Event</td>
-                                <td class="align-middle">
-                                    <select class="form-control" id="inlineFormCustomSelectPref">
-                                        <option selected>Choose...</option>
-                                        <option value="true">Correct</option>
-                                        <option value="false">Wrong</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-6" id="task2">
-                    <p><b>Task 2.</b> Add a missing mapping below.</p>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                            <th scope="col">Ontology 1 (left)</th>
-                            <th scope="col">Ontology 2 (right)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="text" class="form-control" id="class1" placeholder="class1" required></td>
-                                <td><input type="text" class="form-control" id="class2" placeholder="class2" required></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <p>Task. Check if the mapping below is correct.</p>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                    <th scope="col">Ontology 1 (left)</th>
+                    <th scope="col">Ontology 2 (right)</th>
+                    <th scope="col">Correct?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="align-middle">AcademicEvent</td>
+                        <td class="align-middle">Scientific_Event</td>
+                        <td class="align-middle">
+                            <select class="form-control" id="inlineFormCustomSelectPref">
+                                <option selected>Choose...</option>
+                                <option value="true">Correct</option>
+                                <option value="false">Wrong</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="svgdiv" id="baseline-svgdiv">
@@ -94,7 +73,7 @@
 
         <div class="mt-4 text-center">
             <hr>
-            <a href="../feedback_form.html" class="btn btn-primary">Finish Tasks</a>
+            <a href="../feedback/feedback_form.html" class="btn btn-primary">Finish Tasks</a>
         </div>
     </div>
 </body>

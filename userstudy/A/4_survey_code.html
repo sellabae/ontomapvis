@@ -19,15 +19,25 @@
             <h2 class="my-3">Thanks for your participation!</h2>
             <br><br>
             <p>
-                Copy the survey code below,<br>
-                go back to Amazon MTurk and put it into your HIT session.
+                Copy the survey code below.<br>
+                Put it into your HIT session in Amazon MTurk.
             </p>
             <div class="input-group input-group-lg mb-3" style="width:250px; margin:0 auto;">
-                <input type="text" class="form-control" placeholder="E8C97A31" aria-label="Generated survey code" readonly>
+                <input type="text" class="form-control" id="surveyCode" placeholder="SurveyCode" value="E8C97A31" aria-label="Generated survey code" readonly>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button">copy</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copySurveyCode()">copy</button>
                 </div>
             </div>
+            <p id="msg" class="font_color_primary"></p>
+            <script>
+                function copySurveyCode() {
+                    var codeText = document.getElementById('surveyCode');
+                    codeText.select();
+                    codeText.setSelectionRange(0,99);
+                    document.execCommand("copy");
+                    document.getElementById('msg').innerHTML = "The survey code copied.";
+                }
+            </script>
         </div>
         
     </div>

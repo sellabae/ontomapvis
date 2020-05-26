@@ -20,14 +20,14 @@
 
 <body class="text-unselectable p-4">
     <div class="content container-fluid">
-        <form>
+        <form id="feedbackForm">
             <div class="h2">Your Feedback</div>
             <hr class="mb-4">
             <section id="form-board" class="mx-2">
                 <div id="form-head">
                     <!-- participant id and formtype -->
-                    <div class="h4" id="form-title">title</div>
-                    <div id="form-message">...</div>
+                    <div class="h4" id="form-title"></div>
+                    <div id="form-message"></div>
                     <div id="form-identification" class="text-right"></div>
                 </div>
                 <!-- form contents. item list -->
@@ -37,8 +37,9 @@
             </section>
             <div id="form-submit-section" class="mt-4 text-right">
                 <hr>
-                <input type="submit" class="btn btn-primary" value="Submit">
-                <a href="4_survey_code.html" class="btn btn-secondary">Submit-alink</a>
+                <!-- TODO: Make it redirect to the last page after submitting the data to server -->
+                <!-- <input type="submit" class="btn btn-primary" value="Submit"> -->
+                <a href="../A/4_survey_code.html" class="btn btn-primary">Submit</a>
             </div>
         </form>
 

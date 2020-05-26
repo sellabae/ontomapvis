@@ -2,11 +2,7 @@ $primary-color: #0077ff;
 $muted-color: #616161;
 $card-color: #f9f9f9;
 $wordcard-color: #ececec;
-$wordcard-hover-color: #747474;
-
-/* div {
-    border: blue solid 1px;
-} */
+$wordcard-hover-color: #cecece;
 
 .content {
     width: 800px;
@@ -14,11 +10,28 @@ $wordcard-hover-color: #747474;
 h1, h2, .h2 {
     color: $primary-color;
 }
-
 .font_color_primary {
     color: $primary-color;
 }
 
+
+//////////////////////////////// Form Head and Identification
+#form-head {
+    position: relative;
+    margin-bottom: 30px;
+}
+#form-identification {
+    pointer-events:none;
+    position: absolute;
+    right: 0; 
+    top: 0;
+    /* Hide identification info */
+    visibility: hidden;
+    opacity: 0.5;
+}
+
+
+//////////////////////////////// Question & Scale point based Forms
 .itemdiv {
     // background-color: $card-color;
     border: $primary-color solid 1px;
@@ -39,7 +52,6 @@ h1, h2, .h2 {
         color: #333;
     }
 }
-
 .answerdiv {
     padding-top: 20px;
     padding-bottom: 10px;
@@ -70,48 +82,44 @@ h1, h2, .h2 {
     }
 }
 
-#form-head {
-    position: relative;
-    margin-bottom: 30px;
-}
-#form-identification {
-    position: absolute;
-    right: 0; 
-    top: 0;
 
-    /* hide identification info */
-    pointer-events:none;
-    // visibility: hidden;
-    opacity: 0.5;
-}
-
+//////////////////////////////// Reaction Cards form
 .chosen-cards-div {
     // border: red solid 1px;
-
     #chosen-words {
         color: $primary-color;
         pointer-events:none;
-        margin-bottom: 10px;
+        margin-top: 10px;
+        // margin-bottom: 5px;
+        border: none;
+        width: 100%;
     }
 }
-
 .cards-div {
-    border: orange solid 1px;
-
+    // border: orange solid 1px;
 }
-
 .wordcard {
     margin: 3px;
     background-color: $wordcard-color;
     border: none;
-    width: 130px;
+    width: 132px;
+    font-size: 0.9em;
     // min-width: 90px;
 
     &:hover {
         background-color: $wordcard-hover-color;
     }
-    &.selected {
+    &.active {
         background-color: $primary-color;
         color: white;
     }
+
+    .word-checkbox {
+        // Hide from the screen
+        position: absolute;
+        left: -100vw;
+    }
+}
+.reason-div {
+    margin-top: 20px;
 }

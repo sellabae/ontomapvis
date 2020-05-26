@@ -72,7 +72,7 @@ const formdata = {
         "type": "reaction",
         "title": "Reaction Cards",
         "desc": "Microsoft Product Desirability Reaction Cards (64 out of 118 words)",
-        "message": "Please select the top five words that best describe your opinion on the visualization you've just used to complete the task. There is no right or wrong answer.",
+        "message": "Please select the top 5 words that best describe your opinion on the visualization you've just used to complete the task. There is no right or wrong answer.",
         "items": [
             "Advanced",
             "Annoying",
@@ -139,6 +139,6 @@ const formdata = {
             "Unrefined",
             "Useful"
         ],
-        "message1": "Please explain your choices of these words."
+        "q2": "Please explain your choices of these words."
     }
 };

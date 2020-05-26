@@ -1,6 +1,3 @@
-/* div {
-    border: blue solid 1px;
-} */
 .content {
   width: 800px;
 }
@@ -11,6 +8,21 @@ h1, h2, .h2 {
 
 .font_color_primary {
   color: #0077ff;
+}
+
+#form-head {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+#form-identification {
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  /* Hide identification info */
+  visibility: hidden;
+  opacity: 0.5;
 }
 
 .itemdiv {
@@ -56,42 +68,35 @@ h1, h2, .h2 {
   margin-right: 0.75em;
 }
 
-#form-head {
-  position: relative;
-  margin-bottom: 30px;
-}
-
-#form-identification {
-  position: absolute;
-  right: 0;
-  top: 0;
-  /* hide identification info */
-  pointer-events: none;
-  opacity: 0.5;
-}
-
 .chosen-cards-div #chosen-words {
   color: #0077ff;
   pointer-events: none;
-  margin-bottom: 10px;
-}
-
-.cards-div {
-  border: orange solid 1px;
+  margin-top: 10px;
+  border: none;
+  width: 100%;
 }
 
 .wordcard {
   margin: 3px;
   background-color: #ececec;
   border: none;
-  width: 130px;
+  width: 132px;
+  font-size: 0.9em;
 }
 .wordcard:hover {
-  background-color: #747474;
+  background-color: #cecece;
 }
-.wordcard.selected {
+.wordcard.active {
   background-color: #0077ff;
   color: white;
+}
+.wordcard .word-checkbox {
+  position: absolute;
+  left: -100vw;
+}
+
+.reason-div {
+  margin-top: 20px;
 }
 
 /*# sourceMappingURL=style.css.map */
