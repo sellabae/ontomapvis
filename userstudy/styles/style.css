@@ -33,6 +33,11 @@ p b, ul b {
   opacity: 0.5;
 }
 
+#validateMsg {
+  color: orangered;
+  margin-top: 5px;
+}
+
 .itemdiv {
   border: #0077ff solid 1px;
   border-radius: 3px;

@@ -13,13 +13,13 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     
     <!-- Script -->
-    <script src="../../scripts/indented_tree.js"></script>
-    <script src="../../scripts/script-alignment.js"></script>
-    <script src="../../scripts/baselineMap.js"></script>
+    <script src="/scripts/indented_tree.js"></script>
+    <script src="/scripts/script-alignment.js"></script>
+    <script src="/scripts/baselineMap.js"></script>
     <!-- data -->    
-    <script src="../../data/dataset1/dataset1_ont1.js"></script>
-    <script src="../../data/dataset1/dataset1_ont2.js"></script>
-    <script src="../../data/dataset1/dataset1_map_modified.js"></script>
+    <script src="/data/dataset1/dataset1_ont1.js"></script>
+    <script src="/data/dataset1/dataset1_ont2.js"></script>
+    <script src="/data/dataset1/dataset1_map_modified.js"></script>
     <script>
         const dataset1 = {
             domain: 'conference',
@@ -31,8 +31,8 @@
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../../styles/style.css">
-    <link rel="stylesheet" href="style_task.css">
+    <link rel="stylesheet" href="/styles/style.css"> <!-- ontology visualization styles -->
+    <link rel="stylesheet" href="styles/style_task.css"> <!-- task form within userstudy -->
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
@@ -43,7 +43,7 @@
         <p class="h5">Use the visualization to answer the question</p>
         
         <!-- Task Area -->
-        <form id="taskForm" name="task" onsubmit="return validateForm()">
+        <form id="taskForm" action="feedback_form.html" onsubmit="return validateForm();">
             <div class="mb-4 px-4 py-3" id="taskDiv">
                 <p class="task-question">Is "Attendee" in Ontology A correctly mapped?</p>
                 <div id="answerDiv">
@@ -59,7 +59,7 @@
                     var select = $('select.task-answer').val();
                     console.log(select);
                     if (select != "y" && select != "n") {
-                        $('.submit-msg').html("Complete the task.");
+                        $('#validateMsg').html("Complete the task.");
                         return false;
                     }
                     return true;
@@ -77,11 +77,8 @@
         <!-- Finish button -->
         <div class="mt-4 text-center">
             <hr>
-            <!-- TODO: Make it redirect to the last page after submitting the data to server -->
-            <input type="submit" form="taskForm" class="btn btn-primary" value="Finish(Submit)">
-            <a href="../feedback/feedback_form.html" class="btn btn-primary">Finish</a>
-
-            <p class="submit-msg"></p>
+            <input type="submit" form="taskForm" class="btn btn-primary" value="Finish Task">
+            <p id="validateMsg"></p>
         </div>
     </div>
 </body>

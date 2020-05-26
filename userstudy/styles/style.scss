@@ -39,7 +39,10 @@ p, ul {
     visibility: hidden;
     opacity: 0.5;
 }
-
+#validateMsg {
+    color: orangered;
+    margin-top: 5px;
+}
 
 //////////////////////////////// Question & Scale point based Forms
 .itemdiv {

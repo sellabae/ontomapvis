@@ -4,10 +4,13 @@ const FormCode = {
     reaction: 2
 };
 
+var selectedForm;
+
 window.addEventListener('load', function() {
     console.log("window loaded.");
 
     var data = formdata.reaction; //formdata.tlx, formdata.sus, formdata.reaction
+    selectedForm = data;
     generateForm(data);
 });
 
@@ -164,4 +167,28 @@ function shuffle(array) {
       let j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
+}
+
+function validateForm() {
+    switch(selectedForm.formcode) {
+        case FormCode.reaction:
+            //Should select 5 words
+            if ($('input.word-checkbox:checked').length < 5) {
+                $('#validateMsg').html("Select 5 words");
+                return false;
+            }
+            //Should fill out reason
+            if ($('#reasonTextarea').val().length == 0) {
+                $('#validateMsg').html("Fill out the reason");
+                return false;
+            }
+            //TODO: Validate the reason textarea.. if
+            // 1) only symbols typed, 2) same character repeated
+            break;
+        case FormCode.workload:
+        case FormCode.workload:
+            //TODO: validate the scale form
+            break;
+    }
+    return true;
 }

@@ -8,19 +8,19 @@
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="styles/style.css">
     
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- script -->
     <script src="feedback_form.js"></script>
     <!-- form data -->
-    <script src="formdata.js"></script>
+    <script src="feedback_formdata.js"></script>
 </head>
 
 <body class="text-unselectable p-4">
     <div class="content container-fluid">
-        <form id="feedbackForm">
+        <form id="feedbackForm" action="4_survey_code.html" onsubmit="return validateForm();">
             <div class="h2">Your Feedback</div>
             <hr class="mb-4">
             <section id="form-board" class="mx-2">
@@ -35,11 +35,10 @@
                     <!-- item cards -->
                 </div>
             </section>
-            <div id="form-submit-section" class="mt-4 text-right">
+            <div id="form-submit-section" class="mt-4 text-center">
                 <hr>
-                <!-- TODO: Make it redirect to the last page after submitting the data to server -->
-                <!-- <input type="submit" class="btn btn-primary" value="Submit"> -->
-                <a href="../A/4_survey_code.html" class="btn btn-primary">Submit</a>
+                <input type="submit" form="feedbackForm" class="btn btn-primary" value="Submit">
+                <p id="validateMsg"></p>
             </div>
         </form>
 
