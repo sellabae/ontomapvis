@@ -13,6 +13,16 @@ h1, h2, .h2 {
 .font_color_primary {
     color: $primary-color;
 }
+p, ul { 
+    b {
+        color: $primary-color;
+    }
+}
+
+////// Tutorial
+.img-wrapper {
+    border: lightgray solid 1px;
+}
 
 
 //////////////////////////////// Form Head and Identification

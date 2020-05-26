@@ -10,6 +10,14 @@ h1, h2, .h2 {
   color: #0077ff;
 }
 
+p b, ul b {
+  color: #0077ff;
+}
+
+.img-wrapper {
+  border: lightgray solid 1px;
+}
+
 #form-head {
   position: relative;
   margin-bottom: 30px;

@@ -32,48 +32,56 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="../../styles/style.css">
+    <link rel="stylesheet" href="style_task.css">
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
 <body class="text-unselectable p-4">
     <div class="content container-fluid">
-        <p class="h5">Use the visualization to answer the question</p>
-        <div class="mb-4 px-4 py-3" id="task-form" style="border: solid 1px #07F; border-radius: 2px; height:150px;">
-            <p>Task. Check if the mapping below is correct.</p>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                    <th scope="col">Ontology 1 (left)</th>
-                    <th scope="col">Ontology 2 (right)</th>
-                    <th scope="col">Correct?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="align-middle">AcademicEvent</td>
-                        <td class="align-middle">Scientific_Event</td>
-                        <td class="align-middle">
-                            <select class="form-control" id="inlineFormCustomSelectPref">
-                                <option selected>Choose...</option>
-                                <option value="true">Correct</option>
-                                <option value="false">Wrong</option>
-                            </select>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
 
+        <p class="h5">Use the visualization to answer the question</p>
+        
+        <!-- Task Area -->
+        <form id="taskForm" name="task" onsubmit="return validateForm()">
+            <div class="mb-4 px-4 py-3" id="taskDiv">
+                <p class="task-question">Is "Attendee" in Ontology A correctly mapped?</p>
+                <div id="answerDiv">
+                    <select class="task-answer form-control" id="inlineFormCustomSelectPref">
+                        <option selected>Choose...</option>
+                        <option value="y">Yes</option>
+                        <option value="n">No</option>
+                    </select>
+                </div>
+            </div>
+            <script>
+                function validateForm() {
+                    var select = $('select.task-answer').val();
+                    console.log(select);
+                    if (select != "y" && select != "n") {
+                        $('.submit-msg').html("Complete the task.");
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
+        </form>
+
+        <!-- Visualization -->
         <div class="svgdiv" id="baseline-svgdiv">
             <!-- svg for baseline mapping -->
             <svg class="mapsvg" id="baseline-svg" width="800" height="500">
             </svg>
         </div>
-
+        
+        <!-- Finish button -->
         <div class="mt-4 text-center">
             <hr>
-            <a href="../feedback/feedback_form.html" class="btn btn-primary">Finish Tasks</a>
+            <!-- TODO: Make it redirect to the last page after submitting the data to server -->
+            <input type="submit" form="taskForm" class="btn btn-primary" value="Finish(Submit)">
+            <a href="../feedback/feedback_form.html" class="btn btn-primary">Finish</a>
+
+            <p class="submit-msg"></p>
         </div>
     </div>
 </body>
