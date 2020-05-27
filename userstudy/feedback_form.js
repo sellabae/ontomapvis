@@ -1,7 +1,7 @@
 const FormCode = {
-    workload: 0,
-    usability: 1,
-    reaction: 2
+    WORKLOAD: 0,
+    USABILITY: 1,
+    REACTION: 2
 };
 
 var selectedForm;
@@ -16,7 +16,7 @@ window.addEventListener('load', function() {
 
 /**
  * Generate feedback form
- * @param {object} data formdata object
+ * @param {*} data form data object
  */
 function generateForm(data) {
     console.log('generating form...');
@@ -26,18 +26,18 @@ function generateForm(data) {
     $("#form-message").text(data.message);
 
     //Add hidden id/formtype info for form submit
-    var pid = "E9R7A001"; //some 8-digit random generated id
+    var pid = "E9R7A001"; //TODO: some 8-digit random generated id
     $('#form-identification').append(`<input type="text" id="pId" name="pId" value="${pid}" readonly>`);
     $('#form-identification').append(`<input type="text" id="formtype" name="type" value="${data.type}" readonly>`);
     
     //Draw the form on html page
     console.log('formtype: ' + data.formcode);
     switch(data.formcode) {
-        case FormCode.workload:
-        case FormCode.usability:
+        case FormCode.WORKLOAD:
+        case FormCode.USABILITY:
             drawScaleForm(data);
             break;
-        case FormCode.reaction:
+        case FormCode.REACTION:
             drawReactionForm(data);
             break;
         default:
@@ -47,7 +47,7 @@ function generateForm(data) {
 
 /**
  * Draw scale based questionnaire type of form to html.
- * @param {object} formdata. either workload tlx or usability sus
+ * @param {*} data. either workload TLX or usability SUS data
  */
 function drawScaleForm(data) {
     console.log("drawScaleForm()");
@@ -81,11 +81,11 @@ function drawScaleForm(data) {
  */
 function createRadioGroup(inputName, scale) {
     var answerDiv = $('<div class="answerdiv text-center">');
-    answerDiv.append($('<label>'+ scale.first +'</label>'));
+    answerDiv.append($('<label>'+ scale.first +'</label>'));    //label for the smallest option
     var radiogroup = $('<div class="form-check form-check-inline" role="radiogroup">');
     for (var i=1; i<=scale.count; i++) {
         var radio = $('<div class="radiodiv"></div>');
-        radio.append($(`<label class="form-check-label">${i}</label>`));
+        radio.append($(`<label class="form-check-label" for="inlineRadio${i}">${i}</label>`));
         radio.append($('<input/>', {
             class: "form-check-input",
             type: "radio",
@@ -97,7 +97,7 @@ function createRadioGroup(inputName, scale) {
         radiogroup.append(radio);
     }
     answerDiv.append(radiogroup);
-    answerDiv.append($('<label>'+ scale.last +'</label>'));
+    answerDiv.append($('<label>'+ scale.last +'</label>'));    //label for the largest option
     return answerDiv;
 }
 
@@ -171,7 +171,7 @@ function shuffle(array) {
 
 function validateForm() {
     switch(selectedForm.formcode) {
-        case FormCode.reaction:
+        case FormCode.REACTION:
             //Should select 5 words
             if ($('input.word-checkbox:checked').length < 5) {
                 $('#validateMsg').html("Select 5 words");
@@ -185,8 +185,8 @@ function validateForm() {
             //TODO: Validate the reason textarea.. if
             // 1) only symbols typed, 2) same character repeated
             break;
-        case FormCode.workload:
-        case FormCode.workload:
+        case FormCode.WORKLOAD:
+        case FormCode.WORKLOAD:
             //TODO: validate the scale form
             break;
     }
