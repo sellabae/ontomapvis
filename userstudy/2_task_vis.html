@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OntoMapVis - Baseline</title>
+    <title>OntoMapVis: Task</title>
     <!-- <link id="favicon" rel="shortcut icon" href=""/> -->
 
     <!-- jQuery -->
@@ -12,6 +12,11 @@
     <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     
+    <!-- For Tasks -->
+    <script src="tasks/task_data.js"></script>
+    <script src="scripts/task_form.js"></script>
+
+    <!-- For Visualization -->
     <!-- Script -->
     <script src="../scripts/indented_tree.js"></script>
     <script src="../scripts/script-alignment.js"></script>
@@ -45,28 +50,9 @@
         <!-- Task Area -->
         <form id="taskForm" action="feedback_form.html" onsubmit="return validateForm();">
             <div class="mb-4 px-4 py-3" id="taskDiv">
-                <p class="task-question">Is "Attendee" in Ontology A correctly mapped?</p>
-                <div id="answerDiv">
-                    <select class="task-answer form-control" id="inlineFormCustomSelectPref">
-                        <option selected>Choose...</option>
-                        <option value="y">Yes</option>
-                        <option value="n">No</option>
-                    </select>
-                </div>
+                <p class="task-question"></p>
+                <div id="answerDiv"></div>
             </div>
-            <script>
-                function validateForm() {
-                    var select = $('select.task-answer').val();
-                    console.log(select);
-                    if (select != "y" && select != "n") {
-                        $('#validateMsg').html("Complete the task.");
-                        return false;
-                    }
-                    //TODO: validate other condition like 1) some interaction with the visualization..
-
-                    return true;
-                }
-            </script>
         </form>
 
         <!-- Visualization -->

@@ -9,8 +9,8 @@
     font-size: 1em;
     font-weight: 500;
 }
-#answerDiv select {
-        max-width: 200px;
+#answerDiv select, #answerDiv input {
+    max-width: 250px;
 }
 
 #validateMsg {
