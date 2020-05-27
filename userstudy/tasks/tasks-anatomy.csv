@@ -1,10 +1,10 @@
 tasktype, question, answertype, answer
 reading, How many mappings are there in the visualization in total?, number, 12
 reading, How many classes is "Bone" in Ontology A mapped to?, number, 0
-reading, What is "Cartilage" in Ontology A mapped to in Ontology B?, class name, cartilage
+reading, What is "Cartilage" in Ontology A mapped to in Ontology B?, class, cartilage
 reading, Does this mapping from "Leg" (in Ontology A) to "leg" (in Ontology B) exists in the visualization?, y/n, No
 validation, Is "Mucus" in Ontology A correctly mapped?, y/n, No
 validation, Do you think the mapping between "Body_Fluid_or_Substance" and "body fluid/substance" presented in the visualization is correct?, y/n, Yes
-creation, "Skull" in Ontology A is mapped to an incorrect pair. Which class in Ontology B should it be mapped to instead?, y/n, cranium
-creation, "Viscera" in Ontology A has no mapping shown in the visualization. But can it be mapped to another class in Ontology B?, y/n, Yes
-creation, "Viscera" in Ontology A actually has a mapping pair but not shown. Which class in Ontology B should it be mapped to?, class name, visceral organ system
+creation, "Skull" in Ontology A is mapped to an incorrect pair. Which class in Ontology B should it be mapped to instead?, class, cranium
+creation, "Viscera" in Ontology A has no mapping shown in the visualization. Can it be mapped to another class in Ontology B?, y/n, Yes
+creation, "Viscera" in Ontology A actually has a mapping pair but not shown. Which class in Ontology B should it be mapped to?, class, visceral organ system
